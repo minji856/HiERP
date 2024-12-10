@@ -35,7 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/signUp","/","/login").permitAll()
                         .anyRequest().authenticated())
 //                        // antMatchers 는 이제 안 쓰이는 듯
-//                        //.antMatchers("/user","/character").hasRole("USER") // ROLE_USER를 가진 사용자만 접근 가능
+//                        //.requestMatchers("/user").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
 //                        .formLogin(form -> form.loginPage("/user/login")
 //                                .loginProcessingUrl("/login-process") // 인증처리 수행 필터 실행
 //                                .defaultSuccessUrl("/main", true) // 정상적 인증 처리 후 이동하는 페이지
