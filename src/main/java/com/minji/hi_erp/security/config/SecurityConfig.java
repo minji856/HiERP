@@ -23,7 +23,7 @@ public class SecurityConfig {
     // password 암호화를 위해 클래스 생성 후 빈에 등록
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // RESTapi 이용으로 csrf 는 비활성화
+        // RESTapi 이용으로 csrf(cross site request forgery)는 비활성화
         http    .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(form -> form
