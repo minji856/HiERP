@@ -52,7 +52,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public static BCryptPasswordEncoder bCryptPasswordEncoder() {
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
