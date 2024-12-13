@@ -5,8 +5,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ViewController {
-//    @GetMapping("/login")
-//    public String loginPage() {
-//        return "login";
-//    }
+    @GetMapping("/account/login")
+    public String loginPage() {
+        return "login.html";
+    }
+
+    @GetMapping("/account/join")
+    public String joinPage() {
+        return "join.html";
+    }
 }
