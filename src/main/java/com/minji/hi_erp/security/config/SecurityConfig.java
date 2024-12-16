@@ -2,6 +2,7 @@ package com.minji.hi_erp.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
+    // private final UserDetailsService userDetailsService;
     private final ObjectMapper objectMapper;
 
     // password 암호화를 위해 클래스 생성 후 빈에 등록
@@ -27,12 +28,14 @@ public class SecurityConfig {
         // RESTapi 이용으로 csrf(cross site request forgery)는 비활성화
         http    .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+                /* 폼 로그인 */
                 .formLogin(form -> form
                         .defaultSuccessUrl("/",true)
                         .permitAll())
                 .authorizeHttpRequests(authorize -> authorize
                         // requestMatchers 에 지정된 URL 들은 인증,인가 없이도 가능
-                        .requestMatchers("/signUp","/","/login").permitAll()
+                        // 테스트를 위해 h2-console도 추가함
+                        .requestMatchers("/signUp","/","/login","/h2-console/**").permitAll()
                         .anyRequest().authenticated())
 //                        // antMatchers 는 이제 안 쓰이는 듯
 //                        //.requestMatchers("/user").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
