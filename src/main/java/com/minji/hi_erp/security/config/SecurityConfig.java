@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,14 +29,22 @@ public class SecurityConfig {
         // RESTapi 이용으로 csrf(cross site request forgery)는 비활성화
         http    .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+                .headers(
+                        headersConfigurer ->
+                                headersConfigurer
+                                        .frameOptions(
+                                                HeadersConfigurer.FrameOptionsConfig::sameOrigin
+                                        )
+                )
                 /* 폼 로그인 */
                 .formLogin(form -> form
                         .defaultSuccessUrl("/",true)
                         .permitAll())
                 .authorizeHttpRequests(authorize -> authorize
-                        // requestMatchers 에 지정된 URL 들은 인증,인가 없이도 가능
-                        // 테스트를 위해 h2-console도 추가함
-                        .requestMatchers("/signUp","/","/login","/h2-console/**").permitAll()
+                        // requestMatchers 에 지정된 Url 들은 인증,인가 없이도 가능
+                        // 테스트를 위해 h2-console/** 추가함 (배포시 제거)
+                        .requestMatchers("/signUp","/","/login","/h2-console/**")
+                        .permitAll()
                         .anyRequest().authenticated())
 //                        // antMatchers 는 이제 안 쓰이는 듯
 //                        //.requestMatchers("/user").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
