@@ -1,19 +1,31 @@
 package com.minji.hi_erp.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequiredArgsConstructor
+@Controller
+@RequestMapping("/account")
 public class ViewController {
-    @GetMapping("/account/login")
+    /**
+     * 로그인 페이지를 표시합니다.
+     *
+     * @return 로그인 페이지 뷰 이름.
+     */
+    @GetMapping("/login")
     public String loginPage() {
-        return "login.html";
+        return "account/login";
     }
 
-    @GetMapping("/account/join")
+    /**
+     * 회원가입 페이지를 표시합니다.
+     *
+     * @return 회원가입 페이지 뷰 이름.
+     */
+    @GetMapping("/join")
     public String joinPage() {
-        return "join.html";
+        return "account/join";
     }
 }
