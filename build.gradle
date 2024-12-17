@@ -23,6 +23,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-web-services'
 
+	/* 템블릿 엔진 */
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
 	/* Lombok */
 	implementation('org.projectlombok:lombok')
 	annotationProcessor('org.projectlombok:lombok')
