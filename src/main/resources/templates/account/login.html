@@ -21,6 +21,26 @@
     <!-- 이미지 URL 입력 -->
     <label for="imageUrl">프로필 이미지 URL</label>
     <input type="text" id="imageUrl" name="imageUrl" placeholder="http://image.url" />
+    <hr>
+    <!-- 소셜로그인 -->
+    <a th:href="@{/oauth2/authorization/google}">
+        <button class="google__btn">
+            <i class="fab fa-google"></i>
+            Sign in with Google
+        </button>
+    </a>
+    <a th:href="@{/oauth2/authorization/naver}">
+        <button class="naver__btn">
+            <i class="fa-solid fa-n">N</i>
+            Sign in with Naver
+        </button>
+    </a>
+    <a th:href="@{/oauth2/authorization/kakao}">
+        <button class="kakao__btn">
+            <i class="fab fa-kickstarter-k"></i>
+            Sign in with Kakao
+        </button>
+    </a>
 </form>
 </body>
 </html>
