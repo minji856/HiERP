@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/signUp","/","/login","/account/join","/h2-console/**")
                         .permitAll()
                         .anyRequest().authenticated())
-                //.requestMatchers("/user").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
+                        //.requestMatchers("/user").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
 
                 /* 폼 로그인 처리 */
                 .formLogin(form -> form.loginPage("/account/login")
