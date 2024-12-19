@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>로그인페이지</title>
+    <!-- Font-awesome 로드 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
 </head>
 <body>
     <input type="text" id="name" name="name" placeholder="이름을 입력하세요" required />
@@ -31,7 +34,7 @@
     </a>
     <a th:href="@{/oauth2/authorization/naver}">
         <button class="naver__btn">
-            <i class="fa-solid fa-n">N</i>
+            <i class="fa-solid fa-n"></i>
             Sign in with Naver
         </button>
     </a>
