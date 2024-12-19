@@ -3,8 +3,10 @@ package com.minji.hi_erp.security.entity;
 import com.minji.hi_erp.security.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.Id;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 
 @Getter
@@ -43,7 +45,8 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private LocalDate createdAt;
+    @CreationTimestamp
+    private Timestamp createDate;
 
 //    @Enumerated(EnumType.STRING)
 //    @JsonIgnore
