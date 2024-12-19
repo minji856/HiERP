@@ -1,4 +1,4 @@
-package com.minji.hi_erp.security.dto;
+package com.minji.hi_erp.security.entity;
 
 import com.minji.hi_erp.security.Role;
 import jakarta.persistence.*;
