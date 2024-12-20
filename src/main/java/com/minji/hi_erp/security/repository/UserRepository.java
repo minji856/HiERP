@@ -8,6 +8,7 @@ import java.util.Optional;
 /**
  * 회원 정보를 관리하기 위한 Spring Data JPA Repository 인터페이스입니다.
  */
+// @NoRepositoryBean Bean 생성 오류로 어노테이션 추가
 public interface UserRepository extends JpaRepository<Users, Long> {
     Optional<Users> findByEmail(String email);
 }

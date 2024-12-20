@@ -4,15 +4,15 @@ import com.minji.hi_erp.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.Id;
 
 import java.sql.Timestamp;
 
+/**
+ * 회원 정보를 나타내는 엔티티 클래스입니다.
+ */
 @Getter
-@Setter
-@AllArgsConstructor
-@Builder
 @Table(name = "USERS")
+@Entity // DB 테이블과 1:1 매핑
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Users {
     @Id
