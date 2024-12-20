@@ -37,6 +37,7 @@ public class SecurityConfig {
                         // 테스트를 위해 h2-console/** 추가함 (배포시 제거)
                         .requestMatchers("/signUp","/","/login","/account/join","/h2-console/**")
                         .permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                         //.requestMatchers("/user").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
 

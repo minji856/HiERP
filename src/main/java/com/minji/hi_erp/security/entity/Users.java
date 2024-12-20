@@ -39,7 +39,7 @@ public class Users {
     public Users(String email, String password){
         this.email=email;
         this.password=password;
-        this.role=Role.ROLE_USER;
+        this.role=Role.USER;
     }
 
     @Enumerated(EnumType.STRING)
