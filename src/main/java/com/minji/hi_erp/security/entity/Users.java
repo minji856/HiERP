@@ -7,7 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.Id;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 
 @Getter
 @Setter
