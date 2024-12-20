@@ -1,6 +1,6 @@
 package com.minji.hi_erp.security.entity;
 
-import com.minji.hi_erp.security.Role;
+import com.minji.hi_erp.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

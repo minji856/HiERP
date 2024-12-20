@@ -1,4 +1,4 @@
-package com.minji.hi_erp.security;
+package com.minji.hi_erp;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
