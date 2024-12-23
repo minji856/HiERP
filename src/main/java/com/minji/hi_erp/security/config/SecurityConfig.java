@@ -60,7 +60,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
+    @Bean // 패스워드 인코더로 사용할 빈 등록
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
