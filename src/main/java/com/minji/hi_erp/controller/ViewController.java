@@ -44,10 +44,10 @@ public class ViewController {
     }
 
     @PostMapping("/join")
-    public String joinUsers(@ModelAttribute Users users, Model model) {
+    public String joinUsers(@ModelAttribute Users users) {
         userService.saveUsers(users);
-        model.addAttribute("users", users);
-        return "account/join-success";
+        System.out.println("회원가입 Post 실행");
+        return "redirect:/account/join-success";
     }
 
     @Secured("ROLE_ADMIN")        // 이 메소드에 대해서만 특정 권한이 필요할 때 사용 가능
