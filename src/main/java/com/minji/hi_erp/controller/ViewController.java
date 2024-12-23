@@ -50,6 +50,12 @@ public class ViewController {
         return "redirect:/account/join-success";
     }
 
+    @GetMapping("/join-success")
+    public String joinSuccessPage() {
+        System.out.println("회원가입 redirect");
+        return "account/join-success";
+    }
+
     @Secured("ROLE_ADMIN")        // 이 메소드에 대해서만 특정 권한이 필요할 때 사용 가능
     @GetMapping("/info")
     public String info(){
