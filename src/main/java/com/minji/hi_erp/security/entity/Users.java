@@ -35,9 +35,12 @@ public class Users {
     private String imageUrl;
 
     @Builder
-    public Users(String email, String password){
+    public Users(String name, String email, String password, String phoneNum, String imageUrl) {
+        this.name = name;
         this.email=email;
         this.password=password;
+        this.phoneNum=phoneNum;
+        this.imageUrl=imageUrl;
         this.role=Role.USER;
     }
 
