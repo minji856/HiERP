@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -37,6 +38,11 @@ public class ViewController {
     @GetMapping("/join")
     public String joinPage() {
         return "account/join";
+    }
+
+    @PostMapping("/join")
+    public String joinUsers(){
+        return "account/joinUsers";
     }
 
     @Secured("ROLE_ADMIN")        // 이 메소드에 대해서만 특정 권한이 필요할 때 사용 가능
