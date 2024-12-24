@@ -20,7 +20,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Users saveUsers(Users users) {
+    public Users saveUser(Users users) {
         return userRepository.save(users);
     }
 
