@@ -1,0 +1,3 @@
+-- INSERT INTO users (id, name, email, password, ,phoneNum, role, create_date)
+-- VALUES ('1','Admin', 'admin@example.com', '$2a$10$zA8p8GljNF/FlghsqE3NF.icXyxiYDOUmI2WWT8Sy9I4BkELCtm/m', '010-0000-0000','ADMIN', CURRENT_TIMESTAMP)
+--     ON CONFLICT (email) DO NOTHING;
