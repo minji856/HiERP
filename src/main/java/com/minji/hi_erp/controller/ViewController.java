@@ -45,7 +45,7 @@ public class ViewController {
 
     @PostMapping("/join")
     public String joinUsers(@ModelAttribute Users users) {
-        userService.saveUsers(users);
+        userService.saveUser(users);
         System.out.println("회원가입 Post 실행");
         return "redirect:/account/join-success";
     }
