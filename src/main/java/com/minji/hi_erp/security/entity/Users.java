@@ -11,13 +11,13 @@ import java.sql.Timestamp;
  * 회원 정보를 나타내는 엔티티 클래스입니다.
  */
 @Getter // Entity 클래스에는 Setter 사용 지양
-@Table(name = "USERS")
+@Table(name = "Users")
 @Entity // DB 테이블과 1:1 매핑
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column
     private long id;
 
     @Column(nullable = false)
@@ -41,7 +41,6 @@ public class Users {
         this.password=password;
         this.phoneNum=phoneNum;
         this.imageUrl=imageUrl;
-        this.role=Role.USER;
     }
 
     @Enumerated(EnumType.STRING)
