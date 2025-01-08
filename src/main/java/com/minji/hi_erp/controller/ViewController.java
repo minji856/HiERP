@@ -45,10 +45,11 @@ public class ViewController {
     }
 
     @PostMapping("/join")
-    public String joinUsers(@ModelAttribute Users users) {
-        userService.saveUser(users);
+    public String joinUsers(@ModelAttribute("users") Users users, Model model) {
+        Users savedUser = userService.saveUser(users);
+        model.addAttribute("users", savedUser);
         System.out.println("회원가입 Post 실행");
-        return "redirect:/account/join-success";
+        return "account/join-success";
     }
 
     // @PreAuthorize("ROLE_USER")
