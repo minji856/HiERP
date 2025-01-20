@@ -48,7 +48,7 @@ public class ViewController {
     public String joinUsers(@ModelAttribute("users") Users users, Model model) {
         Users savedUser = userService.saveUser(users);
         model.addAttribute("users", savedUser);
-        System.out.println("회원가입 Post 실행");
+        System.out.println("회원가입 Post 실행 " + savedUser.getId() + savedUser.getName() + savedUser.getPassword());
         return "account/join-success";
     }
 
