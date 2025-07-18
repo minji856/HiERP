@@ -31,7 +31,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	/* db */
-	runtimeOnly 'com.h2database:h2'
+	implementation 'com.h2database:h2'
 
 	/* test */
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

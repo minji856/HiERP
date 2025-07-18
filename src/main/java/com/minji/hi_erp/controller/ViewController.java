@@ -44,6 +44,16 @@ public class ViewController {
         return "account/join";
     }
 
+    /**
+     * 회원가입 처리 메서드
+     *
+     * 사용자가 입력한 회원 정보를 받아 저장한 후,
+     * 가입 완료 페이지로 이동합니다.
+     *
+     * @param users 클라이언트로부터 전달된 회원 정보 객체 (폼 데이터)
+     * @param model 뷰에 전달할 모델 객체
+     * @return 회원가입 성공 시 join-success.html 뷰 반환
+     */
     @PostMapping("/join")
     public String joinUsers(@ModelAttribute("users") Users users, Model model) {
         Users savedUser = userService.saveUser(users);
