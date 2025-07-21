@@ -42,7 +42,7 @@ public class SecurityConfig {
                         //.requestMatchers("/user").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
 
                 /* 폼 로그인 처리 */
-                .formLogin(form -> form.loginPage("/account/login")
+                .formLogin(form -> form.loginPage("/")
                         .loginProcessingUrl("/login-process") // 인증처리 수행 필터 실행
                         .defaultSuccessUrl("/main", true) // 정상적 인증 처리 후 이동하는 페이지
                         .permitAll())
