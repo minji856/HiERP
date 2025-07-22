@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -23,7 +24,8 @@ public class AccountController {
      * @return 회원가입 페이지 뷰 이름.
      */
     @GetMapping("/join")
-    public String joinPage() {
+    public String joinPage(Model model) {
+        model.addAttribute("UserJoinDto", new UserJoinDto());
         return "account/join";
     }
 
@@ -37,7 +39,7 @@ public class AccountController {
      * @return 회원가입 성공 시 join-success.html 뷰 반환
      */
     @PostMapping("/join")
-    public String joinUsers(@RequestBody UserJoinDto userJoinDto) {
+    public String joinUsers(@ModelAttribute UserJoinDto userJoinDto, Model model) {
         Users users = Users.builder()
                 .name(userJoinDto.getName())
                 .email(userJoinDto.getEmail())
@@ -48,7 +50,17 @@ public class AccountController {
 
         userService.saveUser(users);
 
-        return "회원가입 성공";
+        model.addAttribute("UserJoinDto", userJoinDto);
+
+        // 콘솔에 가입 정보 출력
+        System.out.println("✅ 신규 회원가입 완료:");
+        System.out.println("이름: " + users.getName());
+        System.out.println("이메일: " + users.getEmail());
+        System.out.println("전화번호: " + users.getPhoneNum());
+        System.out.println("이미지 URL: " + users.getImageUrl());
+        System.out.println("암호화된 비밀번호: " + users.getPassword());
+
+        return "/account/join-success";
     }
 
     /* 테스트용
