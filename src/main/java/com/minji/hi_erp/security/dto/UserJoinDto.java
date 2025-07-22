@@ -15,5 +15,4 @@ public class UserJoinDto {
     private String password;
     private String phoneNum;
     private String imageUrl;
-    private Role role;
 }
