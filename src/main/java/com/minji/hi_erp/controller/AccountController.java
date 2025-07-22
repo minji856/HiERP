@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/account")
 @RequiredArgsConstructor
 public class AccountController {
@@ -35,6 +35,7 @@ public class AccountController {
      * @param model 뷰에 전달할 모델 객체
      * @return 회원가입 성공 시 join-success.html 뷰 반환
      */
+    /*
     @PostMapping("/join")
     public String joinUsers(@ModelAttribute("users") Users users, Model model) {
         Users savedUser = userService.saveUser(users);
@@ -42,6 +43,7 @@ public class AccountController {
         System.out.println("회원가입 Post 실행");
         return "redirect:/account/join-success";  // 회원가입 성공 시 리다이렉트 처리 권장
     }
+     */
 
     /**
      * 회원가입 성공 시 자동이동되는 메서드
