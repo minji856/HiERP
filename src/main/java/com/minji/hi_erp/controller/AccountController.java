@@ -1,11 +1,12 @@
 package com.minji.hi_erp.controller;
 
+import com.minji.hi_erp.security.dto.UserJoinDto;
 import com.minji.hi_erp.security.entity.Users;
 import com.minji.hi_erp.security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
 
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * 회원가입 페이지를 표시합니다.
@@ -31,10 +33,25 @@ public class AccountController {
      * 사용자가 입력한 회원 정보를 받아 저장한 후,
      * 가입 완료 페이지로 이동합니다.
      *
-     * @param users 클라이언트로부터 전달된 회원 정보 객체 (폼 데이터)
-     * @param model 뷰에 전달할 모델 객체
+     * @param
      * @return 회원가입 성공 시 join-success.html 뷰 반환
      */
+    @PostMapping("/join")
+    public String joinUsers(@RequestBody UserJoinDto userJoinDto) {
+        Users users = Users.builder()
+                .name(userJoinDto.getName())
+                .email(userJoinDto.getEmail())
+                .password(passwordEncoder.encode(userJoinDto.getPassword())) // 비밀번호 암호화
+                .phoneNum(userJoinDto.getPhoneNum())
+                .imageUrl(userJoinDto.getImageUrl())
+                .build();
+
+        userService.saveUser(users);
+
+        return "회원가입 성공";
+    }
+
+    /* 테스트용
     @PostMapping("/join")
     public String joinUsers(@ModelAttribute("users") Users users, Model model) {
         Users savedUser = userService.saveUser(users);
@@ -42,6 +59,7 @@ public class AccountController {
         System.out.println("회원가입 Post 실행");
         return "redirect:/account/join-success";  // 회원가입 성공 시 리다이렉트 처리 권장
     }
+    */
 
     /**
      * 회원가입 성공 시 자동이동되는 메서드
