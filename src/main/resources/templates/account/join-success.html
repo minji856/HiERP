@@ -8,6 +8,7 @@
 <body>
     <h1>회원가입 성공</h1>
     <p>안녕하세요, <span th:text="${UserJoinDto.name}"></span>님!</p>
+    <p>비밀번호: <span th:text="${UserJoinDto.password}"></span></p>
     <p>이메일: <span th:text="${UserJoinDto.email}"></span></p>
     <p>전화번호: <span th:text="${UserJoinDto.phoneNum}"></span></p>
     <p>프로필 이미지: <img th:src="${UserJoinDto.imageUrl}" alt="프로필 이미지" style="max-width: 100px; max-height: 100px;" /></p>
