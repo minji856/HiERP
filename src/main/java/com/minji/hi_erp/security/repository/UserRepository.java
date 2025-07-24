@@ -2,6 +2,7 @@ package com.minji.hi_erp.security.repository;
 
 import com.minji.hi_erp.security.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
@@ -9,6 +10,7 @@ import java.util.Optional;
  * 회원 정보를 관리하기 위한 Spring Data JPA Repository 인터페이스입니다.
  */
 // @NoRepositoryBean Bean 생성 오류로 어노테이션 추가
+@Repository
 public interface UserRepository extends JpaRepository<Users, Long> {
     Optional<Users> findByEmail(String email);
 }
