@@ -39,7 +39,7 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
-                        //.requestMatchers("/user").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
+                        //.requestMatchers("/mypage").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
 
                 /* 폼 로그인 처리 */
                 .formLogin(form -> form.loginPage("/")
