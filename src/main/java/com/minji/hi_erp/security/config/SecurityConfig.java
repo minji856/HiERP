@@ -27,19 +27,19 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http    .csrf(AbstractHttpConfigurer::disable) // RESTapi 이용으로 csrf(cross site request forgery)는 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP basic 비활성화
-                // h2-console 접근 시 localhost 거부로 인하여 xFrame 옵션 변경
+                // h2-console 접근 시 localhost 거부로 인하여 xFrame 옵션 변경 (배포시 제거)
                 .headers( headersConfigurer -> headersConfigurer
                         .frameOptions( HeadersConfigurer.FrameOptionsConfig::sameOrigin
                         )
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        // requestMatchers 에 지정된 Url 들은 인증,인가 없이도 가능
+                        // requestMatchers().permitAll() 에 지정된 Url 들은 인증,인가 없이도 접근 가능
                         // 테스트를 위해 h2-console/** 추가함 (배포시 제거)
                         .requestMatchers("/signUp","/","/login","/join","/account/join","/account/join-success","/h2-console/**")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/user/**").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
                         .anyRequest().authenticated())
-                        //.requestMatchers("/mypage").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
 
                 /* 폼 로그인 처리 */
                 .formLogin(form -> form.loginPage("/")
