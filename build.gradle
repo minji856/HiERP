@@ -23,6 +23,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-web-services'
 
+	/* 유효성 검사 (Validation: @NotBlank, @Email 등) */
+	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+	implementation 'org.hibernate.validator:hibernate-validator'
+
 	/* 템블릿 엔진 */
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
