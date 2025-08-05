@@ -24,12 +24,12 @@ public class ViewController {
     }
 
     /**
-     * 로그인 페이지를 표시합니다.
+     * Hi-E 메인 페이지를 표시합니다.
      *
-     * @return 로그인 페이지 뷰 이름.
+     * @return 메인 페이지 뷰 이름
      */
     @GetMapping("/")
-    public String loginPage() {
-        return "account/login"; // 로그인 뷰 파일 경로
+    public String MainPage() {
+        return "main";
     }
 }
