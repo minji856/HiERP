@@ -42,14 +42,14 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
 
                 /* 폼 로그인 처리 */
-                .formLogin(form -> form.loginPage("/")
+                .formLogin(form -> form.loginPage("/account/login")
                         .loginProcessingUrl("/login-process") // 인증처리 수행 필터 실행
                         .defaultSuccessUrl("/main", true) // 정상적 인증 처리 후 이동하는 페이지
                         .permitAll())
 
                 /* 폼 로그아웃 처리 */
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login") // 로그아웃 성공 후 이동할 URL
+                        .logoutSuccessUrl("/main") // 로그아웃 성공 후 이동할 URL
                         .permitAll()
                         .invalidateHttpSession(true)) // 세션 무효화
 
