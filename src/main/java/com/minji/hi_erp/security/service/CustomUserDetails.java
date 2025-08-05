@@ -17,13 +17,21 @@ public class CustomUserDetails implements UserDetails {
         this.users = users;
     }
 
-    /* 사용자의 권한을 반환하는 메서드 */
+    /**
+     *  사용자의 권한을 반환하는 메서드
+     *
+     * @return 유저 권한 이름
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(() -> "ROLE_" + users.getRole().name());
     }
 
-    // 이름 대신 email 로 불러오기
+    /**
+     * 사용자 이름 대신 사용자 이메일 반환하는 메서드
+     *
+     * @return userEmail
+     */
     @Override
     public String getUsername(){
         return users.getEmail();
