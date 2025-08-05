@@ -3,6 +3,7 @@ package com.minji.hi_erp.controller;
 import com.minji.hi_erp.security.dto.UserJoinDto;
 import com.minji.hi_erp.security.entity.Users;
 import com.minji.hi_erp.security.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +22,7 @@ public class AccountController {
     /**
      * 회원가입 페이지를 표시합니다.
      *
-     * @return 회원가입 페이지 뷰 이름.
+     * @return 회원가입 페이지
      */
     @GetMapping("/join")
     public String joinPage(Model model) {
@@ -35,7 +36,7 @@ public class AccountController {
      * 사용자가 입력한 회원 정보를 받아 저장한 후,
      * 가입 완료 페이지로 이동합니다.
      *
-     * @param
+     * @param userJoinDto model
      * @return 회원가입 성공 시 join-success.html 뷰 반환
      */
     @PostMapping("/join")
@@ -46,6 +47,7 @@ public class AccountController {
                 .password(passwordEncoder.encode(userJoinDto.getPassword())) // 비밀번호 암호화
                 .phoneNum(userJoinDto.getPhoneNum())
                 .imageUrl(userJoinDto.getImageUrl())
+                .role(userJoinDto.getRole())
                 .build();
 
         userService.saveUser(users);
@@ -63,20 +65,25 @@ public class AccountController {
         return "/account/join-success";
     }
 
-    /* 테스트용
-    @PostMapping("/join")
-    public String joinUsers(@ModelAttribute("users") Users users, Model model) {
-        Users savedUser = userService.saveUser(users);
-        model.addAttribute("users", savedUser);
-        System.out.println("회원가입 Post 실행");
-        return "redirect:/account/join-success";  // 회원가입 성공 시 리다이렉트 처리 권장
+    /**
+     * 로그인 페이지를 표시합니다.
+     *
+     * @return 로그인 페이지
+     */
+    @GetMapping("/login")
+    public String loginPage() {
+        return "/account/login";
     }
-    */
+
+    @PostMapping("/login")
+    public String login(@ModelAttribute UserJoinDto userJoinDto, Model model) {
+        return "main";
+    }
 
     /**
      * 회원가입 성공 시 자동이동되는 메서드
      *
-     * @return 회원가입 성공 뷰 반환
+     * @return 회원가입 성공 페이지
      */
     // @PreAuthorize("ROLE_USER")
     @GetMapping("/join-success")
@@ -84,6 +91,7 @@ public class AccountController {
         System.out.println("회원가입 redirect");
         return "account/join-success";
     }
+
 
     /**
      * 개인정보 페이지 (ROLE_ADMIN 권한 필요)
