@@ -1,6 +1,7 @@
 package com.minji.hi_erp.controller;
 
 import com.minji.hi_erp.security.dto.UserJoinDto;
+import com.minji.hi_erp.security.dto.UserLoginDto;
 import com.minji.hi_erp.security.entity.Users;
 import com.minji.hi_erp.security.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +37,8 @@ public class AccountController {
      * 사용자가 입력한 회원 정보를 받아 저장한 후,
      * 가입 완료 페이지로 이동합니다.
      *
-     * @param userJoinDto model
+     * @param userJoinDto 회원가입 정보 dto 클래스
+     * @param model
      * @return 회원가입 성공 시 join-success.html 뷰 반환
      */
     @PostMapping("/join")
@@ -75,8 +77,15 @@ public class AccountController {
         return "/account/login";
     }
 
+    /**
+     * 로그인 처리 메서드
+     *
+     * @param userLoginDto
+     * @param model
+     * @return
+     */
     @PostMapping("/login")
-    public String login(@ModelAttribute UserJoinDto userJoinDto, Model model) {
+    public String login(@ModelAttribute UserLoginDto userLoginDto, Model model) {
         return "main";
     }
 
