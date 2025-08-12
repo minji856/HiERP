@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,14 @@ public class ViewController {
      * @return 메인 페이지 뷰 이름
      */
     @GetMapping("/")
-    public String MainPage() {
+    public String MainPage(Authentication authentication, Model model) {
+        if (authentication != null) {
+
+            System.out.println("Authentication: " + authentication);
+            System.out.println("Principal: " + authentication.getPrincipal());
+
+            model.addAttribute("username", authentication.getName());
+        }
         return "main";
     }
 }
