@@ -35,7 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // requestMatchers().permitAll() 에 지정된 Url 들은 인증,인가 없이도 접근 가능
                         // 테스트를 위해 h2-console/** 추가함 (배포시 제거)
-                        .requestMatchers("/signUp","/","/login","/join","/account/join","/account/join-success","/h2-console/**")
+                        .requestMatchers("/signUp","/","/login","/join","/account/join","/account/join-success",
+                                "/css/**", "/js/**", "/h2-console/**")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
@@ -45,6 +46,7 @@ public class SecurityConfig {
                 .formLogin(form -> form.loginPage("/account/login")
                         .loginProcessingUrl("/login-process") // 인증처리 수행 필터 실행
                         .defaultSuccessUrl("/main", true) // 정상적 인증 처리 후 이동하는 페이지
+                        //.failureUrl("/auths/login-form?error")); 로그인 실패 시 이동 페이
                         .permitAll())
 
                 /* 폼 로그아웃 처리 */
