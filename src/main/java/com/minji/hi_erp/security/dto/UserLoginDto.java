@@ -1,20 +1,18 @@
 package com.minji.hi_erp.security.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Service;
+import lombok.Setter;
 
 @Getter
-@Service
+@Setter
 @NoArgsConstructor
 public class UserLoginDto {
 
-    @NotBlank
-    private String loginId;
-    
-    @NotBlank
-    private String loginPwd;
+    @NotBlank(message = "이메일을 입력해주세요.")
+    private String email;
 
+    @NotBlank(message = "비밀번호를 입력해주세요.")
+    private String password;
 }
