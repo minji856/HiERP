@@ -23,7 +23,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    // private final UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
     private final ObjectMapper objectMapper;
 
     @Bean
@@ -60,7 +60,7 @@ public class SecurityConfig {
 
                 // 세션 정책
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 );
 
         return http.build();
