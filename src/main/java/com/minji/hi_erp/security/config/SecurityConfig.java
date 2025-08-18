@@ -15,6 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Spring Security 인증과 폼 로그인 설정관련 환경설정 Class 입니다.
+ */
 @Configuration
 @EnableWebSecurity // 스프링 Security 지원을 가능하게 함
 @RequiredArgsConstructor
@@ -36,7 +39,7 @@ public class SecurityConfig {
                         // requestMatchers().permitAll() 에 지정된 Url 들은 인증,인가 없이도 접근 가능
                         // 테스트를 위해 h2-console/** 추가함 (배포시 제거)
                         .requestMatchers("/signUp","/","/login","/join","/account/join","/account/join-success",
-                                "/css/**", "/js/**", "/h2-console/**")
+                                "/account/mypage", "/css/**", "/js/**", "/h2-console/**")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
@@ -44,7 +47,7 @@ public class SecurityConfig {
 
                 /* 폼 로그인 처리 */
                 .formLogin(form -> form.loginPage("/account/login")
-                        .loginProcessingUrl("/login-process") // 인증처리 수행 필터 실행
+                        .loginProcessingUrl("/account/login-process") // 인증처리 수행 필터 실행
                         .defaultSuccessUrl("/main", true) // 정상적 인증 처리 후 이동하는 페이지
                         //.failureUrl("/auths/login-form?error")); 로그인 실패 시 이동 페이
                         .permitAll())
