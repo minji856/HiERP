@@ -30,14 +30,7 @@ public class ViewController {
      * @return 메인 페이지 뷰 이름
      */
     @GetMapping("/")
-    public String MainPage(Authentication authentication, Model model) {
-        if (authentication != null) {
-
-            System.out.println("Authentication: " + authentication);
-            System.out.println("Principal: " + authentication.getPrincipal());
-
-            model.addAttribute("username", authentication.getName());
-        }
+    public String MainPage() {
         return "main";
     }
 }
