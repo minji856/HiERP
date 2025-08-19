@@ -1,6 +1,7 @@
 package com.minji.hi_erp.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.minji.hi_erp.security.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -24,7 +26,13 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
+    //private final CustomUserDetailsService customUserDetailsService;
     private final ObjectMapper objectMapper;
+
+    @Bean // 패스워드 인코더로 사용할 빈 등록
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -48,8 +56,8 @@ public class SecurityConfig {
                 /* 폼 로그인 처리 */
                 .formLogin(form -> form.loginPage("/account/login")
                         .loginProcessingUrl("/account/login-process") // 인증처리 수행 필터 실행
-                        .defaultSuccessUrl("/main", true) // 정상적 인증 처리 후 이동하는 페이지
-                        //.failureUrl("/auths/login-form?error")); 로그인 실패 시 이동 페이
+                        .defaultSuccessUrl("/", true) // 정상적 인증 처리 후 이동하는 페이지
+                        .failureUrl("/account/login-form?error") // 로그인 실패 시 이동 페이지
                         .permitAll())
 
                 /* 폼 로그아웃 처리 */
@@ -64,10 +72,5 @@ public class SecurityConfig {
                 );
 
         return http.build();
-    }
-
-    @Bean // 패스워드 인코더로 사용할 빈 등록
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
