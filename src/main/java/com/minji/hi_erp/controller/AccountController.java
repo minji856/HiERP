@@ -5,9 +5,13 @@ import com.minji.hi_erp.security.dto.UserLoginDto;
 import com.minji.hi_erp.security.entity.Users;
 import com.minji.hi_erp.security.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -82,11 +86,23 @@ public class AccountController {
      *
      * @param userLoginDto
      * @param model
-     * @return
+     * @return 로그인 성공시 main 페이지 반환
      */
-    @PostMapping("/login")
-    public String login(@ModelAttribute UserLoginDto userLoginDto, Model model) {
-        return "main";
+    @PostMapping("/login-process")
+    public String login(@ModelAttribute UserLoginDto userLoginDto, Model model, HttpServletRequest request) {
+        try{
+            Authentication auth = userService.login(userLoginDto.getEmail(),userLoginDto.getPassword());
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            request.getSession(true).setAttribute(
+                    HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                    SecurityContextHolder.getContext()
+            );
+            return "account/mypage";
+        }
+        catch (IllegalArgumentException e){
+            model.addAttribute("error", e.getMessage());
+            return "main";
+        }
     }
 
     /**
@@ -101,13 +117,19 @@ public class AccountController {
         return "account/join-success";
     }
 
+    @GetMapping("/mypage")
+    public String mypage() {
+        return "account/mypage";
+    }
 
     /**
-     * 개인정보 페이지 (ROLE_ADMIN 권한 필요)
+     * 개인정보 페이지 (ROLE_USER 권한 필요)
      */
-    @Secured("ROLE_ADMIN")
+    @Secured("ROLE_USER")
     @GetMapping("/info")
+    @ResponseBody
     public String info() {
-        return "개인정보";
+        System.out.println("당신은 유저입니다");
+        return "접근 허용됨: ROLE_USER 인증 성공!";
     }
 }
