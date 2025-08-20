@@ -30,11 +30,20 @@ public class CustomUserDetails implements UserDetails {
     /**
      * 사용자 이름 대신 사용자 이메일 반환하는 메서드
      *
-     * @return userEmail
+     * @return 사용자 로그인된 이메일
      */
     @Override
     public String getUsername(){
         return users.getEmail();
+    }
+
+    /**
+     * 사용자 이름 반환하는 메서드
+     *
+     * @return 사용자 이름
+     */
+    public String getRealname() {
+        return  users.getName();
     }
 
     @Override
