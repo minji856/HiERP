@@ -62,7 +62,8 @@ public class SecurityConfig {
 
                 /* 폼 로그아웃 처리 */
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/main") // 로그아웃 성공 후 이동할 URL
+                        .logoutUrl("/account/logout")
+                        .logoutSuccessUrl("/") // 로그아웃 성공 후 이동할 URL
                         .permitAll()
                         .invalidateHttpSession(true)) // 세션 무효화
 
