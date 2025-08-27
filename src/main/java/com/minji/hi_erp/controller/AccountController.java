@@ -16,6 +16,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 사용자 관련 컨트롤러입니다.
+ */
 @Controller
 @RequestMapping("/account")
 @RequiredArgsConstructor
