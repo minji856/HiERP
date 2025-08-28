@@ -45,6 +45,7 @@ public class Users {
         this.role=Role.USER;
     }
 
+    // Enum 이름을 문자열로 저장 (ORDINAL은 순서 변경 시 데이터 꼬임 위험 있음)
     @Enumerated(EnumType.STRING)
     private Role role;
 
