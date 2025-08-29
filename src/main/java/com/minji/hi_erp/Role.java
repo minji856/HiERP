@@ -12,10 +12,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Role {
 
-    USER("ROLE_USER","유저"),
-    ADMIN("ROLE_ADMIN","관리자");
+    /** 차단된 사용자 (로그인 불가) */
+    BANNED("ROLE_BANNED", "BANNED"),
 
-    // BANNED("ROLE_BANNED", "BANNED"), USER("ROLE_USER", "USER"), ADMIN("ROLE_ADMIN", "ADMIN"), MASTER("ROLE_MASTER", "MASTER");
-    private final String title;
+    /** 일반 사용자 권한 */
+    USER("ROLE_USER", "USER"),
+
+    /** 관리자 권한 */
+    ADMIN("ROLE_ADMIN", "ADMIN"),
+
+    /** 마스터(최고 관리자) 권한 */
+    MASTER("ROLE_MASTER", "MASTER");
+
+    /** Spring Security 권한 문자열 (예: ROLE_USER) */
     private final String key;
+
+    /** 화면 등에서 표시할 간단한 이름 */
+    private final String title;
 }
