@@ -5,28 +5,70 @@
 <head>
     <meta charset="UTF-8">
     <title>Hi-e</title>
+    <style>
+        /* 상단 헤더 스타일 */
+        .header {
+            background-color: #f5f5f5;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: flex-end; /* 오른쪽 정렬 */
+            align-items: center;
+            gap: 10px; /* 요소 간 간격 */
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header a {
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        .header form {
+            display: inline;
+            margin: 0;
+        }
+
+        .header input[type="submit"] {
+            padding: 5px 10px;
+            background-color: #ff4d4f;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .header input[type="submit"]:hover {
+            background-color: #d9363e;
+        }
+
+        .username {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h1>메인페이지</h1>
 
-    <!--로그인 된 유저에게만 보이는 문구들-->
-    <div sec:authorize="hasRole('USER')">일반 회원만 볼 수 있습니다.</div>
-    <p sec:authorize="isAuthenticated()" th:text="|${#authentication.name}님 로그인중|"></p>
-    <p sec:authorize="isAuthenticated()" th:text="|${#authentication.principal.realname}님 로그인중|"></p>
+<div class="header">
+    <!-- 로그인 안 됨 -->
+    <span sec:authorize="isAnonymous()">
+        <a th:href="@{/account/login}">로그인 하러가기</a>
+    </span>
 
-    <!-- principal이 실제로 CustomUserDetails인지 확인하는 코드 -->
-    <p th:text="${#authentication.principal.class.name}"></p>
+    <!-- 로그인 됨 -->
+    <span sec:authorize="isAuthenticated()">
+        <span class="username" th:text="|${#authentication.principal.realname}님 안녕하세요|"></span>
+        <form th:action="@{/account/logout}" method="post">
+            <input type="submit" value="로그아웃"/>
+        </form>
+    </span>
+</div>
 
-    <div sec:authorize="hasRole('ADMIN')">관리자만 볼 수 있습니다.</div>
+<!--<div sec:authorize="hasRole('ADMIN')">관리자만 볼 수 있습니다.</div>&ndash;&gt;-->
 
-    <!-- 로그인 테스트용 thymeleaf -->
-    <div sec:authorize="isAuthenticated()">
-        로그인 됨
-    </div>
-    <div sec:authorize="isAnonymous()">
-        로그인 안됨
-    </div>
+<!-- 페이지 본문 -->
+<div class="content">
+    <h1>Hi-E</h1>
+</div>
 
-    <a th:href="@{/account/login}">로그인 하러가기</a>
 </body>
 </html>
