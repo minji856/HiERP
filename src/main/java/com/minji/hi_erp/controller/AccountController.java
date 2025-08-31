@@ -5,7 +5,6 @@ import com.minji.hi_erp.security.dto.UserLoginDto;
 import com.minji.hi_erp.security.entity.Users;
 import com.minji.hi_erp.security.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
@@ -17,7 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 사용자 관련 컨트롤러입니다.
+ * 일반 유저 로그인,회원가입 컨트롤러입니다.
  */
 @Controller
 @RequestMapping("/account")
@@ -50,26 +49,16 @@ public class AccountController {
      */
     @PostMapping("/join")
     public String joinUsers(@ModelAttribute UserJoinDto userJoinDto, Model model) {
-        Users users = Users.builder()
-                .name(userJoinDto.getName())
-                .email(userJoinDto.getEmail())
-                .password(passwordEncoder.encode(userJoinDto.getPassword())) // 비밀번호 암호화
-                .phoneNum(userJoinDto.getPhoneNum())
-                .imageUrl(userJoinDto.getImageUrl())
-                .role(userJoinDto.getRole())
-                .build();
+        // 회원 저장 -> userId 반환
+        Long userId = userService.save(userJoinDto);
 
-        userService.saveUser(users);
+        // 방금 저장한 유저 정보 조회
+        Users savedUser = userService.findById(userId);
 
-        model.addAttribute("UserJoinDto", userJoinDto);
+        // 뷰에 유저정보 넘기는 코드
+        model.addAttribute("user", savedUser);
 
-        // 콘솔에 가입 정보 출력
-        System.out.println("✅ 신규 회원가입 완료:");
-        System.out.println("이름: " + users.getName());
-        System.out.println("이메일: " + users.getEmail());
-        System.out.println("전화번호: " + users.getPhoneNum());
-        System.out.println("이미지 URL: " + users.getImageUrl());
-        System.out.println("암호화된 비밀번호: " + users.getPassword());
+        System.out.println("회원가입된 사용자 이름: " + savedUser.getName());
 
         return "/account/join-success";
     }
