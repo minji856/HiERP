@@ -55,7 +55,7 @@ public class AccountController {
         // 방금 저장한 유저 정보 조회
         Users savedUser = userService.findById(userId);
 
-        // 뷰에 유저정보 넘기는 코드
+        // 뷰에 유저정보 넘기는 코드 (redirect 사용으로 addFlashattribute)
         redirectAttributes.addFlashAttribute("user", savedUser);
 
         System.out.println("회원가입된 사용자 이름: " + savedUser.getName());
