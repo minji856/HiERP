@@ -14,6 +14,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * 일반 유저 로그인,회원가입 컨트롤러입니다.
@@ -44,11 +45,10 @@ public class AccountController {
      * 가입 완료 페이지로 이동합니다.
      *
      * @param userJoinDto 회원가입 정보 dto 클래스
-     * @param model
      * @return 회원가입 성공 시 join-success.html 뷰 반환
      */
     @PostMapping("/join")
-    public String joinUsers(@ModelAttribute UserJoinDto userJoinDto, Model model) {
+    public String joinUsers(@ModelAttribute UserJoinDto userJoinDto, RedirectAttributes redirectAttributes) {
         // 회원 저장 -> userId 반환
         Long userId = userService.save(userJoinDto);
 
@@ -56,11 +56,11 @@ public class AccountController {
         Users savedUser = userService.findById(userId);
 
         // 뷰에 유저정보 넘기는 코드
-        model.addAttribute("user", savedUser);
+        redirectAttributes.addFlashAttribute("user", savedUser);
 
         System.out.println("회원가입된 사용자 이름: " + savedUser.getName());
 
-        return "/account/join-success";
+        return "redirect:/account/join-success";
     }
 
     /**
