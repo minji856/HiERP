@@ -74,30 +74,6 @@ public class AccountController {
     }
 
     /**
-     * 로그인 처리 메서드
-     *
-     * @param userLoginDto
-     * @param model
-     * @return 로그인 성공시 main 페이지 반환
-     */
-    @PostMapping("/login-process")
-    public String login(@ModelAttribute UserLoginDto userLoginDto, Model model, HttpServletRequest request) {
-        try{
-            Authentication auth = userService.login(userLoginDto.getEmail(),userLoginDto.getPassword());
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            request.getSession(true).setAttribute(
-                    HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                    SecurityContextHolder.getContext()
-            );
-            return "account/mypage";
-        }
-        catch (IllegalArgumentException e){
-            model.addAttribute("error", e.getMessage());
-            return "main";
-        }
-    }
-
-    /**
      * 회원가입 성공 시 자동이동되는 메서드
      *
      * @return 회원가입 성공 페이지
