@@ -30,7 +30,7 @@ public class ViewController {
      * @return 메인 페이지 뷰 이름
      */
     @GetMapping("/")
-    public String MainPage() {
+    public String mainPage() {
         return "main";
     }
 }
