@@ -22,8 +22,8 @@ public class AdminController{
 @GetMapping("/admin_setting")
 @ResponseBody
 public String adminPage() {
-    System.out.println("당신은 유저입니다");
-    return "접근 허용됨: ROLE_USER 인증 성공!";
+    System.out.println("당신은 관리자입니다");
+    return "접근 허용됨: ROLE_ADMIN 인증 성공!";
 }
 
 }
