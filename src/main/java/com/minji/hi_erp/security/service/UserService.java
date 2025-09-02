@@ -32,6 +32,12 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자가 없습니다. id=" + id));
     }
 
+    /**
+     * 유저 정보와 비밀번호를 암호화하여 저장하고 id 값을 반환하는 메서드입니다.
+     *
+     * @param userJoinDto
+     * @return
+     */
     @Transactional
     public Long save(UserJoinDto userJoinDto) {
         Users user = Users.builder()
@@ -55,6 +61,7 @@ public class UserService {
      * @param password
      * @return
      */
+    /*
     public Authentication login(String email, String password){
         Users users = userRepository.findByEmail(email)
                 .orElseThrow(()-> new IllegalArgumentException("이메일이 존재하지 않습니다."));
@@ -64,6 +71,7 @@ public class UserService {
         }
         return new UsernamePasswordAuthenticationToken(users.getEmail(), passwordEncoder.encode(users.getPassword()));
     }
+     */
 
     public void deleteUsers(Long id) {
         userRepository.deleteById(id);
