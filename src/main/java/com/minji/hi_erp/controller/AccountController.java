@@ -27,8 +27,7 @@ public class AccountController {
      * @return 회원가입 페이지
      */
     @GetMapping("/join")
-    public String joinPage(Model model) {
-        model.addAttribute("UserJoinDto", new UserJoinDto());
+    public String joinPage() {
         return "account/join";
     }
 
@@ -54,7 +53,7 @@ public class AccountController {
 
         System.out.println("회원가입된 사용자 이름: " + savedUser.getName());
 
-        return "redirect:/account/join-success";
+        return "redirect:/account/login";
     }
 
     /**
