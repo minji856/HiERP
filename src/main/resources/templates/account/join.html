@@ -60,26 +60,26 @@
 <body>
 <div class="container">
     <h1>회원가입</h1>
-    <form th:action="@{/account/join}" th:object="${UserJoinDto}" method="post">
+    <form th:action="@{/account/join}" method="post">
         <!-- 이름 입력 -->
         <label for="name">이름</label>
-        <input type="text" id="name" name="name" th:field="*{name}" placeholder="이름을 입력하세요" required />
+        <input type="text" id="name" name="name" placeholder="이름을 입력하세요" required />
 
         <!-- 이메일 입력 -->
         <label for="email">이메일</label>
-        <input type="email" id="email" name="email" th:field="*{email}" placeholder="example@domain.com" required />
+        <input type="email" id="email" name="email" placeholder="example@domain.com" required />
 
         <!-- 비밀번호 입력 -->
         <label for="password">비밀번호</label>
-        <input type="password" id="password" name="password" th:field="*{password}" placeholder="비밀번호를 입력하세요" required />
+        <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required />
 
         <!-- 전화번호 입력 -->
         <label for="phoneNum">전화번호</label>
-        <input type="tel" id="phoneNum" name="phoneNum" th:field="*{phoneNum}" placeholder="010-1234-5678" required />
+        <input type="tel" id="phoneNum" name="phoneNum" placeholder="010-1234-5678" required />
 
         <!-- 이미지 URL 입력 -->
         <label for="imageUrl">프로필 이미지 URL</label>
-        <input type="text" id="imageUrl" name="imageUrl" th:field="*{imageUrl}" placeholder="http://image.url" />
+        <input type="text" id="imageUrl" name="imageUrl" placeholder="이미지를 업로드 해주세요" />
 
         <!-- 제출 버튼 -->
         <input type="submit" value="가입하기" />
