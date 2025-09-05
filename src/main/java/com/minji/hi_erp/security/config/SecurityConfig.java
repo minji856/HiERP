@@ -1,9 +1,7 @@
 package com.minji.hi_erp.security.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.minji.hi_erp.security.service.CustomUserDetailsService;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,23 +11,21 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * Spring Security 인증과 폼 로그인 설정관련 환경설정 Class 입니다.
  */
 @Configuration
-@EnableWebSecurity // 스프링 Security 지원을 가능하게 함
+@EnableWebSecurity // 스프링 Security 필터가 스프링 기본 필터체인에 등록되서 Security 지원을 가능하게 함
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
-    //private final CustomUserDetailsService customUserDetailsService;
-    private final ObjectMapper objectMapper;
 
-    @Bean // 패스워드 인코더로 사용할 빈 등록
+    // 패스워드 인코더로 사용할 빈 등록
+    // 단방향 암호화가 아닌 BCrypt암호화 알고리즘을 사용하기 때문에
+    @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -54,8 +50,10 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
 
                 /* 폼 로그인 처리 */
-                .formLogin(form -> form.loginPage("/account/login")
-                        .loginProcessingUrl("/account/login-process") // 인증처리 수행 필터 실행
+                .formLogin(form -> form.loginPage("/account/login") // 커스텀 로그인 페이지 지정
+                        .loginProcessingUrl("/account/login-process") // submit 받을 url
+                        .usernameParameter("email") // submit할 아이디
+                        .passwordParameter("password") // submit할 비밀번호
                         .defaultSuccessUrl("/", true) // 정상적 인증 처리 후 이동하는 페이지
                         .failureUrl("/account/login-form?error") // 로그인 실패 시 이동 페이지
                         .permitAll())
@@ -65,9 +63,9 @@ public class SecurityConfig {
                         .logoutUrl("/account/logout")
                         .logoutSuccessUrl("/") // 로그아웃 성공 후 이동할 URL
                         .permitAll()
-                        .invalidateHttpSession(true)) // 세션 무효화
+                        .invalidateHttpSession(true)) // 로그아웃 후 세션 무효화
 
-                // 세션 정책
+                // 세션 정책(추후 JWT 토큰으로 변경예정)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 );
