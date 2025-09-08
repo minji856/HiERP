@@ -1,15 +1,11 @@
 package com.minji.hi_erp.controller;
 
 import com.minji.hi_erp.security.dto.UserJoinDto;
-import com.minji.hi_erp.security.entity.Users;
 import com.minji.hi_erp.security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * 일반 유저 로그인,회원가입 컨트롤러입니다.
@@ -41,18 +37,9 @@ public class AccountController {
      * @return 회원가입 성공 시 join-success.html 뷰 반환
      */
     @PostMapping("/join")
-    public String joinUsers(@ModelAttribute UserJoinDto userJoinDto, RedirectAttributes redirectAttributes) {
+    public String joinUsers(UserJoinDto userJoinDto) {
         // 회원 저장 -> userId 반환
-        Long userId = userService.save(userJoinDto);
-
-        // 방금 저장한 유저 정보 조회
-        Users savedUser = userService.findById(userId);
-
-        // 뷰에 유저정보 넘기는 코드 (redirect 사용으로 addFlashattribute)
-        redirectAttributes.addFlashAttribute("user", savedUser);
-
-        System.out.println("회원가입된 사용자 이름: " + savedUser.getName());
-
+        userService.save(userJoinDto);
         return "redirect:/account/login";
     }
 
