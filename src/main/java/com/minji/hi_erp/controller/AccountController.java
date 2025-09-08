@@ -66,18 +66,6 @@ public class AccountController {
         return "/account/login";
     }
 
-    /**
-     * 회원가입 성공 시 자동이동되는 메서드
-     *
-     * @return 회원가입 성공 페이지
-     */
-    // @PreAuthorize("ROLE_USER")
-    @GetMapping("/join-success")
-    public String joinSuccessPage() {
-        System.out.println("회원가입 redirect");
-        return "account/join-success";
-    }
-
     @GetMapping("/mypage")
     public String mypage() {
         return "account/mypage";
