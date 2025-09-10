@@ -15,4 +15,9 @@ public class ViewController {
     public String mainPage() {
         return "main";
     }
+
+    @GetMapping("/calendar")
+    public String calendarPage() {
+        return "calendar";
+    }
 }
