@@ -20,10 +20,9 @@ public class AdminController{
  */
 @Secured("ROLE_ADMIN")
 @GetMapping("/admin_setting")
-@ResponseBody
 public String adminPage() {
     System.out.println("당신은 관리자입니다");
-    return "접근 허용됨: ROLE_ADMIN 인증 성공!";
+    return "/admin/admin_setting";
 }
 
 }
