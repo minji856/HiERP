@@ -1,10 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>관리자 설정 페이지</title>
 </head>
 <body>
-    
+    <h1>회원목록 보기</h1>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- users는 model에 담긴 List<Users> -->
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.role}"></td>
+            <td>
+                <!-- 삭제 버튼 -->
+                <form th:action="@{/admin/delete/{id}(id=${user.id})}" method="post">
+                    <button type="submit">삭제</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </body>
 </html>
