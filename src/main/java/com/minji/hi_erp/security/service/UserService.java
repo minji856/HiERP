@@ -18,7 +18,6 @@ import java.util.List;
  * UserRepository 을 통해 데이터베이스에 접근하며, 비밀번호 암호화 등의 비즈니스 로직을 수행합니다.
  */
 @Service
-@Transactional
 public class UserService {
 
     private final UserRepository userRepository;
