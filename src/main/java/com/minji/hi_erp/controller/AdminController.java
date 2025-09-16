@@ -21,17 +21,17 @@ public class AdminController{
      * 회원 관리 리스트 페이지 (ROLE_ADMIN 권한 필요)
      */
     @Secured("ROLE_ADMIN")
-    @GetMapping("/admin_setting")
+    @GetMapping("/admin-setting")
     public String adminGetUserPage(Model model) {
         model.addAttribute("users", userService.findAll());
-        return "/admin/admin_setting";
+        return "/admin/admin-setting";
     }
 
     // 회원 삭제 (form submit)
     @PostMapping("/delete/{id}")
     public String deleteUser(@PathVariable Long id) {
         userService.deleteUserByAdmin(id);
-        return "redirect:/admin/admin_setting"; // 삭제 후 리스트로 리다이렉트
+        return "redirect:/admin/admin-setting"; // 삭제 후 리스트로 리다이렉트
     }
 
 }
