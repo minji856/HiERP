@@ -1,5 +1,6 @@
 package com.minji.hi_erp.security.service;
 
+import com.minji.hi_erp.security.dto.ChangePasswordRequestDto;
 import com.minji.hi_erp.security.dto.UserJoinDto;
 import com.minji.hi_erp.security.entity.Users;
 import com.minji.hi_erp.security.repository.UserRepository;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +31,16 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional(readOnly = true)
-    public Users findById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 사용자가 없습니다. id=" + id));
+    /**
+     * 현재 로그인된 사용자 가져오는 메서드 입니다.
+     *
+     */
+    private Users getCurrentLoggedInMember() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("로그인한 사용자를 찾을 수 없습니다."));
     }
 
     /**
@@ -68,26 +76,6 @@ public class UserService {
         return userRepository.save(user).getId();
     }
 
-
-    /**
-     * 로그인 검증 메서드 입니다.
-     *
-     * @param email
-     * @param password
-     * @return
-     */
-    /*
-    public Authentication login(String email, String password){
-        Users users = userRepository.findByEmail(email)
-                .orElseThrow(()-> new IllegalArgumentException("이메일이 존재하지 않습니다."));
-
-        if(!passwordEncoder.matches(password,users.getPassword())){
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-        return new UsernamePasswordAuthenticationToken(users.getEmail(), passwordEncoder.encode(users.getPassword()));
-    }
-     */
-
     public void deleteUsers(Long id) {
         userRepository.deleteById(id);
     }
@@ -98,5 +86,30 @@ public class UserService {
             throw new IllegalArgumentException("해당 ID의 사용자가 존재하지 않습니다.");
         }
         userRepository.deleteById(id);
+    }
+
+    /**
+     * 유저 비밀번호 확인 후 비밀번호를 변경하는 메서드입니다.
+     *
+     * @param requestDto
+     */
+    @Transactional
+    public void changePassword(ChangePasswordRequestDto requestDto) {
+        // 로그인중인지 확인
+        Users users = getCurrentLoggedInMember();
+
+        if (!passwordEncoder.matches(requestDto.getExPassword(), users.getPassword()) || users == null) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 새 비밀번호와 확인 비밀번호 일치 여부 확인
+        if (!requestDto.getNewPassword().equals(requestDto.getNewPasswordChk())) {
+            throw new IllegalArgumentException("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 새 비밀번호로 DB 업데이트
+        userRepository.updateMemberPassword(
+                users.getEmail(),
+                passwordEncoder.encode(requestDto.getNewPassword()));
     }
 }
