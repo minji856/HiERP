@@ -1,11 +1,13 @@
 package com.minji.hi_erp.controller;
 
+import com.minji.hi_erp.security.dto.ChangePasswordRequestDto;
 import com.minji.hi_erp.security.dto.UserJoinDto;
 import com.minji.hi_erp.security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * 일반 유저 로그인,회원가입 컨트롤러입니다.
@@ -67,5 +69,23 @@ public class AccountController {
     public String info() {
         System.out.println("당신은 유저입니다");
         return "접근 허용됨: ROLE_USER 인증 성공!";
+    }
+
+    @GetMapping("/change-password")
+    public String changePasswordForm() {
+        return "account/change-password"; // 비밀번호 변경 폼 페이지
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(@ModelAttribute ChangePasswordRequestDto dto,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            userService.changePassword(dto);
+            redirectAttributes.addFlashAttribute("message", "비밀번호가 변경되었습니다.");
+            return "redirect:/account/mypage"; // 성공 시 마이페이지 이동
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/account/change-password"; // 실패 시 다시 폼으로
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.minji.hi_erp.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.Timestamp;
 
@@ -52,9 +53,7 @@ public class Users {
     @CreationTimestamp
     private Timestamp createDate;
 
-/*
-	@JsonIgnore
-	@OneToMany(mappedBy = "users")
-	private List<SharedAlbum> sharedAlbums = new ArrayList<>();
-*/
+    public void updatePassword(String password, PasswordEncoder passwordEncoder) {
+        this.password=passwordEncoder.encode(password);
+    }
 }
