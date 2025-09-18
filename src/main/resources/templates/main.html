@@ -44,31 +44,68 @@
         .username {
             font-weight: bold;
         }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 120px;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
+    <div class="header">
+        <!-- 로그인 안 됐을경우 로그인 하러가기만 띄운다 -->
+        <span sec:authorize="isAnonymous()">
+            <a th:href="@{/account/login}">로그인 하러가기</a>
+        </span>
 
-<div class="header">
-    <!-- 로그인 안 됨 -->
-    <span sec:authorize="isAnonymous()">
-        <a th:href="@{/account/login}">로그인 하러가기</a>
+        <!-- 로그인 됐을 경우 -->
+        <span sec:authorize="isAuthenticated()" class="dropdown">
+        <span class="username" onclick="toggleMenu()">[[${#authentication.principal.realname}]]님 안녕하세요</span>
+
+        <div id="dropdownMenu" class="dropdown-content">
+            <a th:href="@{/account/mypage}">마이페이지</a>
+            <form th:action="@{/account/logout}" method="post">
+                <input type="submit" value="로그아웃"/>
+            </form>
+        </div>
     </span>
-
-    <!-- 로그인 됨 -->
-    <span sec:authorize="isAuthenticated()">
-        <span class="username" th:text="|${#authentication.principal.realname}님 안녕하세요|"></span>
-        <form th:action="@{/account/logout}" method="post">
-            <input type="submit" value="로그아웃"/>
-        </form>
-    </span>
-</div>
-
-<!--<div sec:authorize="hasRole('ADMIN')">관리자만 볼 수 있습니다.</div>&ndash;&gt;-->
-
-<!-- 페이지 본문 -->
-<div class="content">
-    <h1>Hi-E</h1>
-</div>
-
+    </div>
+    <!--<div sec:authorize="hasRole('ADMIN')">관리자만 볼 수 있습니다.</div>&ndash;&gt;-->
+    <!-- 페이지 본문 -->
+    <div class="content">
+        <h1>Hi-E</h1>
+    </div>
 </body>
+    <!--(모바일용) 마우스 클릭하면 나오는-->
+    <script>
+        function toggleMenu() {
+            document.getElementById("dropdownMenu").classList.toggle("show");
+        }
+        // PC에서는 hover로도 작동
+        if (window.innerWidth > 768) {
+            const dropdown = document.querySelector(".dropdown");
+            dropdown.addEventListener("mouseenter", () => {
+                document.getElementById("dropdownMenu").classList.add("show");
+            });
+            dropdown.addEventListener("mouseleave", () => {
+                document.getElementById("dropdownMenu").classList.remove("show");
+            });
+        }
+    </script>
 </html>
