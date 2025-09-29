@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
         googleCalendarApiKey: '<YOUR API KEY>',
             eventSources: [
                 {
-                    googleCalendarId: 'efgh5678@group.calendar.google.com',
+                    googleCalendarId: 'ko.south_korea#holiday@group.v.calendar.google.com',
                     className: 'ko-event'
                 }
             ],
