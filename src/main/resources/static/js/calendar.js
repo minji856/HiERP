@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     let calendarEl = document.getElementById('calendar');
 
-    fetch('/api/calendar/key')
+    fetch('/api/calendar')
         .then(response => response.text())
-        .then(apiKey => {
+        .then(googleApiKey => {
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'ko',
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     week: '주',
                     day: '일'
                 },
-                googleCalendarApiKey: apiKey,
+                googleCalendarApiKey: googleApiKey,
                 eventSources: [
                     {
                         googleCalendarId: 'ko.south_korea#holiday@group.v.calendar.google.com',
