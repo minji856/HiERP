@@ -1,15 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
     let calendarEl = document.getElementById('calendar');
-    //
-    // fetch('/api/calendar')
-    //     .then(res => res.json())
-    //     .then(data => {
-    //         const events = data.items.map(item => ({
-    //             title: item.summary,
-    //             start: item.start.date || item.start.dateTime,
-    //             end: item.end.date || item.end.dateTime,
-    //             allDay: true
-    //         }));
 
     let calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -25,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
             week: '주',
             day: '일'
         },
+        selectable : true,
         events: function(fetchInfo, successCallback, failureCallback) {
             fetch('/api/calendar')
                 .then(res => res.json())
@@ -33,7 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         title: item.summary,
                         start: item.start.date || item.start.dateTime,
                         end: item.end.date || item.end.dateTime,
-                        allDay: true
+                        allDay: true,
+                        color: 'red',
+                        textColor: 'white'
                     }));
                     successCallback(events);
                 })
