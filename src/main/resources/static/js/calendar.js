@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         start: item.start.date || item.start.dateTime,
                         end: item.end.date || item.end.dateTime,
                         allDay: true,
-                        color: 'red',
+                        // color: 'red',
+                        color: '#f83345',
                         textColor: 'white'
                     }));
                     successCallback(events);
