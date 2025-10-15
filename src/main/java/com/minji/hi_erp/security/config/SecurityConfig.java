@@ -4,6 +4,7 @@ package com.minji.hi_erp.security.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity // 스프링 Security 필터가 스프링 기본 필터체인에 등록되서 Security 지원을 가능하게 함
 @RequiredArgsConstructor
+@EnableMethodSecurity(securedEnabled = true) // 접근 권한 Secured 메서드 기능을 가능하게 함
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
