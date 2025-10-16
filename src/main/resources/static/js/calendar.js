@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
         headerToolbar: {
             left: 'prev,next,today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            right: 'addEventButton,dayGridMonth,timeGridWeek,timeGridDay'
         },
         buttonText: {
             today: '오늘',
@@ -15,7 +15,28 @@ document.addEventListener('DOMContentLoaded', function() {
             week: '주',
             day: '일'
         },
-        selectable : true,
+        customButtons : {
+            addEventButton : {
+                text : '일정 추가',
+                click : function () {
+                    const title = prompt('일정 제목을 입력하세요.');
+                    const dateStr = prompt('날짜를 YYYY-MM-DD 형식으로 입력하세요.');
+
+                    if (title && dateStr){
+                        const date = new Date(dateStr() + 'T00:00:00'); //날짜 포맷 변환
+                        calendar.addEvent({
+                            title: title,
+                            start : date,
+                            allDay: true
+                        });
+                        alert('일정이 추가되었습니다.');
+                    }else {
+                        alert('입력값이 올바르지 않습니다.')
+                    }
+                }
+            }
+        }
+        ,
         events: function(fetchInfo, successCallback, failureCallback) {
             fetch('/api/calendar')
                 .then(res => res.json())
@@ -31,9 +52,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     }));
                     successCallback(events);
                 })
-                .catch(err => failureCallback(err));
+            .catch(err => failureCallback(err));
         }
     });
     calendar.render();
-    });
+});
+    //
+    // let calendar = new FullCalendar.Calendar(calendarE1,{
+    //     initialView: 'dayGridMonth',
+    //     events: function (fetchInfo, successCallback, failureCallback){
+    //         $.ajax({
+    //             url : ''
+    //         })
+    //     }
+    // });
 //});
