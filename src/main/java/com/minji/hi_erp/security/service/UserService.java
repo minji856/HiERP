@@ -38,7 +38,7 @@ public class UserService {
     private Users getCurrentLoggedInMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        
+
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("로그인한 사용자를 찾을 수 없습니다."));
     }
@@ -93,7 +93,7 @@ public class UserService {
      *
      * @param requestDto
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public void changePassword(ChangePasswordRequestDto requestDto) {
         // 로그인중인지 확인
         Users users = getCurrentLoggedInMember();
