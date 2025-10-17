@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const dateStr = prompt('날짜를 YYYY-MM-DD 형식으로 입력하세요.');
 
                     if (title && dateStr){
-                        const date = new Date(dateStr() + 'T00:00:00'); //날짜 포맷 변환
+                        const date = new Date(dateStr + 'T00:00:00'); //날짜 포맷 변환
                         calendar.addEvent({
                             title: title,
                             start : date,
