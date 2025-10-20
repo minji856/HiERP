@@ -1,4 +1,4 @@
-package com.minji.hi_erp.security.dto;
+package com.minji.hi_erp.security.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
