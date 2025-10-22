@@ -22,21 +22,32 @@ document.addEventListener('DOMContentLoaded', function() {
                     const title = prompt('일정 제목을 입력하세요.');
                     const dateStr = prompt('날짜를 YYYY-MM-DD 형식으로 입력하세요.');
 
-                    if (title && dateStr){
-                        const date = new Date(dateStr + 'T00:00:00'); //날짜 포맷 변환
-                        calendar.addEvent({
-                            title: title,
-                            start : date,
-                            allDay: true
-                        });
-                        alert('일정이 추가되었습니다.');
-                    }else {
-                        alert('입력값이 올바르지 않습니다.')
+                    if (title && dateStr) {
+                        fetch('/api/calevents',{
+                            method : 'POST',
+                            headers : { 'Content-Type' : 'application/json'},
+                            body : JSON.stringify({
+                                title : title,
+                                startDate : dateStr
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            const date = new Date(dateStr + 'T00:00:00'); //날짜 포맷 변환
+                            calendar.addEvent({
+                                title: title,
+                                start : date,
+                                allDay: true
+                            });
+                            alert('일정이 추가되었습니다.');
+                            })
+                            .catch(err => alert('저장 실패: ' + err));
+                        } else {
+                                alert('입력값이 올바르지 않습니다.');
+                        }
                     }
                 }
-            }
-        }
-        ,
+            },
         events: function(fetchInfo, successCallback, failureCallback) {
             fetch('/api/calendar')
                 .then(res => res.json())
