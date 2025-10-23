@@ -48,31 +48,46 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             },
-        events: function(fetchInfo, successCallback, failureCallback) {
-            fetch('/api/calendar')
-                .then(res => res.json())
-                .then(data => {
-                    const events = (data.items || []).map(item => ({
-                        title: item.summary,
-                        start: item.start.date || item.start.dateTime,
-                        end: item.end.date || item.end.dateTime,
-                        allDay: true,
-                        // color: '#f83345',
-                    }));
-                    successCallback(events);
-                })
-            .catch(err => failureCallback(err));
-        }
+        eventSources: [
+            // 1️⃣ Google API 일정
+            {
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    fetch('/api/calendar')
+                        .then(res => res.json())
+                        .then(data => {
+                            const events = (data.items || []).map(item => ({
+                                title: item.summary,
+                                start: item.start.date || item.start.dateTime,
+                                end: item.end.date || item.end.dateTime,
+                                allDay: true
+                            }));
+                            successCallback(events);
+                        })
+                        .catch(err => failureCallback(err));
+                },
+            },
+            // 2️⃣ 내가 DB에 저장한 일정
+            {
+                url: '/api/calevents', // GET /api/calevents 자동 호출됨
+                color: '#2e7d32',      // 파란색
+                textColor: 'white'
+            }
+        ]
+        // events: function(fetchInfo, successCallback, failureCallback) {
+        //     fetch('/api/calendar')
+        //         .then(res => res.json())
+        //         .then(data => {
+        //             const events = (data.items || []).map(item => ({
+        //                 title: item.summary,
+        //                 start: item.start.date || item.start.dateTime,
+        //                 end: item.end.date || item.end.dateTime,
+        //                 allDay: true,
+        //                 // color: '#f83345',
+        //             }));
+        //             successCallback(events);
+        //         })
+        //     .catch(err => failureCallback(err));
+        // }
     });
     calendar.render();
 });
-    //
-    // let calendar = new FullCalendar.Calendar(calendarE1,{
-    //     initialView: 'dayGridMonth',
-    //     events: function (fetchInfo, successCallback, failureCallback){
-    //         $.ajax({
-    //             url : ''
-    //         })
-    //     }
-    // });
-//});
