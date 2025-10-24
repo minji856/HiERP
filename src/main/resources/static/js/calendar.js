@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             headers : { 'Content-Type' : 'application/json'},
                             body : JSON.stringify({
                                 title : title,
-                                startDate : dateStr
+                                start : dateStr
                             })
                         })
                         .then(res => res.json())
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             },
         eventSources: [
-            // 1️⃣ Google API 일정
+            // Google API 공휴일 일정불러오는 코드
             {
                 events: function(fetchInfo, successCallback, failureCallback) {
                     fetch('/api/calendar')
@@ -66,28 +66,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         .catch(err => failureCallback(err));
                 },
             },
-            // 2️⃣ 내가 DB에 저장한 일정
+            // 사용자가 직접 추가한 일정 불러오는 코드
             {
-                url: '/api/calevents', // GET /api/calevents 자동 호출됨
-                color: '#2e7d32',      // 파란색
-                textColor: 'white'
+                url: "/api/calevents",
+                failure: function() {
+                    alert("이벤트 목록을 가져오다가 문제가 발생했습니다.");
+                }
             }
         ]
-        // events: function(fetchInfo, successCallback, failureCallback) {
-        //     fetch('/api/calendar')
-        //         .then(res => res.json())
-        //         .then(data => {
-        //             const events = (data.items || []).map(item => ({
-        //                 title: item.summary,
-        //                 start: item.start.date || item.start.dateTime,
-        //                 end: item.end.date || item.end.dateTime,
-        //                 allDay: true,
-        //                 // color: '#f83345',
-        //             }));
-        //             successCallback(events);
-        //         })
-        //     .catch(err => failureCallback(err));
-        // }
     });
     calendar.render();
 });
