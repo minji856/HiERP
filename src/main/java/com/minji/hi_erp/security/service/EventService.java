@@ -17,8 +17,8 @@ public class EventService {
     public Event saveEvent(EventDto dto){
         Event event = Event.builder()
                 .title(dto.getTitle())
-                .startDate(dto.getStartDate())
-                .endDate(dto.getEndDate())
+                .startDate(dto.getStart())
+                .endDate(dto.getEnd())
                 .build();
 
         return eventRepository.save(event);
