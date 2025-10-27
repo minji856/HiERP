@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ko',
+        // 달력 숫자에서 '일' 지우는 옵션
+        dayCellContent: function(arg) {
+            let text = arg.dayNumberText.replace('일', '');
+            return { html: text };
+        },
         headerToolbar: {
             left: 'prev,next,today',
             center: 'title',
@@ -68,7 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             // 사용자가 직접 추가한 일정 불러오는 코드
             {
-                url: "/api/calevents",
+                url: '/api/calevents',
+                color: "#81c784",
                 failure: function() {
                     alert("이벤트 목록을 가져오다가 문제가 발생했습니다.");
                 }
