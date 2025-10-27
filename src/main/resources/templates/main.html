@@ -2,12 +2,15 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
+<head>
+    <meta charset="UTF-8">
+    <!-- BootStrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <!-- Fullcalendar Cdn -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.11/index.global.min.js"></script>
-<head>
-    <meta charset="UTF-8">
+    <!-- BootStrap4버전 이상부터 viewport 태그 추가 필수 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hi-e</title>
     <style>
         /* 상단 헤더 스타일 */
@@ -82,24 +85,39 @@
             overflow: hidden;    /* 캘린더 영역 밖 내용 숨김 */
         }
 
+
         /* 토요일은 파란색, 일요일은 빨간색으로 */
         .fc-day-sun .fc-col-header-cell-cushion {
             color: red;
+            text-decoration: none;
+        }
+        .fc-daygrid-day.fc-day-sun .fc-daygrid-day-number{
+            color: red;
+            text-decoration: none;
         }
         .fc-day-sat .fc-col-header-cell-cushion {
             color: blue;
-        }
-        /* 	    	.fc-daygrid-day .fc-daygrid-day-number {	// 일요일, 토요일 제외
-                    color: black;
-                } */
-        .fc-daygrid-day.fc-day-sun .fc-daygrid-day-number{
-            color: red;
+            text-decoration: none;
         }
         .fc-daygrid-day.fc-day-sat .fc-daygrid-day-number{
             color: blue;
+            text-decoration: none;
         }
+
+        /* 요일 헤더 평일은 검정색으로 */
+        .fc-col-header-cell-cushion {
+            color: black;
+            text-decoration: none;
+        }
+        /* 평일 날짜 색은 검정색 */
+        .fc-daygrid-day:not(.fc-day-sun):not(.fc-day-sat) .fc-daygrid-day-number {
+            color: black;
+            text-decoration: none;
+        }
+
     </style>
 </head>
+
 <body>
     <div class="header">
         <!-- 로그인 안 됐을경우 로그인 하러가기만 띄운다 -->
@@ -128,7 +146,10 @@
         <div th:replace="~{calendar :: calendarFragment}" class="calendar-container"></div>
     </div>
 </body>
-    <!--(모바일용) 마우스 클릭하면 나오는-->
+
+    <!-- BootStrap Javascript 태그 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <!--(모바일용) 마우스 클릭하면 나오는 Javascript -->
     <script>
         function toggleMenu() {
             document.getElementById("dropdownMenu").classList.toggle("show");
@@ -144,5 +165,5 @@
                 document.getElementById("dropdownMenu").classList.remove("show");
             });
         }
-</script>
+    </script>
 </html>
