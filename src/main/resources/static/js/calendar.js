@@ -23,33 +23,10 @@ document.addEventListener('DOMContentLoaded', function() {
         customButtons : {
             addEventButton : {
                 text : '일정 추가',
-                click : function () {
-                    const title = prompt('일정 제목을 입력하세요.');
-                    const dateStr = prompt('날짜를 YYYY-MM-DD 형식으로 입력하세요.');
-
-                    if (title && dateStr) {
-                        fetch('/api/calevents',{
-                            method : 'POST',
-                            headers : { 'Content-Type' : 'application/json'},
-                            body : JSON.stringify({
-                                title : title,
-                                start : dateStr
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            const date = new Date(dateStr + 'T00:00:00'); //날짜 포맷 변환
-                            calendar.addEvent({
-                                title: title,
-                                start : date,
-                                allDay: true
-                            });
-                            alert('일정이 추가되었습니다.');
-                            })
-                            .catch(err => alert('저장 실패: ' + err));
-                        } else {
-                                alert('입력값이 올바르지 않습니다.');
-                        }
+                click: function() {
+                    // 모달 열기
+                    const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+                    eventModal.show();
                     }
                 }
             },
@@ -74,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 사용자가 직접 추가한 일정 불러오는 코드
             {
                 url: '/api/calevents',
-                color: "#81c784",
+                color: '#81c784',
                 failure: function() {
                     alert("이벤트 목록을 가져오다가 문제가 발생했습니다.");
                 }
@@ -82,4 +59,49 @@ document.addEventListener('DOMContentLoaded', function() {
         ]
     });
     calendar.render();
+
+    // 저장 버튼 클릭 시 이벤트 등록
+    document.getElementById('saveEventBtn').addEventListener('click', function() {
+        const title = document.getElementById('eventTitle').value.trim();
+        const start = document.getElementById('eventStart').value;
+        const end = document.getElementById('eventEnd').value;
+
+        if (!title || !start) {
+            alert('제목과 시작일은 필수입니다.');
+            return;
+        }
+
+        if (end && end < start) {
+            alert('종료일은 시작일보다 이후여야 합니다.');
+            return;
+        }
+
+        // 서버로 저장
+        fetch('/api/calevents', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, start, end })
+        })
+            .then(res => res.json())
+            .then(data => {
+                // 달력에 즉시 추가
+                calendar.addEvent({
+                    title: title,
+                    start: start,
+                    end: end || start,
+                    allDay: true,
+                    color : '#81c784'
+                });
+
+                // 폼 초기화 + 모달 닫기
+                document.getElementById('eventForm').reset();
+                const eventModal = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
+                eventModal.hide();
+                alert('일정이 추가되었습니다!');
+
+                // 서버에서 다시 이벤트 목록 새로 불러오기
+                calendar.refetchEvents();
+            })
+            .catch(err => alert('저장 실패: ' + err));
+    });
 });
