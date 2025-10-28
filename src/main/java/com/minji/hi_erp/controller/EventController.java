@@ -29,14 +29,15 @@ public class EventController {
     public List<Map<String, String>> getAllEvents() {
         List<Event> events = eventService.getAllEvent();
 
-        System.out.println("📅 이벤트 개수: " + events.size());
+        System.out.println("📅이벤트 개수: " + events.size());
         for (Event e : events) {
-            System.out.println("➡ " + e.getTitle() + " / " + e.getStartDate());
+            System.out.println("➡ " + e.getTitle() + " / " + e.getStartDate() + " ~ " + e.getEndDate());
         }
 
         return events.stream().map(event -> Map.of(
                 "title", event.getTitle(),
-                "start", event.getStartDate()
+                "start", event.getStartDate(),
+                "end", event.getEndDate()
         )).toList();
     }
 }
