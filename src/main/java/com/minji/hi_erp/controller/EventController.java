@@ -27,10 +27,6 @@ public class EventController {
         return eventService.saveEvent(eventDto);
     }
 
-//    @GetMapping
-//    public List<Event> getAllEvents(){
-//        return eventService.getAllEvent();
-//    }
     @GetMapping
     public List<Map<String, String>> getAllEvents() {
         List<Event> events = eventService.getAllEvent();

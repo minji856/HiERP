@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
             week: '주',
             day: '일'
         },
-        customButtons : {
+        customButtons: {
             addEventButton : {
                 text : '일정 추가',
                 click: function() {
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // 서버로 저장
+        // 서버로 저장 EventController saveEvent 메서드
         fetch('/api/calevents', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -84,15 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
         })
             .then(res => res.json())
             .then(data => {
-                // 달력에 즉시 추가
-                // calendar.addEvent({
-                //     title: title,
-                //     start: start,
-                //     end: end || start,
-                //     allDay: true,
-                //     color : '#81c784'
-                // });
-
                 // 폼 초기화 + 모달 닫기
                 document.getElementById('eventForm').reset();
                 const eventModal = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
