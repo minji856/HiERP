@@ -6,6 +6,7 @@ import com.minji.hi_erp.security.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,9 @@ public class EventController {
         return events.stream().map(event -> Map.of(
                 "title", event.getTitle(),
                 "start", event.getStartDate(),
-                "end", event.getEndDate()
+                "end", event.getEndDate() != null ?
+                        LocalDate.parse(event.getEndDate()).plusDays(1).toString()
+                        : event.getStartDate()
         )).toList();
     }
 }
