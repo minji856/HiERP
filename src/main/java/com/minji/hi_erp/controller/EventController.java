@@ -19,6 +19,11 @@ public class EventController {
 
     @PostMapping
     public Event saveEvent(@RequestBody EventDto eventDto) {
+        // end가 null 또는 빈 문자열이면 start로 자동 세팅 (종일 이벤트)
+        if (eventDto.getEnd() == null || eventDto.getEnd().isBlank()) {
+            eventDto.setEnd(eventDto.getStart());
+        }
+
         return eventService.saveEvent(eventDto);
     }
 
@@ -35,12 +40,24 @@ public class EventController {
             System.out.println("➡ " + e.getTitle() + " / " + e.getStartDate() + " ~ " + e.getEndDate());
         }
 
-        return events.stream().map(event -> Map.of(
-                "title", event.getTitle(),
-                "start", event.getStartDate(),
-                "end", event.getEndDate() != null ?
-                        LocalDate.parse(event.getEndDate()).plusDays(1).toString()
-                        : event.getStartDate()
-        )).toList();
+        return events.stream().map(event -> {
+            String start = event.getStartDate();
+            String end = event.getEndDate();
+
+            // end가 없거나 start와 같으면 종일 이벤트 → 그대로 전달
+            if (end == null || end.equals(start)) {
+                return Map.of(
+                        "title", event.getTitle(),
+                        "start", start
+                );
+            } else {
+                // 기간 이벤트는 exclusive 방지 위해 +1일 처리
+                return Map.of(
+                        "title", event.getTitle(),
+                        "start", start,
+                        "end", LocalDate.parse(end).plusDays(1).toString()
+                );
+            }
+        }).toList();
     }
 }
