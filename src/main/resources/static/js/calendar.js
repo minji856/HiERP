@@ -66,11 +66,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const start = document.getElementById('eventStart').value;
         const end = document.getElementById('eventEnd').value;
 
+        // 유효성 검사
         if (!title || !start) {
             alert('제목과 시작일은 필수입니다.');
             return;
         }
-
         if (end && end < start) {
             alert('종료일은 시작일보다 이후여야 합니다.');
             return;
@@ -85,13 +85,13 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(res => res.json())
             .then(data => {
                 // 달력에 즉시 추가
-                calendar.addEvent({
-                    title: title,
-                    start: start,
-                    end: end || start,
-                    allDay: true,
-                    color : '#81c784'
-                });
+                // calendar.addEvent({
+                //     title: title,
+                //     start: start,
+                //     end: end || start,
+                //     allDay: true,
+                //     color : '#81c784'
+                // });
 
                 // 폼 초기화 + 모달 닫기
                 document.getElementById('eventForm').reset();
