@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  <div th:fragment="eventDetail">
+    <!-- 일정 상세 모달 -->
+    <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="eventDetailModalLabel">일정 상세</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+          </div>
+          <div class="modal-body">
+            <p><strong>제목:</strong> <span id="detailTitle"></span></p>
+            <p><strong>시작일:</strong> <span id="detailStart"></span></p>
+            <p><strong>종료일:</strong> <span id="detailEnd"></span></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="editEventBtn">수정</button>
+            <button type="button" class="btn btn-danger" id="deleteEventBtn">삭제</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

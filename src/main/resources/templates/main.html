@@ -11,6 +11,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.11/index.global.min.js"></script>
     <!-- BootStrap4버전 이상부터 viewport 태그 추가 필수 -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/fullCalendar.css" type="text/css">
+
     <title>Hi-e</title>
     <style>
         /* 상단 헤더 스타일 */
@@ -84,48 +88,6 @@
             border-radius: 8px;
             overflow: hidden;    /* 캘린더 영역 밖 내용 숨김 */
         }
-
-        /* 토요일은 파란색, 일요일은 빨간색으로 */
-        .fc-day-sun .fc-col-header-cell-cushion {
-            color: red;
-            text-decoration: none;
-        }
-        .fc-daygrid-day.fc-day-sun .fc-daygrid-day-number{
-            color: red;
-            text-decoration: none;
-        }
-        .fc-day-sat .fc-col-header-cell-cushion {
-            color: blue;
-            text-decoration: none;
-        }
-        .fc-daygrid-day.fc-day-sat .fc-daygrid-day-number{
-            color: blue;
-            text-decoration: none;
-        }
-
-        /* 요일 헤더 평일은 검정색으로 */
-        .fc-col-header-cell-cushion {
-            color: black;
-            text-decoration: none;
-        }
-        /* 평일 날짜 색은 검정색 */
-        .fc-daygrid-day:not(.fc-day-sun):not(.fc-day-sat) .fc-daygrid-day-number {
-            color: black;
-            text-decoration: none;
-        }
-
-        /* 날짜 셀 기본적으로 클릭 가능한 손바닥 커서 */
-        .fc-daygrid-day {
-            cursor: pointer;
-            transition: background-color 0.2s ease; /* hover 시 부드럽게 전환 */
-        }
-
-        /* hover 효과 — 마우스 올리면 살짝 강조 */
-        .fc-daygrid-day:hover {
-            background-color: rgba(129, 199, 132, 0.15); /* 연한 초록빛 하이라이트 */
-            border-radius: 8px; /* 살짝 둥글게 (선택 사항) */
-        }
-
     </style>
 </head>
 
@@ -157,44 +119,11 @@
         <div th:replace="~{calendar :: calendarFragment}" class="calendar-container"></div>
     </div>
 
-    <!-- 일정 추가 모달창 -->
-    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="eventModalLabel">일정 추가</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="eventForm">
-                        <div class="mb-3">
-                            <label for="eventTitle" class="form-label">제목</label>
-                            <input type="text" class="form-control" id="eventTitle" placeholder="일정 제목을 입력하세요" required>
-                        </div>
-                        <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" id="eventAllDay">
-                            <label class="form-check-label" for="eventAllDay">종일 일정</label>
-                        </div>
-                        <div class="mb-3">
-                            <label for="eventStart" class="form-label">시작일</label>
-                            <input type="date" class="form-control" id="eventStart" required>
-                        </div>
-                        <!-- 종일 일정시 입력 칸 비활성화 -->
-                        <div class="mb-3" id="endDateGroup">
-                            <label for="eventEnd" class="form-label">종료일</label>
-                            <input type="date" class="form-control" id="eventEnd">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="saveEventBtn">저장</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
+    <!-- 일정 모달창들 -->
+    <div th:replace="~{modal/eventDetailModal :: eventDetail}" ></div>
+    <div th:replace="~{modal/eventModal :: eventModal}"></div>
 
+</body>
     <!-- BootStrap Javascript 태그 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <!--(모바일용) 마우스 클릭하면 나오는 Javascript -->
