@@ -1,0 +1,40 @@
+/* 토요일은 파란색, 일요일은 빨간색으로 */
+.fc-day-sun .fc-col-header-cell-cushion {
+    color: red;
+    text-decoration: none;
+}
+.fc-daygrid-day.fc-day-sun .fc-daygrid-day-number{
+    color: red;
+    text-decoration: none;
+}
+.fc-day-sat .fc-col-header-cell-cushion {
+    color: blue;
+    text-decoration: none;
+}
+.fc-daygrid-day.fc-day-sat .fc-daygrid-day-number{
+    color: blue;
+    text-decoration: none;
+}
+
+/* 요일 헤더 평일은 검정색으로 */
+.fc-col-header-cell-cushion {
+    color: black;
+    text-decoration: none;
+}
+/* 평일 날짜 색은 검정색 */
+.fc-daygrid-day:not(.fc-day-sun):not(.fc-day-sat) .fc-daygrid-day-number {
+    color: black;
+    text-decoration: none;
+}
+
+/* 날짜 셀 기본적으로 클릭 가능한 손바닥 커서 */
+.fc-daygrid-day {
+    cursor: pointer;
+    transition: background-color 0.2s ease; /* hover 시 부드럽게 전환 */
+}
+
+/* hover 효과 — 마우스 올리면 살짝 강조 */
+.fc-daygrid-day:hover {
+    background-color: rgba(129, 199, 132, 0.15); /* 연한 초록빛 하이라이트 */
+    border-radius: 8px; /* 살짝 둥글게 (선택 사항) */
+}
