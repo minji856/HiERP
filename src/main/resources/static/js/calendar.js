@@ -1,13 +1,13 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     let calendarEl = document.getElementById('calendar');
 
     let calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ko',
         // 달력 숫자에서 '일' 지우는 옵션
-        dayCellContent: function(arg) {
+        dayCellContent: function (arg) {
             let text = arg.dayNumberText.replace('일', '');
-            return { html: text };
+            return {html: text};
         },
         headerToolbar: {
             left: 'prev,next,today',
@@ -21,40 +21,90 @@ document.addEventListener('DOMContentLoaded', function() {
             day: '일'
         },
         // 날짜 클릭시 그 날짜로 자동 입력 되면서 일정 추가 모달창 활성화
-        dateClick : function(info){
-           openEventModal(info.dateStr)
+        dateClick: function (info) {
+            openEventModal(info.dateStr)
         },
-        eventClick: function(info) {
+        eventClick: function (info) {
             const event = info.event;
             const detailModal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
+            // 일정 상세보기 모달 표시
+            detailModal.show();
 
             // 날짜 포맷 (YYYY-MM-DD 형태로)
             const start = event.start ? event.start.toISOString().slice(0, 10) : '';
             const end = event.end ? event.end.toISOString().slice(0, 10) : start;
 
-            // 모달 내용 채우기
-            document.getElementById('detailTitle').textContent = event.title;
-            document.getElementById('detailStart').textContent = start;
-            document.getElementById('detailEnd').textContent = end;
+            // 모달창에 DB 내용 채우기
+            document.getElementById('detailEventTitle').textContent = event.title;
+            document.getElementById('detailEventStart').textContent = start;
+            document.getElementById('detailEventEnd').textContent = end;
 
-            // 모달 표시
-            detailModal.show();
+            // 일정 수정버튼 눌렀을 때 데이터를 서버에 보내는 코드 /api/calevents/{event.id}
+            document.getElementById('updateEventBtn').onclick = function () {
+                const updateTitle = document.getElementById('detailEventTitle').value.trim();
+                const updateStart = document.getElementById('detailEventStart').value;
+                const updateEnd = document.getElementById('detailEventEnd').value;
+
+                // detailModal.show();
+
+                if (!updateTitle || !updateStart || !updateEnd) {
+                    alert("모든 정보를 입력해주세요.");
+                    return;
+                }
+
+                fetch(`/api/calevents/${event.id}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        title: updateTitle,
+                        start: updateStart,
+                        end: updateEnd
+                    })
+                })
+                    .then(res => {
+                        if (!res.ok) throw new Error('수정에 실패하였습니다.');
+                        return res.json();
+                    })
+                    .then(() => {
+                        detailModal.hide();
+                        alert('일정이 수정되었습니다.');
+                        calendar.refetchEvents();
+                    })
+                    .catch(err => alert(err));
+            };
+
+            // 일정을 삭제하는 코드
+            document.getElementById('deleteEventBtn').onclick = function () {
+                if(!confirm('정말 삭제하시겠습니까?')) return;
+
+                fetch(`/api/calevents/{event.id}`, {method: 'DELETE'})
+                    .then(res => {
+                        if (!res.ok) throw new Error('일정 삭제에 실패하였습니다.');
+                        return res.text();
+                    })
+                    .then(() => {
+                        detailModal.hide();
+                        alert('일정이 삭제되었습니다.');
+                        calendar.refetchEvents(); // 서버 동기화
+                    })
+                    .catch(err => alert(err));
+            }
 
             // 캘린더 클릭 이벤트의 기본 동작 방지 (페이지 이동 등)
             info.jsEvent.preventDefault();
         },
         customButtons: {
-            addEventButton : {
-                text : '일정 추가',
-                click: function() {
+            addEventButton: {
+                text: '일정 추가',
+                click: function () {
                     openEventModal(); // 날짜 미선택
-                    }
                 }
-            },
+            }
+        },
         eventSources: [
             // Google API 공휴일 일정불러오는 코드
             {
-                events: function(fetchInfo, successCallback, failureCallback) {
+                events: function (fetchInfo, successCallback, failureCallback) {
                     fetch('/api/calendar')
                         .then(res => res.json())
                         .then(data => {
@@ -73,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
             {
                 url: '/api/calevents',
                 color: '#81c784',
-                failure: function() {
+                failure: function () {
                     alert("이벤트 목록을 가져오다가 문제가 발생했습니다.");
                 }
             }
@@ -100,12 +150,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const endGroup = document.getElementById('endDateGroup');
 
     // 종일 체크시 종료일 입력 칸 비활성화
-    allDayCheck.addEventListener('change', function() {
+    allDayCheck.addEventListener('change', function () {
         endGroup.style.display = allDayCheck.checked ? 'none' : 'block';
     });
 
     // 저장 버튼 클릭 시 이벤트 등록
-    document.getElementById('saveEventBtn').addEventListener('click', function() {
+    document.getElementById('saveEventBtn').addEventListener('click', function () {
         const title = document.getElementById('eventTitle').value.trim();
         const start = document.getElementById('eventStart').value;
         let end = document.getElementById('eventEnd').value;
@@ -125,8 +175,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // 서버로 저장 EventController saveEvent 메서드
         fetch('/api/calevents', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, start, end })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({title, start, end})
         })
             .then(res => res.json())
             .then(data => {
