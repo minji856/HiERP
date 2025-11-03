@@ -3,15 +3,18 @@
     color: red;
     text-decoration: none;
 }
-.fc-daygrid-day.fc-day-sun .fc-daygrid-day-number{
+
+.fc-daygrid-day.fc-day-sun .fc-daygrid-day-number {
     color: red;
     text-decoration: none;
 }
+
 .fc-day-sat .fc-col-header-cell-cushion {
     color: blue;
     text-decoration: none;
 }
-.fc-daygrid-day.fc-day-sat .fc-daygrid-day-number{
+
+.fc-daygrid-day.fc-day-sat .fc-daygrid-day-number {
     color: blue;
     text-decoration: none;
 }
@@ -21,6 +24,7 @@
     color: black;
     text-decoration: none;
 }
+
 /* 평일 날짜 색은 검정색 */
 .fc-daygrid-day:not(.fc-day-sun):not(.fc-day-sat) .fc-daygrid-day-number {
     color: black;
