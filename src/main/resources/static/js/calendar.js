@@ -75,9 +75,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 일정을 삭제하는 코드
             document.getElementById('deleteEventBtn').onclick = function () {
+                console.log('프론트에서 삭제할 ID:' + info.event.id);
                 if(!confirm('정말 삭제하시겠습니까?')) return;
 
-                fetch(`/api/calevents/{event.id}`, {method: 'DELETE'})
+                fetch(`/api/calevents/${event.id}`, {method: 'DELETE'})
                     .then(res => {
                         if (!res.ok) throw new Error('일정 삭제에 실패하였습니다.');
                         return res.text();
