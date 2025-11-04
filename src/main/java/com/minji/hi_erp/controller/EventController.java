@@ -63,12 +63,14 @@ public class EventController {
             // end가 없거나 start와 같으면 종일 이벤트 → 그대로 전달
             if (end == null || end.equals(start)) {
                 return Map.of(
+                        "id", String.valueOf(event.getId()),
                         "title", event.getTitle(),
                         "start", start
                 );
             } else {
                 // 기간 이벤트는 exclusive 방지 위해 +1일 처리
                 return Map.of(
+                        "id", String.valueOf(event.getId()),
                         "title", event.getTitle(),
                         "start", start,
                         "end", LocalDate.parse(end).plusDays(1).toString()
@@ -95,6 +97,7 @@ public class EventController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEvent(@PathVariable Long id) {
+        System.out.println("DELETE 요청 들어옴 : " + id);
         eventService.deleteEvent(id);
         return ResponseEntity.ok("Deleted");
     }
