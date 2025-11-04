@@ -5,6 +5,7 @@ import com.minji.hi_erp.security.entity.Event;
 import com.minji.hi_erp.security.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class EventService {
     }
 
     // 일정을 삭제하는 메서드 입니다.
+    @Transactional
     public void deleteEvent(Long id) {
         if (!eventRepository.existsById(id)) {
             throw new RuntimeException("삭제할 일정이 존재하지 않습니다. ID: " + id);
