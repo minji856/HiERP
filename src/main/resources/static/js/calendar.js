@@ -1,14 +1,17 @@
 document.addEventListener('DOMContentLoaded', function () {
     let calendarEl = document.getElementById('calendar');
+    let isEditMode = false; // 추가/수정 모드 구분
+    let editingEventId = null; // 수정중인 일정 ID
 
     let calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ko',
         // 달력 숫자에서 '일' 지우는 옵션
-        dayCellContent: function (arg) {
-            let text = arg.dayNumberText.replace('일', '');
-            return {html: text};
-        },
+        dayCellContent: arg => ({ html: arg.dayNumberText.replace('일', '') }),
+        // dayCellContent: function (arg) {
+        //     let text = arg.dayNumberText.replace('일', '');
+        //     return {html: text};
+        // },
         headerToolbar: {
             left: 'prev,next,today',
             center: 'title',
@@ -41,36 +44,65 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 일정 수정버튼 눌렀을 때 데이터를 서버에 보내는 코드 /api/calevents/{event.id}
             document.getElementById('updateEventBtn').onclick = function () {
-                const updateTitle = document.getElementById('detailEventTitle').value.trim();
-                const updateStart = document.getElementById('detailEventStart').value;
-                const updateEnd = document.getElementById('detailEventEnd').value;
+                // 상세 모달 닫기
+                detailModal.hide();
 
-                // detailModal.show();
+                // 일정 추가/수정 모달 열기
+                const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+                eventModal.show();
 
-                if (!updateTitle || !updateStart || !updateEnd) {
-                    alert("모든 정보를 입력해주세요.");
-                    return;
+                // 기존 데이터 세팅
+                document.getElementById('eventTitle').value = event.title;
+                document.getElementById('eventStart').value = start;
+                document.getElementById('eventEnd').value = end;
+
+                // if (!updateTitle || !updateStart || !updateEnd) {
+                //     alert("모든 정보를 입력해주세요.");
+                //     return;
+                // }
+
+                // 종일 여부 처리
+                const allDayCheck = document.getElementById('eventAllDay');
+                const endGroup = document.getElementById('endDateGroup');
+                if (start === end) {
+                    allDayCheck.checked = true;
+                    endGroup.style.display = 'none';
+                } else {
+                    allDayCheck.checked = false;
+                    endGroup.style.display = 'block';
                 }
 
-                fetch(`/api/calevents/${event.id}`, {
-                    method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        title: updateTitle,
-                        start: updateStart,
-                        end: updateEnd
+                // 저장 버튼 클릭 시 PUT 요청
+                document.getElementById('saveEventBtn').onclick = function () {
+                    const updatedTitle = document.getElementById('eventTitle').value.trim();
+                    const updatedStart = document.getElementById('eventStart').value;
+                    const updatedEnd = document.getElementById('eventEnd').value;
+
+                    if (!updatedTitle || !updatedStart || !updatedEnd) {
+                        alert("모든 정보를 입력해주세요.");
+                        return;
+                    }
+
+                    fetch(`/api/calevents/${event.id}`, {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            title: updatedTitle,
+                            start: updatedStart,
+                            end: updatedEnd
+                        })
                     })
-                })
-                    .then(res => {
-                        if (!res.ok) throw new Error('수정에 실패하였습니다.');
-                        return res.json();
-                    })
-                    .then(() => {
-                        detailModal.hide();
-                        alert('일정이 수정되었습니다.');
-                        calendar.refetchEvents();
-                    })
-                    .catch(err => alert(err));
+                        .then(res => {
+                            if (!res.ok) throw new Error('수정에 실패하였습니다.');
+                            return res.json();
+                        })
+                        .then(() => {
+                            detailModal.hide();
+                            alert('일정이 수정되었습니다.');
+                            calendar.refetchEvents();
+                        })
+                        .catch(err => alert(err));
+                };
             };
 
             // 일정을 삭제하는 코드
@@ -97,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
         customButtons: {
             addEventButton: {
                 text: '일정 추가',
-                click: function () {
+                click: () => {
                     openEventModal(); // 날짜 미선택
                 }
             }
