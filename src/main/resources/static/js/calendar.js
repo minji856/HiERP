@@ -6,12 +6,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ko',
-        // 달력 숫자에서 '일' 지우는 옵션
+        // 기본 옵션인 날짜에 숫자+일에서 '일' 글자 지우는 옵션
         dayCellContent: arg => ({ html: arg.dayNumberText.replace('일', '') }),
-        // dayCellContent: function (arg) {
-        //     let text = arg.dayNumberText.replace('일', '');
-        //     return {html: text};
-        // },
         headerToolbar: {
             left: 'prev,next,today',
             center: 'title',
@@ -23,14 +19,15 @@ document.addEventListener('DOMContentLoaded', function () {
             week: '주',
             day: '일'
         },
-        // 날짜 클릭시 그 날짜로 자동 입력 되면서 일정 추가 모달창 활성화
-        dateClick: function (info) {
-            openEventModal(info.dateStr)
-        },
-        eventClick: function (info) {
+        // 날짜 클릭 시 그 날짜로 자동 입력 되면서 일정 추가 모달창 활성화
+        dateClick: (info) => openEventModal(info.dateStr),
+        // 일정 클릭 시 일정 상세보기 표시 와 수정, 삭제버튼
+        eventClick: function (info){
             const event = info.event;
-            const detailModal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
+            const updateBtn = document.getElementById('updateEventBtn');
+            const deleteBtn = document.getElementById('deleteEventBtn');
             // 일정 상세보기 모달 표시
+            const detailModal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
             detailModal.show();
 
             // 날짜 포맷 (YYYY-MM-DD 형태로)
@@ -42,24 +39,36 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('detailEventStart').textContent = start;
             document.getElementById('detailEventEnd').textContent = end;
 
-            // 일정 수정버튼 눌렀을 때 데이터를 서버에 보내는 코드 /api/calevents/{event.id}
+            // 공휴일일 경우
+            if (event.extendedProps.readOnly) {
+                // 수정/삭제 버튼 숨김
+                updateBtn.style.display = 'none';
+                deleteBtn.style.display = 'none';
+            } else {
+                // 일반 일정일 경우 버튼 보이기
+                updateBtn.style.display = 'inline-block';
+                deleteBtn.style.display = 'inline-block';
+
+                // 수정 버튼 동작
+                updateBtn.onclick = function () {
+                    detailModal.hide();
+                    openEventModal(event);
+                };
+            }
+
+            // 일정 수정버튼 눌렀을 때 데이터를 서버에 보내는 코드 /api/calevents/${event.id}
             document.getElementById('updateEventBtn').onclick = function () {
+
                 // 상세 모달 닫기
                 detailModal.hide();
-
                 // 일정 추가/수정 모달 열기
                 const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
                 eventModal.show();
 
-                // 기존 데이터 세팅
+                // 기존 데이터 세팅 value로 가져옴
                 document.getElementById('eventTitle').value = event.title;
                 document.getElementById('eventStart').value = start;
                 document.getElementById('eventEnd').value = end;
-
-                // if (!updateTitle || !updateStart || !updateEnd) {
-                //     alert("모든 정보를 입력해주세요.");
-                //     return;
-                // }
 
                 // 종일 여부 처리
                 const allDayCheck = document.getElementById('eventAllDay');
@@ -107,30 +116,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 일정을 삭제하는 코드
             document.getElementById('deleteEventBtn').onclick = function () {
-                console.log('프론트에서 삭제할 ID:' + info.event.id);
-                if(!confirm('정말 삭제하시겠습니까?')) return;
+                    if (!confirm('정말 삭제하시겠습니까?')) return;
+                    console.log('프론트에서 삭제할 ID:' + info.event.id);
 
-                fetch(`/api/calevents/${event.id}`, {method: 'DELETE'})
-                    .then(res => {
-                        if (!res.ok) throw new Error('일정 삭제에 실패하였습니다.');
-                        return res.text();
-                    })
-                    .then(() => {
-                        detailModal.hide();
-                        alert('일정이 삭제되었습니다.');
-                        calendar.refetchEvents(); // 서버 동기화
-                    })
-                    .catch(err => alert(err));
-            }
-
+                    fetch(`/api/calevents/${event.id}`, {method: 'DELETE'})
+                        .then(res => {
+                            if (!res.ok) throw new Error('일정 삭제에 실패하였습니다.');
+                            return res.text();
+                        })
+                        .then(() => {
+                            detailModal.hide();
+                            alert('일정이 삭제되었습니다.');
+                            calendar.refetchEvents(); // 서버 동기화
+                        })
+                        .catch(err => alert(err));
+                }
             // 캘린더 클릭 이벤트의 기본 동작 방지 (페이지 이동 등)
-            info.jsEvent.preventDefault();
+            info.jsEvent.preventDefault()
         },
         customButtons: {
             addEventButton: {
-                text: '일정 추가',
-                click: () => {
-                    openEventModal(); // 날짜 미선택
+                text: '일정 추가', click: () => {openEventModal(); // 날짜 미선택
                 }
             }
         },
@@ -145,7 +151,10 @@ document.addEventListener('DOMContentLoaded', function () {
                                 title: item.summary,
                                 start: item.start.date || item.start.dateTime,
                                 end: item.end.date || item.end.dateTime,
-                                allDay: true
+                                allDay: true,
+                                extendedProps: {
+                                    readOnly: true  // 읽기 전용 플래그
+                                }
                             }));
                             successCallback(events);
                         })
