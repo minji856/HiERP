@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
         initialView: 'dayGridMonth',
         locale: 'ko',
         // 기본 옵션인 날짜에 숫자+일에서 '일' 글자 지우는 옵션
-        dayCellContent: arg => ({ html: arg.dayNumberText.replace('일', '') }),
+        dayCellContent: arg => ({html: arg.dayNumberText.replace('일', '')}),
         headerToolbar: {
             left: 'prev,next,today',
             center: 'title',
@@ -21,8 +21,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         // 날짜 클릭 시 그 날짜로 자동 입력 되면서 일정 추가 모달창 활성화
         dateClick: (info) => openEventModal(info.dateStr),
+
         // 일정 클릭 시 일정 상세보기 표시 와 수정, 삭제버튼
-        eventClick: function (info){
+        eventClick: function (info) {
             const event = info.event;
             const updateBtn = document.getElementById('updateEventBtn');
             const deleteBtn = document.getElementById('deleteEventBtn');
@@ -58,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 일정 수정버튼 눌렀을 때 데이터를 서버에 보내는 코드 /api/calevents/${event.id}
             document.getElementById('updateEventBtn').onclick = function () {
-
                 // 상세 모달 닫기
                 detailModal.hide();
                 // 일정 추가/수정 모달 열기
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     endGroup.style.display = 'block';
                 }
 
-                // 저장 버튼 클릭 시 PUT 요청
+                // 수정 모드에서 저장 버튼 클릭 시 PUT 요청
                 document.getElementById('saveEventBtn').onclick = function () {
                     const updatedTitle = document.getElementById('eventTitle').value.trim();
                     const updatedStart = document.getElementById('eventStart').value;
@@ -116,27 +116,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 일정을 삭제하는 코드
             document.getElementById('deleteEventBtn').onclick = function () {
-                    if (!confirm('정말 삭제하시겠습니까?')) return;
-                    console.log('프론트에서 삭제할 ID:' + info.event.id);
+                if (!confirm('정말 삭제하시겠습니까?')) return;
+                console.log('프론트에서 삭제할 ID:' + info.event.id);
 
-                    fetch(`/api/calevents/${event.id}`, {method: 'DELETE'})
-                        .then(res => {
-                            if (!res.ok) throw new Error('일정 삭제에 실패하였습니다.');
-                            return res.text();
-                        })
-                        .then(() => {
-                            detailModal.hide();
-                            alert('일정이 삭제되었습니다.');
-                            calendar.refetchEvents(); // 서버 동기화
-                        })
-                        .catch(err => alert(err));
-                }
+                fetch(`/api/calevents/${event.id}`, {method: 'DELETE'})
+                    .then(res => {
+                        if (!res.ok) throw new Error('일정 삭제에 실패하였습니다.');
+                        return res.text();
+                    })
+                    .then(() => {
+                        detailModal.hide();
+                        alert('일정이 삭제되었습니다.');
+                        calendar.refetchEvents(); // 서버 동기화
+                    })
+                    .catch(err => alert(err));
+            }
             // 캘린더 클릭 이벤트의 기본 동작 방지 (페이지 이동 등)
             info.jsEvent.preventDefault()
         },
         customButtons: {
             addEventButton: {
-                text: '일정 추가', click: () => {openEventModal(); // 날짜 미선택
+                text: '일정 추가', click: () => {
+                    openEventModal(); // 날짜 미선택
                 }
             }
         },
@@ -173,8 +174,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     calendar.render();
 
+    // 일정 입력 모달창을 여는 함수
     function openEventModal(dateStr = '') {
-        // 폼 초기화 및 기본값으로 설정
+        // 폼 초기화 및 종일일정 토글 기본값으로 설정
         document.getElementById('eventForm').reset();
         allDayCheck.checked = false;
         endGroup.style.display = 'block';
@@ -184,6 +186,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('eventEnd').value = dateStr;
         }
 
+        // 일정 입력 모달창 띄우기
         const modal = new bootstrap.Modal(document.getElementById('eventModal'));
         modal.show();
     }
