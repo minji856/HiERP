@@ -65,6 +65,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
                 eventModal.show();
 
+                // 수정 모달에서는 삭제 버튼 표시
+                const deleteBtnInEdit = document.getElementById('deleteEventInEditBtn');
+                deleteBtnInEdit.classList.remove('d-none');
+
                 // 기존 데이터 세팅 value로 가져옴
                 document.getElementById('eventTitle').value = event.title;
                 document.getElementById('eventStart').value = start;
@@ -181,6 +185,9 @@ document.addEventListener('DOMContentLoaded', function () {
         allDayCheck.checked = false;
         endGroup.style.display = 'block';
 
+        // 일정 추가 모달에서는 삭제 버튼 숨김
+        document.getElementById('deleteEventInEditBtn').classList.add('d-none');
+
         if (dateStr) {
             document.getElementById('eventStart').value = dateStr;
             document.getElementById('eventEnd').value = dateStr;
@@ -191,6 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.show();
     }
 
+    // 현재 이부분이 중복?
     const allDayCheck = document.getElementById('eventAllDay');
     const endGroup = document.getElementById('endDateGroup');
 
