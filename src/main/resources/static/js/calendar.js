@@ -1,7 +1,6 @@
+/* 기존 코드
 document.addEventListener('DOMContentLoaded', function () {
     let calendarEl = document.getElementById('calendar');
-    let isEditMode = false; // 추가/수정 모드 구분
-    let editingEventId = null; // 수정중인 일정 ID
 
     let calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -246,5 +245,193 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('일정이 추가되었습니다!');
             })
             .catch(err => alert('저장 실패: ' + err));
+    });
+});
+
+*/
+
+document.addEventListener('DOMContentLoaded', function () {
+    let calendarEl = document.getElementById('calendar');
+
+    let calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'ko',
+        // 기본 옵션인 날짜에 숫자+일에서 '일' 글자 지우는 옵션
+        dayCellContent: arg => ({html: arg.dayNumberText.replace('일', '')}),
+        headerToolbar: {
+            left: 'prev,next,today',
+            center: 'title',
+            right: 'addEventButton,dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        buttonText: {
+            today: '오늘',
+            month: '월',
+            week: '주',
+            day: '일'
+        },
+        // 날짜 클릭 시 그 날짜로 자동 입력 되면서 일정 추가 모달창 활성화
+        dateClick: function (info) {
+            openModalForCreate(info.dateStr);
+        },
+        // 일정 클릭 시 일정 상세보기 표시 와 수정, 삭제버튼
+        eventClick: function (info) {
+            openModalForUpdate(info.event);
+            info.jsEvent.preventDefault();
+        },
+        customButtons: {
+            addEventButton: {
+                text: '일정 추가', click: () => {
+                    openEventModal(); // 날짜 미선택
+                }
+            }
+        },
+        eventSources: [
+            // Google API 공휴일 일정불러오는 코드
+            {
+                events: function (fetchInfo, successCallback, failureCallback) {
+                    fetch('/api/calendar')
+                        .then(res => res.json())
+                        .then(data => {
+                            const events = (data.items || []).map(item => ({
+                                title: item.summary,
+                                start: item.start.date || item.start.dateTime,
+                                end: item.end.date || item.end.dateTime,
+                                allDay: true,
+                                extendedProps: {
+                                    readOnly: true  // 읽기 전용 플래그
+                                }
+                            }));
+                            successCallback(events);
+                        })
+                        .catch(err => failureCallback(err));
+                },
+            },
+            // 사용자가 직접 추가한 일정 불러오는 코드
+            {
+                url: '/api/calevents',
+                color: '#81c784',
+                failure: function () {
+                    alert("이벤트 목록을 가져오다가 문제가 발생했습니다.");
+                }
+            }
+        ]
+    });
+
+    calendar.render();
+
+    // --- 모달 요소 / 버튼 전역 참조 (한 번만 찾음) ---
+    const detailModalEl = document.getElementById('eventDetailModal');
+    const detailModal = new bootstrap.Modal(detailModalEl);
+
+    const eventModalEl = document.getElementById('eventModal');
+    const eventModal = new bootstrap.Modal(eventModalEl);
+
+    const detailUpdateBtn = document.getElementById('detailUpdateBtn');
+    const detailDeleteBtn = document.getElementById('detailDeleteBtn');
+
+    const idInput = document.getElementById('modalEventId');
+    const titleInput = document.getElementById('eventTitle');
+    const startInput = document.getElementById('eventStart');
+    const endInput = document.getElementById('eventEnd');
+    const allDayCheck = document.getElementById('eventAllDay');
+    const deleteBtnInEdit = document.getElementById('deleteEventInEditBtn');
+
+    let modalMode = 'create';
+    let currentEvent = null;
+
+    // --- 헬퍼: API 호출들 ---
+    async function apiSaveEvent(dto, id = null) {
+        const url = id ? `/api/calevents/${id}` : '/api/calevents';
+        const method = id ? 'PUT' : 'POST';
+        const res = await fetch(url, {
+            method,
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(dto)
+        });
+        if (!res.ok) throw new Error('저장 실패');
+        return res.json();
+    }
+
+    async function apiDeleteEvent(id) {
+        const res = await fetch(`/api/calevents/${id}`, {method: 'DELETE'});
+        if (!res.ok) throw new Error('삭제 실패');
+        return res.text();
+    }
+
+    // --- 공통 함수: 모달 열기 (create / update 분기) ---
+    function openModalForCreate(defaultDate = '') {
+        modalMode = 'create';
+        idInput.value = '';
+        titleInput.value = '';
+        startInput.value = defaultDate || '';
+        endInput.value = defaultDate || '';
+        allDayCheck.checked = false;
+        endGroup.style.display = 'block';
+        deleteBtn.style.display = 'none'; // 생성 모드면 삭제 버튼 숨김
+        modal.show();
+    }
+
+    function openModalForUpdate(eventObj) {
+        modalMode = 'update';
+        idInput.value = eventObj.id; // FullCalendar event id
+        titleInput.value = eventObj.title || '';
+        const start = eventObj.start ? eventObj.start.toISOString().slice(0, 10) : '';
+        const end = eventObj.end ? eventObj.end.toISOString().slice(0, 10) : start;
+        startInput.value = start;
+        endInput.value = end;
+        if (start === end) {
+            allDayCheck.checked = true;
+            endGroup.style.display = 'none';
+        } else {
+            allDayCheck.checked = false;
+            endGroup.style.display = 'block';
+        }
+        deleteBtn.style.display = 'inline-block'; // 수정 모드면 삭제 보여줌
+        modal.show();
+    }
+
+    // --- 한 번만 바인딩: 저장 버튼 ---
+    saveBtn.addEventListener('click', async function () {
+        const title = titleInput.value.trim();
+        const start = startInput.value;
+        let end = endInput.value;
+        if (!title || !start) {
+            alert('제목과 시작일 필요');
+            return;
+        }
+        if (allDayCheck.checked || !end) end = start;
+        const dto = {title, start, end};
+
+        try {
+            if (modalMode === 'create') {
+                await apiSaveEvent(dto);
+            } else {
+                const id = idInput.value;
+                await apiSaveEvent(dto, id);
+            }
+            modal.hide();
+            calendar.refetchEvents(); // FullCalendar 인스턴스 전역 변수여야 함
+        } catch (e) {
+            alert(e.message || '에러');
+        }
+    });
+
+    // --- 한 번만 바인딩: 삭제 버튼 ---
+    deleteBtn.addEventListener('click', async function () {
+        const id = idInput.value;
+        if (!id) return alert('삭제할 ID가 없습니다.');
+        if (!confirm('정말 삭제?')) return;
+        try {
+            await apiDeleteEvent(id);
+            modal.hide();
+            calendar.refetchEvents();
+        } catch (e) {
+            alert(e.message || '삭제 실패');
+        }
+    });
+
+    // --- 종일 토글 처리 (한 번만) ---
+    allDayCheck.addEventListener('change', function () {
+        endGroup.style.display = allDayCheck.checked ? 'none' : 'block';
     });
 });
