@@ -253,7 +253,8 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
     let calendarEl = document.getElementById('calendar');
 
-    let calendar = new FullCalendar.Calendar(calendarEl, {
+    // 전역에서 쓰기 위해 window.calendar로 설정
+    window.calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ko',
         // 기본 옵션인 날짜에 숫자+일에서 '일' 글자 지우는 옵션
