@@ -40,7 +40,9 @@
 <body>
     <div th:fragment="calendarFragment">
         <div id="calendar" class="calendar-container"></div>
+        <script src="/js/eventModal.js"></script>
         <script src="/js/calendar.js"></script>
+        <!-- <script th:inline="/js/calendar.js"></script> Thymleaf 사용-->
     </div>
 </body>
 </html>
