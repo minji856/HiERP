@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     let calendarEl = document.getElementById('calendar');
+    if(!calendarEl) return;
 
     // 수정과 추가 구별하기 위한 EditMode 추가
     let isEditMode = false;
