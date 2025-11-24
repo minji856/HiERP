@@ -88,4 +88,9 @@ public class AccountController {
             return "redirect:/account/change-password"; // 실패 시 다시 폼으로
         }
     }
+
+    @GetMapping("/find-password")
+    public String findPassword(){
+        return "account/find-password";
+    }
 }
