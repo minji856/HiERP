@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * 회원 정보를 나타내는 엔티티 클래스입니다.
@@ -30,6 +31,10 @@ public class Users {
 
     @Column(nullable = false)
     private String password;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "birth_day")
+    private Date birthday;
 
     @Column(nullable = false)
     private String phoneNum;
