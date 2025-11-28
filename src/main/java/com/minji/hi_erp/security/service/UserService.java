@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 사용자 등록 및 삭제 등 사용자 관련 기능을 담당하는 서비스 클래스입니다.
@@ -33,7 +34,6 @@ public class UserService {
 
     /**
      * 현재 로그인된 사용자 가져오는 메서드 입니다.
-     *
      */
     private Users getCurrentLoggedInMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -111,5 +111,16 @@ public class UserService {
         userRepository.updateMemberPassword(
                 users.getEmail(),
                 passwordEncoder.encode(requestDto.getNewPassword()));
+    }
+
+    // 이메일로 사용자 검증하는 메서드입니다.
+    public Users validateUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("입력하신 이메일과 일치하는 사용자가 없습니다."));
+    }
+
+    public String generateTempassword(){
+        return UUID.randomUUID().toString().substring(0,10);
     }
 }
