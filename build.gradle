@@ -28,6 +28,9 @@ dependencies {
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	testImplementation 'org.springframework.security:spring-security-test'
 
+	/* JavaMail */
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 	/* 유효성 검사 (Validation: @NotBlank, @Email 등) */
 	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
 	implementation 'org.hibernate.validator:hibernate-validator'
