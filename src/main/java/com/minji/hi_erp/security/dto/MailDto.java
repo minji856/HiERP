@@ -16,7 +16,7 @@ public class MailDto {
     private String sendTo; // 수신자
     private String title; // 메일 제목
     private String message;
-    private Map<String, Object> content; // 내용
+    private Map<String, Object> context; // 내용
     private String templates; // 사용할 templates 파일 이름
 
     // templates 경로가 /templates/mail/ 로 설정
