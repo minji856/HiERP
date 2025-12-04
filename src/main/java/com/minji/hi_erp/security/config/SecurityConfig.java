@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // requestMatchers().permitAll() 에 지정된 Url 들은 인증,인가 없이도 접근 가능
                         // 테스트를 위해 h2-console/** 추가함 (배포시 제거)
-                        .requestMatchers("/signUp","/","/login","/join","/account/**", "/css/**", "/js/**", "/h2-console/**", "/api/**", "/calendar")
+                        .requestMatchers("/signUp","/","/login","/join","/account/**", "/css/**", "/js/**", "/h2-console/**", "/api/**", "/calendar" ,"/mail")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
