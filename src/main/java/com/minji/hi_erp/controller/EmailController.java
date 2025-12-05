@@ -59,8 +59,7 @@ public class EmailController {
             emailService.sendEmail(mailDto);
             return "메일 발송 성공";
         } catch (Exception e){
-            e.printStackTrace();
-            return "메일 발송 실패: " + e.getMessage();
+            throw new ServiceException(e.getMessage());
         }
     }
 }
