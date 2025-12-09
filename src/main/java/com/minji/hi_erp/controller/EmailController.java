@@ -15,6 +15,7 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/mail")
 public class EmailController {
 
     private final EmailService emailService;
@@ -42,7 +43,7 @@ public class EmailController {
     }
     */
 
-    @GetMapping("/mail")
+    @GetMapping
     @ResponseBody
     public String mailSend() {
         MailDto mailDto = new MailDto();
@@ -61,5 +62,12 @@ public class EmailController {
         } catch (Exception e){
             throw new ServiceException(e.getMessage());
         }
+    }
+
+    @GetMapping("/send-all")
+    @ResponseBody
+    public String sendMailToAllUsers() {
+        emailService.sendEmailToAll();
+        return "전체 회원에게 메일 발송 완료!";
     }
 }
