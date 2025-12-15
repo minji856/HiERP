@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.UUID;
 
@@ -121,6 +122,16 @@ public class UserService {
     }
 
     public String generateTempassword(){
-        return UUID.randomUUID().toString().substring(0,10);
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        SecureRandom random = new SecureRandom();
+
+        for(int i=0; i < 10 ;i++){
+            int index = random.nextInt(chars.length());
+            sb.append(chars.charAt(index));
+        }
+
+        // return UUID.randomUUID().toString().substring(0,10); 특수문자 들어가서 주석 처리함
+        return sb.toString();
     }
 }
