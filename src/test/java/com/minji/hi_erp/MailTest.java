@@ -1,12 +1,18 @@
 package com.minji.hi_erp;
 
+import com.minji.hi_erp.security.dto.MailDto;
 import com.minji.hi_erp.security.service.EmailService;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.javamail.JavaMailSender;
-
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import java.util.HashMap;
 import java.util.Map;
+
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class MailTest {
@@ -14,32 +20,35 @@ public class MailTest {
     @Autowired
     EmailService emailService;
 
-    @MockBean
+    @MockitoBean
     JavaMailSender mailSender;
 
-    public String testMail100() {
+    @Test
+    public void send100Mail() throws Exception {
+        // given
+        when(mailSender.createMimeMessage())
+                .thenReturn(new MimeMessage((Session) null));
+
+        long start = System.currentTimeMillis();
+
+        // when
         for (int i = 1; i <= 100; i++) {
-            try {
-                Map<String, Object> ctx = Map.of(
-                        "name", "User" + i,
-                        "content", "메일 테스트 " + i
-                );
+            Map<String, Object> ctx = new HashMap<>();
+            ctx.put("name", "User" + i);
+            ctx.put("content", "테스트 메일 " + i);
 
-                MailDto dto = new MailDto(
-                        "test" + i + "@example.com",
-                        "MailTrap 테스트 메일 " + i,
-                        ctx,
-                        "mailTest"
-                );
+            MailDto dto = new MailDto(
+                    "test" + i + "@example.com",
+                    "테스트 메일",
+                    ctx,
+                    "mailTest"
+            );
 
-                emailService.sendEmail(dto);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            emailService.sendEmail(dto); // @Async 메서드
         }
-        return "100개 메일 전송 완료!";
-    }
 
-    {
+        // then
+        long end = System.currentTimeMillis();
+        System.out.println("비동기 메일 100건 요청 소요 시간: " + (end - start) + "ms");
     }
 }
