@@ -23,5 +23,4 @@ public class MailDto {
     public void setTemplates(String templates){
         this.templates = "mail/"+templates;
     }
-
 }
