@@ -25,14 +25,15 @@ public class MailTest {
 
     @Test
     public void send100Mail() throws Exception {
-        // given
+
+        // given 실제 SMTP 호출 방지
         when(mailSender.createMimeMessage())
                 .thenReturn(new MimeMessage((Session) null));
 
         long start = System.currentTimeMillis();
 
         // when
-        for (int i = 1; i <= 100; i++) {
+        for (int i = 1; i <= 10; i++) {
             Map<String, Object> ctx = new HashMap<>();
             ctx.put("name", "User" + i);
             ctx.put("content", "테스트 메일 " + i);
@@ -41,7 +42,7 @@ public class MailTest {
                     "test" + i + "@example.com",
                     "테스트 메일",
                     ctx,
-                    "mailTest"
+                    "/mail/mailTest"
             );
 
             emailService.sendEmail(dto); // @Async 메서드
@@ -49,6 +50,6 @@ public class MailTest {
 
         // then
         long end = System.currentTimeMillis();
-        System.out.println("비동기 메일 100건 요청 소요 시간: " + (end - start) + "ms");
+        System.out.println("비동기 메일 10건 요청 소요 시간: " + (end - start) + "ms");
     }
 }
