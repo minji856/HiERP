@@ -121,6 +121,7 @@ public class UserService {
                         new IllegalArgumentException("입력하신 이메일과 일치하는 사용자가 없습니다."));
     }
 
+    // 임시 비밀번호를 발급해주는 메서드입니다.
     public String generateTempassword(){
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder sb = new StringBuilder();
