@@ -26,11 +26,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     /**
@@ -109,7 +111,7 @@ public class UserService {
         }
 
         // 새 비밀번호로 DB 업데이트
-        userRepository.updateMemberPassword(
+        userRepository.updatePassword(
                 users.getEmail(),
                 passwordEncoder.encode(requestDto.getNewPassword()));
     }
@@ -134,5 +136,17 @@ public class UserService {
 
         // return UUID.randomUUID().toString().substring(0,10); 특수문자 들어가서 주석 처리함
         return sb.toString();
+    }
+
+    // 임시 비밀번호 저장하고 메일 보내는 메서드 입니다.
+    public void resetPasswordAndSendMail(Users user) {
+        String tempPassword = generateTempassword();
+
+        userRepository.updatePassword(
+                user.getEmail(),
+                passwordEncoder.encode(tempPassword)
+        );
+
+        emailService.sendTempPasswordMail(user, tempPassword);
     }
 }
