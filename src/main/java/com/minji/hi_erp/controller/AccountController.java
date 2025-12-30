@@ -2,6 +2,7 @@ package com.minji.hi_erp.controller;
 
 import com.minji.hi_erp.security.dto.ChangePasswordRequestDto;
 import com.minji.hi_erp.security.dto.UserJoinDto;
+import com.minji.hi_erp.security.entity.Users;
 import com.minji.hi_erp.security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
@@ -93,4 +94,33 @@ public class AccountController {
     public String findPassword(){
         return "account/find-password";
     }
+
+    @PostMapping("/find-password")
+    public String findPassword(@RequestParam String email,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            Users user = userService.validateUser(email);
+            userService.resetPasswordAndSendMail(user);
+
+            redirectAttributes.addFlashAttribute(
+                    "message",
+                    "임시 비밀번호가 이메일로 발송되었습니다."
+            );
+            return "redirect:/account/login";
+
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    e.getMessage()
+            );
+            return "redirect:/account/find-password";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    "임시 비밀번호 발송 중 오류가 발생했습니다."
+            );
+            return "redirect:/account/find-password";
+        }
+    }
+
 }
