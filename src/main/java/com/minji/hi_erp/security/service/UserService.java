@@ -1,9 +1,13 @@
 package com.minji.hi_erp.security.service;
 
 import com.minji.hi_erp.security.dto.ChangePasswordRequestDto;
+import com.minji.hi_erp.security.dto.MailDto;
 import com.minji.hi_erp.security.dto.UserJoinDto;
 import com.minji.hi_erp.security.entity.Users;
 import com.minji.hi_erp.security.repository.UserRepository;
+import jakarta.mail.MessagingException;
+import jakarta.validation.constraints.Email;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -22,6 +28,7 @@ import java.util.UUID;
  * UserRepository 을 통해 데이터베이스에 접근하며, 비밀번호 암호화 등의 비즈니스 로직을 수행합니다.
  */
 @Service
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -139,7 +146,10 @@ public class UserService {
     }
 
     // 임시 비밀번호 저장하고 메일 보내는 메서드 입니다.
-    public void resetPasswordAndSendMail(Users user) {
+    @Transactional(readOnly = true)
+    public void resetPasswordAndSendMail(String email) {
+        Users user = validateUser(email);
+
         String tempPassword = generateTempassword();
 
         userRepository.updatePassword(
@@ -147,6 +157,26 @@ public class UserService {
                 passwordEncoder.encode(tempPassword)
         );
 
-        emailService.sendTempPasswordMail(user, tempPassword);
+        Map<String, Object> ctx = new HashMap<>();
+        ctx.put("name", user.getName());
+        ctx.put("tempPassword", tempPassword);
+
+        MailDto dto = new MailDto(
+                user.getEmail(),
+                "임시 비밀번호 안내",
+                ctx,
+                "tempPassword"
+        );
+
+        try {
+            emailService.sendEmail(dto);
+        } catch (MessagingException e) {
+            // 여기서 정확히 원인을 본다
+            log.error("임시 비밀번호 메일 발송 실패. email={}", email, e);
+
+            // 선택 1: 그냥 로그만 남기고 계속
+            // 선택 2: 런타임 예외로 감싸서 던지기
+            throw new IllegalStateException("메일 발송 실패", e);
+        }
     }
 }
