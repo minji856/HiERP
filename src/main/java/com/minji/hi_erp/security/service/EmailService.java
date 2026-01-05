@@ -29,7 +29,6 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
-    private final UserService userService;
     private final SpringTemplateEngine templateEngine;
     private final UserRepository userRepository;
 
@@ -85,6 +84,6 @@ public class EmailService {
                 "tempPassword"
         );
 
-        sendEmail(dto);
+        //sendEmail(dto);
     }
 }
