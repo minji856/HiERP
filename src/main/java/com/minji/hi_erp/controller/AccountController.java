@@ -98,29 +98,20 @@ public class AccountController {
     @PostMapping("/find-password")
     public String findPassword(@RequestParam String email,
                                RedirectAttributes redirectAttributes) {
+//            userService.resetPasswordAndSendMail(email);
+//
+//            redirectAttributes.addFlashAttribute(
+//                    "message",
+//                    "임시 비밀번호가 이메일로 발송되었습니다."
+//            );
+//            return "redirect:/account/login";
         try {
-            Users user = userService.validateUser(email);
-            userService.resetPasswordAndSendMail(user);
-
-            redirectAttributes.addFlashAttribute(
-                    "message",
-                    "임시 비밀번호가 이메일로 발송되었습니다."
-            );
+            userService.resetPasswordAndSendMail(email);
+            redirectAttributes.addFlashAttribute("message", "임시 비밀번호가 이메일로 발송되었습니다.");
             return "redirect:/account/login";
-
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    e.getMessage()
-            );
-            return "redirect:/account/find-password";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute(
-                    "error",
-                    "임시 비밀번호 발송 중 오류가 발생했습니다."
-            );
+            redirectAttributes.addFlashAttribute("error", "입력하신 이메일로 가입된 계정을 찾을 수 없습니다.");
             return "redirect:/account/find-password";
         }
     }
-
 }
