@@ -114,4 +114,9 @@ public class AccountController {
             return "redirect:/account/find-password";
         }
     }
+
+    @GetMapping("/find-id")
+    public String findId(){
+        return "account/find-id";
+    }
 }
