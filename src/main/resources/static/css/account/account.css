@@ -1,0 +1,27 @@
+/* account.css */
+
+.container {
+    max-width: 420px;
+    width: 90%;
+    margin: 60px auto;
+    padding: 40px 30px;
+}
+
+input[type="submit"],
+button[type="submit"] {
+    width: 100%;
+    margin-top: 20px;
+    background-color: #007BFF;
+    color: white;
+}
+
+input[type="submit"]:hover,
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.button-row {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
