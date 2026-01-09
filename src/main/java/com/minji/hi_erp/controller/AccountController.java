@@ -111,6 +111,7 @@ public class AccountController {
             return "redirect:/account/login";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", "입력하신 이메일로 가입된 계정을 찾을 수 없습니다.");
+            redirectAttributes.addFlashAttribute("errorCode", "USER_NOT_FOUND");
             return "redirect:/account/find-password";
         }
     }
