@@ -43,8 +43,14 @@ public class AccountController {
     public String joinUsers(UserJoinDto userJoinDto) {
         // 회원 저장 -> userId 반환
         userService.save(userJoinDto);
-        return "redirect:/account/login";
+        return "redirect:/account/join-success";
     }
+
+    @GetMapping("/join-success")
+    public String joinSuccess() {
+        return "account/join-success";
+    }
+
 
     /**
      * 로그인 페이지를 표시합니다.
