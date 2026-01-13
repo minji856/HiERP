@@ -2,6 +2,7 @@ package com.minji.hi_erp.security.dto;
 
 import com.minji.hi_erp.Role;
 import com.minji.hi_erp.security.entity.Users;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,10 +13,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserJoinDto {
 
+    @NotBlank(message = "이름은 필수입니다.")
     private String name;
+
+    @NotBlank(message = "이메일은 필수입니다.")
     private String email;
+
+    @NotBlank(message = "비밀번호는 필수입니다.")
     private String password;
+
+    @NotBlank(message = "전화번호는 필수입니다.")
     private String phoneNum;
+
     private String imageUrl;
     private Role role;
 
