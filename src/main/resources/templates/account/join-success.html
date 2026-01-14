@@ -3,16 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원가입 성공</title>
+    <link rel="stylesheet" th:href="@{/css/account/common.css}">
+    <title>회원가입 완료</title>
 </head>
 <body>
-    <h1>회원가입 성공</h1>
-    <p>안녕하세요, <span th:text="${user.name}"></span>님!</p>
-    <p>비밀번호: <span th:text="${user.password}"></span></p>
-    <p>이메일: <span th:text="${user.email}"></span></p>
-    <p>전화번호: <span th:text="${user.phoneNum}"></span></p>
-    <p>프로필 이미지: <img th:src="${user.imageUrl}" alt="프로필 이미지" style="max-width: 100px; max-height: 100px;" /></p>
+    <div class="container">
+        <h1>회원가입 완료</h1>
 
-    <a th:href="@{/account/login}">로그인 페이지로 이동</a>
+        <div class="message-box">
+            <p>
+                회원가입이 완료되었습니다.
+            </p>
+
+            <p>
+                입력하신 이메일로 인증 메일을 발송했습니다.<br>
+                <!-- 개인정보 보호를 위해 마스킹한 이메일 렌더링 -->
+                <span class="email-text" th:text="${maskedEmail}">ex***@gmail.com</span>
+                메일함을 확인해주세요.
+            </p>
+
+            <p class="helper">
+                메일이 보이지 않으면 스팸함을 확인해주세요.
+            </p>
+        </div>
+
+        <div class="btn-row">
+            <!-- 인증 메일 재전송 -->
+            <form th:action="@{/account/resend-verification}" method="post">
+                <!-- 어떤 메일로 보내야 하는지 알기 위해서 히든태그로 이메일 삽입 -->
+                <input type="hidden" name="email" th:value="${email}">
+                <button type="submit" class="btn btn-secondary">인증 메일 재전송</button>
+            </form>
+
+            <!-- 로그인 이동 -->
+            <a th:href="@{/account/login}" style="width: 100%;">
+                <button type="button" class="btn btn-primary" style="width: 100%;">로그인 하러 가기</button>
+            </a>
+        </div>
+
+<!--        &lt;!&ndash; 재전송 성공/실패 메시지 &ndash;&gt;-->
+<!--        <p th:if="${message}" th:text="${message}" style="color: #007BFF; margin-top: 10px;"></p>-->
+<!--        <p th:if="${error}" th:text="${error}" style="color: red; margin-top: 10px;"></p>-->
+    </div>
+    <!--container-->
 </body>
 </html>

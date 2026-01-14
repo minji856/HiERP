@@ -41,9 +41,13 @@ public class AccountController {
      */
     @PostMapping("/join")
     public String joinUsers(UserJoinDto userJoinDto) {
-        // 회원 저장 -> userId 반환
-        userService.save(userJoinDto);
-        return "redirect:/account/join-success";
+        try{
+            // 회원 저장 -> userId 반환
+            userService.save(userJoinDto);
+            return "redirect:/account/join-success";
+        } catch (IllegalArgumentException e){
+            return "account/join";
+        }
     }
 
     @GetMapping("/join-success")
