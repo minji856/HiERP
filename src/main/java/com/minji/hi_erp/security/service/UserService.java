@@ -66,6 +66,23 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    // 전화번호 정규화하고 db에 저장하기 쉽게 - 제거하는 메서드입니다.
+    private String normalizeAndValidatePhone(String phoneNum) {
+        if (phoneNum == null) {
+            throw new IllegalArgumentException("전화번호는 필수입니다.");
+        }
+
+        String normalized = phoneNum.replaceAll("[^0-9]", "");
+
+        if (!normalized.matches("^01[0-9]{8,9}$")) {
+            throw new IllegalArgumentException("전화번호 형식 오류");
+        }
+
+        return normalized;
+    }
+
+
+
     /**
      * 유저 정보와 비밀번호를 암호화하여 저장하고 id 값을 반환하는 메서드입니다.
      *
@@ -78,7 +95,8 @@ public class UserService {
                 // 페스워드 암호화
                 .password(passwordEncoder.encode(userJoinDto.getPassword()))
                 .email(userJoinDto.getEmail())
-                .phoneNum(userJoinDto.getPhoneNum())
+                // 전화번호 정규화
+                .phoneNum(normalizeAndValidatePhone(userJoinDto.getPhoneNum()))
                 .imageUrl(userJoinDto.getImageUrl())
                 .role(userJoinDto.getRole())
                 .build();
@@ -152,6 +170,7 @@ public class UserService {
 
         String tempPassword = generateTempassword();
 
+        // 임시 비밀번호 기존 DB에 저장
         userRepository.updatePassword(
                 user.getEmail(),
                 passwordEncoder.encode(tempPassword)
