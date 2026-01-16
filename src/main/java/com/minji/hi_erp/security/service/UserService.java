@@ -45,7 +45,7 @@ public class UserService {
     /**
      * 현재 로그인된 사용자 가져오는 메서드 입니다.
      */
-    private Users getCurrentLoggedInMember() {
+    public Users getCurrentLoggedInMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
@@ -95,7 +95,7 @@ public class UserService {
                 // 페스워드 암호화
                 .password(passwordEncoder.encode(userJoinDto.getPassword()))
                 .email(userJoinDto.getEmail())
-                // 전화번호 정규화
+                // 정규화된 전화번호 숫자만 저장
                 .phoneNum(normalizeAndValidatePhone(userJoinDto.getPhoneNum()))
                 .imageUrl(userJoinDto.getImageUrl())
                 .role(userJoinDto.getRole())
@@ -190,11 +190,8 @@ public class UserService {
         try {
             emailService.sendEmail(dto);
         } catch (MessagingException e) {
-            // 여기서 정확히 원인을 본다
             log.error("임시 비밀번호 메일 발송 실패. email={}", email, e);
 
-            // 선택 1: 그냥 로그만 남기고 계속
-            // 선택 2: 런타임 예외로 감싸서 던지기
             throw new IllegalStateException("메일 발송 실패", e);
         }
     }
