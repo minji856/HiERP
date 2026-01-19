@@ -3,83 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>회원가입</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333333;
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            margin: 10px 0 5px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="email"], input[type="password"], input[type="tel"], input[type="date"] {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        input[type="submit"] {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-        .error {
-            color: red;
-            font-size: 12px;
-        }
-    </style>
+    <!--Css-->
+    <link rel="stylesheet" th:href="@{/css/account/common.css}">
+    <link rel="stylesheet" th:href="@{/css/account/join.css}">
+    <title>Hi-E 회원가입</title>
 </head>
 <body>
 <div class="container">
-    <h1>회원가입</h1>
+    <h1>Hi-E 회원가입</h1>
     <form th:action="@{/account/join}" method="post">
         <!-- 이름 입력 -->
         <label for="name">이름</label>
-        <input type="text" id="name" name="name" placeholder="이름을 입력하세요" required />
+        <input type="text" id="name" name="name" placeholder="이름을 입력하세요"/>
 
         <!-- 이메일 입력 -->
         <label for="email">이메일</label>
-        <input type="email" id="email" name="email" placeholder="example@domain.com" required />
+        <input type="email" id="email" name="email" placeholder="이메일을 입력하세요"/>
+
+        <!-- 생년원일 입력 -->
+        <label for="birthday">생년원일</label>
+        <input type="date" id="birthday" name="birthday"/>
 
         <!-- 비밀번호 입력 -->
         <label for="password">비밀번호</label>
-        <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required />
+        <p class="pw-hint">※ 영문, 숫자, 특수문자 포함 8글자 이상</p>
+        <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요"/>
+
+        <label for="passwordcheck">비밀번호 재확인</label>
+        <p class="pw-hint">비밀번호를 한 번 더 입력해주세요.</p>
+        <input type="password" id="passwordcheck" name="passwordcheck" placeholder="비밀번호를 입력하세요"/>
 
         <!-- 전화번호 입력 -->
         <label for="phoneNum">전화번호</label>
-        <input type="tel" id="phoneNum" name="phoneNum" placeholder="010-1234-5678" required />
+        <input type="tel" id="phoneNum" name="phoneNum" placeholder="010-1234-5678"/>
 
         <!-- 이미지 URL 입력 -->
-        <label for="imageUrl">프로필 이미지 URL</label>
-        <input type="text" id="imageUrl" name="imageUrl" placeholder="이미지를 업로드 해주세요" />
+        <label for="imageUrl">프로필 이미지 업로드</label>
+        <input type="text" id="imageUrl" name="imageUrl" placeholder="이미지를 업로드 해주세요"/>
 
         <!-- 제출 버튼 -->
         <input type="submit" value="가입하기" />
