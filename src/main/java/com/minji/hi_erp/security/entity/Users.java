@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -26,15 +27,18 @@ public class Users {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "birth_day")
+    private LocalDate birthday;
+
+//    @Enumerated(EnumType.STRING)
+//    @Column(nullable = false)
+//    private Gender gender;
+
     @Column(nullable = false, unique = true, length = 30)
     private String email;
 
     @Column(nullable = false)
     private String password;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name = "birth_day")
-    private Date birthday;
 
     @Column(nullable = false)
     private String phoneNum;
@@ -42,13 +46,15 @@ public class Users {
     private String imageUrl;
 
     @Builder
-    public Users(String name, String email, String password, String phoneNum, String imageUrl, Role role) {
+    public Users(String name, LocalDate birthDay, String email,  String password, String phoneNum, String imageUrl, Role role) {
         this.name = name;
-        this.email=email;
-        this.password=password;
-        this.phoneNum=phoneNum;
-        this.imageUrl=imageUrl;
-        this.role=Role.USER;
+        this.birthday= birthDay;
+        this.email = email;
+        this.password = password;
+        this.phoneNum = phoneNum;
+        this.imageUrl = imageUrl;
+        // 회원가입 시 권한은 서버에서 기본 USER로 고정 (권한 상승/조작 방지)
+        this.role = Role.USER;
     }
 
     // Enum 이름을 문자열로 저장 (ORDINAL은 순서 변경 시 데이터 꼬임 위험 있음)

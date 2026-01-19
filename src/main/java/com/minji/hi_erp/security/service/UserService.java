@@ -92,6 +92,7 @@ public class UserService {
     public Long save(UserJoinDto userJoinDto) {
         Users user = Users.builder()
                 .name(userJoinDto.getName())
+                .birthDay(userJoinDto.getBirthday())
                 // 페스워드 암호화
                 .password(passwordEncoder.encode(userJoinDto.getPassword()))
                 .email(userJoinDto.getEmail())
