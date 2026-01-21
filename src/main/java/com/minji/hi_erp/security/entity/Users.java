@@ -1,6 +1,7 @@
 package com.minji.hi_erp.security.entity;
 
 import com.minji.hi_erp.Role;
+import com.minji.hi_erp.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,9 +31,9 @@ public class Users {
     @Column(name = "birth_day")
     private LocalDate birthday;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
-//    private Gender gender;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Gender gender;
 
     @Column(nullable = false, unique = true, length = 30)
     private String email;
@@ -46,9 +47,10 @@ public class Users {
     private String imageUrl;
 
     @Builder
-    public Users(String name, LocalDate birthDay, String email,  String password, String phoneNum, String imageUrl, Role role) {
+    public Users(String name, LocalDate birthDay, Gender gender, String email,  String password, String phoneNum, String imageUrl, Role role) {
         this.name = name;
         this.birthday= birthDay;
+        this.gender = gender;
         this.email = email;
         this.password = password;
         this.phoneNum = phoneNum;
