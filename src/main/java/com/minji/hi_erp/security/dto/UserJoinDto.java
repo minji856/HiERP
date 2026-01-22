@@ -1,6 +1,7 @@
 package com.minji.hi_erp.security.dto;
 
 import com.minji.hi_erp.Role;
+import com.minji.hi_erp.enums.Gender;
 import com.minji.hi_erp.security.entity.Users;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +25,9 @@ public class UserJoinDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "생년원일은 필수입니다.")
     private LocalDate birthday;
+
+    @NotNull(message = "성별은 필수입니다.")
+    private Gender gender;
 
     @NotBlank(message = "이메일은 필수입니다.")
     private String email;
