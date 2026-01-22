@@ -16,13 +16,27 @@
         <label for="name">이름</label>
         <input type="text" id="name" name="name" placeholder="이름을 입력하세요"/>
 
-        <!-- 이메일 입력 -->
-        <label for="email">이메일</label>
-        <input type="email" id="email" name="email" placeholder="이메일을 입력하세요"/>
-
         <!-- 생년원일 입력 -->
         <label for="birthday">생년원일</label>
         <input type="date" id="birthday" name="birthday"/>
+
+        <!-- 성별 입력 -->
+        <label>성별</label>
+        <div class="radio-group">
+            <label class="radio-item">
+                <input type="radio" name="gender" value="MALE">
+                남성
+            </label>
+
+            <label class="radio-item">
+                <input type="radio" name="gender" value="FEMALE">
+                여성
+            </label>
+        </div>
+
+        <!-- 이메일 입력 -->
+        <label for="email">이메일</label>
+        <input type="email" id="email" name="email" placeholder="이메일을 입력하세요"/>
 
         <!-- 비밀번호 입력 -->
         <label for="password">비밀번호</label>
