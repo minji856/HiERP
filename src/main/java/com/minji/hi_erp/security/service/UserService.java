@@ -93,6 +93,7 @@ public class UserService {
         Users user = Users.builder()
                 .name(userJoinDto.getName())
                 .birthDay(userJoinDto.getBirthday())
+                .gender(userJoinDto.getGender())
                 // 페스워드 암호화
                 .password(passwordEncoder.encode(userJoinDto.getPassword()))
                 .email(userJoinDto.getEmail())
