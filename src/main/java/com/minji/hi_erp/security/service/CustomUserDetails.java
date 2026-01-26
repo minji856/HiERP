@@ -66,8 +66,15 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
+    /**
+     * 계정 활성화 여부를 반환합니다.
+     * enabled 값이 false이면 이메일 인증/관리자 승인 등이 완료되지 않은 상태로 간주되어
+     * Spring Security 로그인 인증 과정에서 접근이 차단됩니다.
+     *
+     * @return 계정 활성화 여부(true: 로그인 가능, false: 로그인 불가)
+     */
     @Override
     public boolean isEnabled() {
-        return true;
+        return users.isEnabled();
     }
 }
