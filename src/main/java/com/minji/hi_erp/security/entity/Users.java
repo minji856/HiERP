@@ -9,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * 회원 정보를 나타내는 엔티티 클래스입니다.
@@ -47,7 +46,7 @@ public class Users {
     private String imageUrl;
 
     @Builder
-    public Users(String name, LocalDate birthDay, Gender gender, String email,  String password, String phoneNum, String imageUrl, Role role) {
+    public Users(String name, LocalDate birthDay, Gender gender, String email,  String password, String phoneNum, String imageUrl, Role role, boolean enabled) {
         this.name = name;
         this.birthday= birthDay;
         this.gender = gender;
@@ -57,11 +56,16 @@ public class Users {
         this.imageUrl = imageUrl;
         // 회원가입 시 권한은 서버에서 기본 USER로 고정 (권한 상승/조작 방지)
         this.role = Role.USER;
+        // 회원가입 시 기본값은 false로 설정. 이메일 인증시 true 변환
+        this.enabled = false;
     }
 
     // Enum 이름을 문자열로 저장 (ORDINAL은 순서 변경 시 데이터 꼬임 위험 있음)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(nullable = false)
+    private boolean enabled;
 
     @CreationTimestamp
     private Timestamp createDate;
