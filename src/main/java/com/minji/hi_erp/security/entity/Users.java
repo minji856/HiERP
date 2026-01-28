@@ -75,13 +75,13 @@ public class Users {
     }
 
     // 계정상태 활성화 처리하는 메서드입니다. (이메일 인증 또는 관리자 승인 완료 시 호출)
-    public void enable() {
+    public void enableAccount() {
         this.enabled = true;
     }
 
 
     // 계정상태를 비활성화 처리하는 메서드입니다.
-    public void disable() {
+    public void disableAccount() {
         this.enabled = false;
     }
 }
