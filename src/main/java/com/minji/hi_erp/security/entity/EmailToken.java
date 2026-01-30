@@ -1,6 +1,7 @@
 package com.minji.hi_erp.security.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
  * Users 엔티티와 1:1 조인하여 user_id 참고
  */
 @Entity
+@Getter
 public class EmailToken {
 
     @Id @GeneratedValue
