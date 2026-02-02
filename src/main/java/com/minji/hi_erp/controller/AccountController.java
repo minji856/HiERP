@@ -4,9 +4,11 @@ import com.minji.hi_erp.security.dto.ChangePasswordRequestDto;
 import com.minji.hi_erp.security.dto.UserJoinDto;
 import com.minji.hi_erp.security.entity.Users;
 import com.minji.hi_erp.security.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -40,14 +42,18 @@ public class AccountController {
      * @return 회원가입 성공 시 join-success.html 뷰 반환
      */
     @PostMapping("/join")
-    public String joinUsers(UserJoinDto userJoinDto) {
-        try{
-            // 회원 저장 -> userId 반환
-            userService.save(userJoinDto);
-            return "redirect:/account/join-success";
-        } catch (IllegalArgumentException e){
-            return "account/join";
-        }
+    public String joinUsers(@Valid @ModelAttribute UserJoinDto dto, BindingResult bindingResult) {
+//        try{
+//            // 회원 저장 -> userId 반환
+//            userService.save(dto);
+//            return "redirect:/account/join-success";
+//        } catch (IllegalArgumentException e){
+//            return "account/join";
+//        }
+         if (bindingResult.hasErrors()){
+          return "account/join";}
+            userService.save(dto);
+         return "redirect:/account/join-success";
     }
 
     @GetMapping("/join-success")
