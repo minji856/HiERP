@@ -1,7 +1,9 @@
 package com.minji.hi_erp.security.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EmailToken {
 
     @Id @GeneratedValue
@@ -25,7 +28,15 @@ public class EmailToken {
 
     private LocalDateTime expiredAt;
 
-    private boolean isExpired(){
+    public EmailToken(String token, Users user, LocalDateTime expiredAt) {
+        this.token = token;
+        this.user = user;
+        this.expiredAt = expiredAt;
+    }
+
+    public boolean isExpired(){
         return LocalDateTime.now().isAfter(expiredAt);
     }
+
+    //protected EmailToken() {} // JPA용
 }
