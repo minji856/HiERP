@@ -45,8 +45,9 @@ public class Users {
 
     private String imageUrl;
 
+    // 추후 role,enabled는 제거 예정
     @Builder
-    public Users(String name, LocalDate birthDay, Gender gender, String email,  String password, String phoneNum, String imageUrl, Role role, boolean enabled) {
+    public Users(String name, LocalDate birthDay, Gender gender, String email,  String password, String phoneNum, String imageUrl) {
         this.name = name;
         this.birthday= birthDay;
         this.gender = gender;
