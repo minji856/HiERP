@@ -39,7 +39,8 @@ public class UserJoinDto {
     private String phoneNum;
 
     private String imageUrl;
-    private Role role;
+
+    //private Role role;
 
     /*
     public Users toEntity(){
