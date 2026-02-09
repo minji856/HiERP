@@ -38,11 +38,11 @@ public class AccountController {
      * 사용자가 입력한 회원 정보를 받아 저장한 후,
      * 가입 완료 페이지로 이동합니다.
      *
-     * @param userJoinDto 회원가입 정보 dto 클래스
+     * @param dto 회원가입 정보 dto 클래스
      * @return 회원가입 성공 시 join-success.html 뷰 반환
      */
     @PostMapping("/join")
-    public String joinUsers(@Valid @ModelAttribute UserJoinDto dto, BindingResult bindingResult) {
+    public String joinUsers(@Valid @ModelAttribute("userjoinDto") UserJoinDto dto, BindingResult bindingResult) {
 //        try{
 //            // 회원 저장 -> userId 반환
 //            userService.save(dto);
