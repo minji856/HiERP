@@ -1,5 +1,6 @@
 package com.minji.hi_erp.security.service;
 
+import com.minji.hi_erp.Role;
 import com.minji.hi_erp.security.dto.ChangePasswordRequestDto;
 import com.minji.hi_erp.security.dto.MailDto;
 import com.minji.hi_erp.security.dto.UserJoinDto;
@@ -81,14 +82,13 @@ public class UserService {
         return normalized;
     }
 
-
-
     /**
      * 유저 정보와 비밀번호를 암호화하여 저장하고 id 값을 반환하는 메서드입니다.
      *
      * @param userJoinDto
      * @return
      */
+    /*
     public Long save(UserJoinDto userJoinDto) {
         Users user = Users.builder()
                 .name(userJoinDto.getName())
@@ -104,6 +104,24 @@ public class UserService {
                 .build();
 
         return userRepository.save(user).getId();
+    }
+     */
+
+
+    private Users saveUser(UserJoinDto dto) {
+        Users user = Users.builder()
+                .name(dto.getName())
+                .birthDay(dto.getBirthday())
+                .gender(dto.getGender())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .email(dto.getEmail())
+                .phoneNum(normalizeAndValidatePhone(dto.getPhoneNum()))
+                .imageUrl(dto.getImageUrl())
+                .role(Role.USER)
+                .enabled(false)
+                .build();
+
+        return userRepository.save(user);
     }
 
     public void deleteUsers(Long id) {
