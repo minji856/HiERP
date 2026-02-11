@@ -80,7 +80,6 @@ public class Users {
         this.enabled = true;
     }
 
-
     // 계정상태를 비활성화 처리하는 메서드입니다.
     public void disableAccount() {
         this.enabled = false;
