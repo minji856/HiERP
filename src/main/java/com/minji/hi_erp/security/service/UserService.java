@@ -108,7 +108,7 @@ public class UserService {
      */
 
 
-    private Users saveUser(UserJoinDto dto) {
+    public Users saveUser(UserJoinDto dto) {
         Users user = Users.builder()
                 .name(dto.getName())
                 .birthDay(dto.getBirthday())
@@ -117,8 +117,6 @@ public class UserService {
                 .email(dto.getEmail())
                 .phoneNum(normalizeAndValidatePhone(dto.getPhoneNum()))
                 .imageUrl(dto.getImageUrl())
-                .role(Role.USER)
-                .enabled(false)
                 .build();
 
         return userRepository.save(user);
