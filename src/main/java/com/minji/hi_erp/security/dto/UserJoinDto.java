@@ -5,6 +5,7 @@ import com.minji.hi_erp.enums.Gender;
 import com.minji.hi_erp.security.entity.Users;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,6 +34,8 @@ public class UserJoinDto {
     private String email;
 
     @NotBlank(message = "비밀번호는 필수입니다.")
+    @Pattern(regexp = "(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!#$%^&*]).{8,16}",
+            message = "비밀번호는 8~16자 영문 대 소문, 숫자, 특수문자를 사용하세요.")
     private String password;
 
     @NotBlank(message = "전화번호는 필수입니다.")
