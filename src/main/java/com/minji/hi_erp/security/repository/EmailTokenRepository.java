@@ -10,6 +10,6 @@ import java.util.Optional;
  * 이메일 인증 토큰 조회 및 저장을 담당하는 Repository
  */
 @Repository
-public interface TokenRepository extends JpaRepository<EmailToken, Long> {
+public interface EmailTokenRepository extends JpaRepository<EmailToken, Long> {
     Optional<EmailToken> findByToken(String token);
 }
