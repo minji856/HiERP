@@ -108,7 +108,8 @@ public class UserService {
      */
 
 
-    public Users saveUser(UserJoinDto dto) {
+    // private으로 내부에서만 쓰게 할 예정
+    private Users saveUser(UserJoinDto dto) {
         Users user = Users.builder()
                 .name(dto.getName())
                 .birthDay(dto.getBirthday())
@@ -121,6 +122,18 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    // public void registerUser(UserJoinDto dto){
+    //  Users user = saveUser(dto);
+    //  String token = UUID.randomUUID().toString();
+    //  EmailToken token = new EmailToken (
+    //     token,
+    //     user,
+    //     LocalDateTime.now().plusHours(24)
+    //     );
+    //  EmailTokenRepostiory
+    //  )
+    // }
 
     public void deleteUsers(Long id) {
         userRepository.deleteById(id);
