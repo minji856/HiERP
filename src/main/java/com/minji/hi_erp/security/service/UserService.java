@@ -55,11 +55,21 @@ public class UserService {
     }
 
     /**
-     * email 중복 체크 메서드
+     * email 중복을 체크합니다.
      * 회원가입 기능 구현 시 사용
-     * 중복되면 true return
+     * 중복되면 강제로 예외처리로 프로그램 중단
      */
-    public boolean checkEmailDuplicate(String email) {
+    public void checkEmailDuplicate(String email) {
+        if(userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
+    }
+
+    /**
+     * UX에서 가입시 간단한 중복체크를 합니다.
+     * 중복된 이메일이면 true 반환
+     */
+    public boolean checkEmail(String email) {
         return userRepository.existsByEmail(email);
     }
 
