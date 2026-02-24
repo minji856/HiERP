@@ -4,11 +4,49 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/account/common.css}">
     <title>마이페이지</title>
 </head>
 <body>
+    <div class="container">
     <h1>내 정보</h1>
+        전화번호
+        이메일 변경
+        <a th:href="@{/account/change-password}">비밀번호 변경</a>
+        탈퇴하기
+<!--        <div class="info-box">-->
+<!--            <div class="info-row">-->
+<!--                <div class="info-left">-->
+<!--                    <div class="info-label">이름</div>-->
+<!--                    <div class="info-value" th:text="${user.name}">이름</div>-->
+<!--                </div>-->
+<!--            </div>-->
 
-    <a th:href="@{/account/change-password}">비밀번호 변경</a>
+<!--            <div class="info-row">-->
+<!--                <div class="info-left">-->
+<!--                    <div class="info-label">이메일</div>-->
+<!--                    <div class="info-value" th:text="${maskedEmail}">*****@gmail.com</div>-->
+<!--                </div>-->
+<!--                <a th:href="@{/account/edit-email}">-->
+<!--                    <button type="button" class="btn-sm">수정</button>-->
+<!--                </a>-->
+<!--            </div>-->
+
+<!--            <div class="info-row">-->
+<!--                <div class="info-left">-->
+<!--                    <div class="info-label">전화번호</div>-->
+<!--                    <div class="info-value" th:text="${maskedPhone}">010-****-1234</div>-->
+<!--                </div>-->
+<!--                <a th:href="@{/account/edit-phone}">-->
+<!--                    <button type="button" class="btn-sm">수정</button>-->
+<!--                </a>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="actions">-->
+<!--            <a th:href="@{/account/change-password}" class="action-link">비밀번호 변경</a>-->
+<!--            <a th:href="@{/account/delete}" class="action-link secondary">회원 탈퇴</a>-->
+<!--        </div>-->
+    </div>
 </body>
 </html>
