@@ -1,5 +1,6 @@
 package com.minji.hi_erp;
 
+import com.minji.hi_erp.enums.Gender;
 import com.minji.hi_erp.security.dto.UserJoinDto;
 import com.minji.hi_erp.security.entity.Users;
 import com.minji.hi_erp.security.repository.UserRepository;
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.time.LocalDate;
 
 import static org.springframework.test.util.AssertionErrors.assertNotEquals;
 
@@ -21,7 +24,8 @@ class HiErpApplicationTests {
 
 	@Test
 	void UserTest() {
-		Users savedUser = userRepository.save(new Users("test","test@naver.com","abcd123@","1","1", Role.USER));
+		Users savedUser = userRepository.save(
+				new Users("test",LocalDate.of(2020,8,8), Gender.FEMALE,"test@naver.com", "abcd123@","1","1", Role.USER , false));
 		String rawPassword = savedUser.getPassword(); // 저장된 원본 비밀번호
 		String encryptedPassword = passwordEncoder.encode(rawPassword); // 암호화된 비밀번호
 
