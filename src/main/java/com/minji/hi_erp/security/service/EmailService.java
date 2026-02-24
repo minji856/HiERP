@@ -52,6 +52,28 @@ public class EmailService {
             mailSender.send(mimeMessage);
     }
 
+    /**
+     * 회원가입 시 인증 메일을 보내는 메서드 입니다.
+     *
+     * @param user
+     * @param token
+     */
+    public void sendVerifyEmail(Users user, String token) {
+        Map<String, Object> ctx = new HashMap<>();
+        ctx.put("name", user.getName());
+        ctx.put("verifyLink",
+                "http://localhost:8080/account/verify?token=" + token);
+
+        MailDto dto = new MailDto(
+                user.getEmail(),
+                "이메일 인증 안내",
+                ctx,
+                "email-verify"
+        );
+
+        //sendEmail(dto);
+    }
+
     // 회원 모두에게 메일을 보내는 메서드입니다.
     public void sendEmailToAll() {
         // 모든 회원 리스트 가져오기
