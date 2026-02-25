@@ -42,7 +42,7 @@ public class AccountController {
      * @return 회원가입 성공 시 join-success.html 뷰 반환
      */
     @PostMapping("/join")
-    public String joinUsers(@Valid @ModelAttribute("userjoinDto") UserJoinDto dto, BindingResult bindingResult) {
+    public String joinUsers(@Valid @ModelAttribute("userJoinDto") UserJoinDto dto, BindingResult bindingResult) {
 //        try{
 //            // 회원 저장 -> userId 반환
 //            userService.save(dto);
