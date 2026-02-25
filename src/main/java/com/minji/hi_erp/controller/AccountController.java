@@ -52,7 +52,7 @@ public class AccountController {
 //        }
          if (bindingResult.hasErrors()){
           return "account/join";}
-            userService.saveUser(dto);
+            userService.save(dto);
          return "redirect:/account/join-success";
     }
 

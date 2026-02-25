@@ -98,7 +98,6 @@ public class UserService {
      * @param userJoinDto
      * @return
      */
-    /*
     public Long save(UserJoinDto userJoinDto) {
         Users user = Users.builder()
                 .name(userJoinDto.getName())
@@ -110,13 +109,10 @@ public class UserService {
                 // 정규화된 전화번호 숫자만 저장
                 .phoneNum(normalizeAndValidatePhone(userJoinDto.getPhoneNum()))
                 .imageUrl(userJoinDto.getImageUrl())
-                .role(userJoinDto.getRole())
                 .build();
 
         return userRepository.save(user).getId();
     }
-     */
-
 
     // private으로 내부에서만 쓰게 할 예정
     private Users saveUser(UserJoinDto dto) {
