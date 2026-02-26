@@ -40,12 +40,13 @@
 
         <!-- 비밀번호 입력 -->
         <label for="password">비밀번호</label>
-        <p class="pw-hint">※ 영문, 숫자, 특수문자 포함 8글자 이상</p>
+        <p class="pw-hint">※ 영어 대소문, 숫자, 특수문자 포함 8~16글자</p>
         <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요"/>
 
         <label for="passwordcheck">비밀번호 재확인</label>
         <p class="pw-hint">비밀번호를 한 번 더 입력해주세요.</p>
         <input type="password" id="passwordcheck" name="passwordcheck" placeholder="비밀번호를 입력하세요"/>
+        <div id="passwordMessage" style="font-size: 0.8em; margin-top: 5px;"></div>
 
         <!-- 전화번호 입력 -->
         <label for="phoneNum">전화번호</label>
@@ -59,6 +60,7 @@
         <input type="submit" value="가입하기" />
     </form>
 </div>
-<!-- JavaScript 파일 -->
+    <!-- JavaScript 파일 -->
+    <script src="/js/validation.js"></script>
 </body>
 </html>
