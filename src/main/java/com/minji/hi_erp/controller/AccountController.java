@@ -6,6 +6,7 @@ import com.minji.hi_erp.security.entity.Users;
 import com.minji.hi_erp.security.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/account")
 @RequiredArgsConstructor
+@Slf4j
 public class AccountController {
 
     private final UserService userService;
@@ -50,10 +52,12 @@ public class AccountController {
 //        } catch (IllegalArgumentException e){
 //            return "account/join";
 //        }
-         if (bindingResult.hasErrors()){
-          return "account/join";}
-            userService.save(dto);
-         return "redirect:/account/join-success";
+        if (bindingResult.hasErrors()){
+            log.info("회원가입 검증 에러 발생 : {}", bindingResult.getAllErrors());
+            return "account/join";
+        }
+        userService.save(dto);
+        return "redirect:/account/join-success";
     }
 
     @GetMapping("/join-success")
