@@ -17,8 +17,26 @@
         <input type="text" id="name" name="name" placeholder="이름을 입력하세요"/>
 
         <!-- 생년원일 입력 -->
+        <!--
         <label for="birthday">생년원일</label>
         <input type="date" id="birthday" name="birthday"/>
+        -->
+        <label>생년월일</label>
+        <div class="birth-group" style="display: flex; gap: 10px;">
+            <select id="birth-year" name="birth-year">
+                <option value="">연도</option>
+            </select>
+
+            <select id="birth-month" name="birth-month">
+                <option value="">월</option>
+            </select>
+
+            <select id="birth-day" name="birth-day">
+                <option value="">일</option>
+            </select>
+        </div>
+
+        <input type="hidden" id="birthday" name="birthday">
 
         <!-- 성별 입력 -->
         <label>성별</label>
