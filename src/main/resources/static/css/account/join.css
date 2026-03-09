@@ -38,3 +38,38 @@ form {
     font-size: 14px;
     color: #333;
 }
+
+/* 생년월일 그룹 레이아웃 */
+.birth-group {
+    display: flex;
+    gap: 10px;
+    margin: 6px 0 14px; /* 다른 입력창들과 간격 통일 */
+}
+
+/* select 박스 공통 스타일 */
+.birth-group select {
+    flex: 1; /* 3개의 박스가 동일한 너비를 가짐 */
+    height: 40px; /* 일반 input창 높이와 맞춤 */
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s; /* 부드러운 테두리 변경 효과 */
+}
+
+/* 포커스 되었을 때 (클릭했을 때) 파란색 테두리 */
+.birth-group select:focus {
+    border-color: #007bff; /* 이미지 하단 버튼색과 통일 */
+}
+
+/* 라벨 스타일 (이미지의 다른 라벨들과 맞춤) */
+label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: block;
+}
