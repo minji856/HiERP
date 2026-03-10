@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const daySelect = document.getElementById('birth-day');
     const birthdayHidden = document.getElementById('birthday');
 
-    // 1. 초기화: 연도(1950~현재)와 월(1~12) 채우기
+    // 초기화: 연도(1950~현재)와 월(1~12) 채우기
     const now = new Date();
     const currentYear = new Date().getFullYear();
 
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
         monthSelect.add(new Option(i, m));
     }
 
-    // 2. 핵심 로직: 선택한 연도와 월에 따라 '일' 개수 변경하기
+    // 선택한 연도와 월에 따라 '일' 개수 변경하기
     function updateDays() {
         const year = yearSelect.value;
         const month = monthSelect.value;
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateBirthday();
     }
 
-    // 3. 서버로 전송할 최종 날짜 문자열(yyyy-MM-dd) 생성
+    // 서버로 전송할 최종 날짜 문자열(yyyy-MM-dd) 히든태그 생성
     function updateBirthday() {
         const year = yearSelect.value;
         const month = monthSelect.value;
