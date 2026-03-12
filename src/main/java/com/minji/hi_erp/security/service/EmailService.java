@@ -58,20 +58,21 @@ public class EmailService {
      * @param user
      * @param token
      */
-    public void sendVerifyEmail(Users user, String token) {
+    public void sendVerifyEmail(Users user, String token) throws MessagingException {
         Map<String, Object> ctx = new HashMap<>();
         ctx.put("name", user.getName());
+        // 탬플릿의 ${verifyLink}
         ctx.put("verifyLink",
                 "http://localhost:8080/account/verify?token=" + token);
 
         MailDto dto = new MailDto(
                 user.getEmail(),
-                "이메일 인증 안내",
+                "HI-E 이메일 인증 안내",
                 ctx,
                 "email-verify"
         );
 
-        //sendEmail(dto);
+        sendEmail(dto);
     }
 
     // 회원 모두에게 메일을 보내는 메서드입니다.
