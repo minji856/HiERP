@@ -55,6 +55,7 @@
         <!-- 이메일 입력 -->
         <label for="email">이메일</label>
         <input type="email" id="email" name="email" placeholder="이메일을 입력하세요"/>
+        <!-- 중복체크 isEmailDuplicateEmail() 중복일 시 true -->
 
         <!-- 비밀번호 입력 -->
         <label for="password">비밀번호</label>
@@ -76,6 +77,13 @@
         <!-- 이미지 URL 입력 -->
         <label for="imageUrl">프로필 이미지 업로드</label>
         <input type="text" id="imageUrl" name="imageUrl" placeholder="이미지를 업로드 해주세요"/>
+
+        <!-- 에러 메세지 사용자에게 출력 -->
+        <p th:if="${error}" style="color:red;">
+            [[${error}]]
+        </p>
+        <p th:if="${message}" th:text="${message}" style="color: #007BFF; margin-top: 10px;"></p>
+        <!--<p th:if="${error}" th:text="${error}" style="color: red; margin-top: 10px;"></p>-->
 
         <!-- 제출 버튼 -->
         <input type="submit" value="가입하기" />
