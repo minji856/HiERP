@@ -1,8 +1,8 @@
-package com.minji.hi_erp.security.service;
+package com.minji.hi_erp.service;
 
-import com.minji.hi_erp.security.dto.EventDto;
-import com.minji.hi_erp.security.entity.Event;
-import com.minji.hi_erp.security.repository.EventRepository;
+import com.minji.hi_erp.dto.EventDto;
+import com.minji.hi_erp.entity.Event;
+import com.minji.hi_erp.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

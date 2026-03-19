@@ -1,8 +1,8 @@
-package com.minji.hi_erp.security.service;
+package com.minji.hi_erp.service;
 
-import com.minji.hi_erp.security.dto.MailDto;
-import com.minji.hi_erp.security.entity.Users;
-import com.minji.hi_erp.security.repository.UserRepository;
+import com.minji.hi_erp.dto.MailDto;
+import com.minji.hi_erp.entity.Users;
+import com.minji.hi_erp.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

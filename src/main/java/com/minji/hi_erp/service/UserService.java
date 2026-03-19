@@ -1,17 +1,16 @@
-package com.minji.hi_erp.security.service;
+package com.minji.hi_erp.service;
 
-import com.minji.hi_erp.Role;
-import com.minji.hi_erp.security.dto.ChangePasswordRequestDto;
-import com.minji.hi_erp.security.dto.MailDto;
-import com.minji.hi_erp.security.dto.UserJoinDto;
-import com.minji.hi_erp.security.entity.Users;
-import com.minji.hi_erp.security.repository.UserRepository;
+import com.minji.hi_erp.dto.ChangePasswordRequestDto;
+import com.minji.hi_erp.dto.MailDto;
+import com.minji.hi_erp.dto.UserJoinDto;
+import com.minji.hi_erp.entity.EmailToken;
+import com.minji.hi_erp.entity.Users;
+import com.minji.hi_erp.repository.EmailTokenRepository;
+import com.minji.hi_erp.repository.UserRepository;
 import jakarta.mail.MessagingException;
-import jakarta.validation.constraints.Email;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,19 +29,14 @@ import java.util.UUID;
  * UserRepository 을 통해 데이터베이스에 접근하며, 비밀번호 암호화 등의 비즈니스 로직을 수행합니다.
  */
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
-
-    @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
-    }
+    private final EmailTokenRepository emailTokenRepository;
 
     /**
      * 현재 로그인된 사용자 가져오는 메서드 입니다.
@@ -77,7 +72,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    // 전화번호 정규화하고 db에 저장하기 쉽게 - 제거하는 메서드입니다.
+    /**
+     *
+     * 전화번호 정규화하고 db에 저장하기 쉽게 특수문자 "-"를 제거하는 메서드입니다.
+     *
+     * @param phoneNum 숫자 11자리 또는 -포함
+     * @return -가 제거된 숫자 11자리
+     */
     private String normalizeAndValidatePhone(String phoneNum) {
         if (phoneNum == null) {
             throw new IllegalArgumentException("전화번호는 필수입니다.");
@@ -93,29 +94,39 @@ public class UserService {
     }
 
     /**
-     * 유저 정보와 비밀번호를 암호화하여 저장하고 id 값을 반환하는 메서드입니다.
+     * 사용자 회원가입 처리를 수행하고 생성된 고유 식별자를 반환합니다.
      *
-     * @param userJoinDto
-     * @return
+     * @param dto 회원가입 요청 정보가 담긴 DTO 객체
+     * @return 데이터베이스에 저장된 사용자의 고유 식별자 id 값
      */
-    public Long save(UserJoinDto userJoinDto) {
+    public Long save(UserJoinDto dto) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+        }
+
+        // Builder 사용
         Users user = Users.builder()
-                .name(userJoinDto.getName())
-                .birthDay(userJoinDto.getBirthday())
-                .gender(userJoinDto.getGender())
-                // 페스워드 암호화
-                .password(passwordEncoder.encode(userJoinDto.getPassword()))
-                .email(userJoinDto.getEmail())
-                // 정규화된 전화번호 숫자만 저장
-                .phoneNum(normalizeAndValidatePhone(userJoinDto.getPhoneNum()))
-                .imageUrl(userJoinDto.getImageUrl())
+                .name(dto.getName())
+                .birthDay(dto.getBirthday())
+                .gender(dto.getGender())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword())) // 비밀번호 암호화
+                .phoneNum(normalizeAndValidatePhone(dto.getPhoneNum())) // 전화번호 정규식
+                .imageUrl(dto.getImageUrl())
                 .build();
 
-        return userRepository.save(user).getId();
+        Users saveUsers = userRepository.save(user);
+        return saveUsers.getId();
     }
 
-    // private으로 내부에서만 쓰게 할 예정
-    private Users saveUser(UserJoinDto dto) {
+    /**
+     * 전달받은 가입 정보를 바탕으로 새로운 사용자 엔티티를 생성하고 데이터베이스에 저장합니다.
+     * 전화번호 정규화, 비밀번호 암호화, Builder 패턴을 통한 객체 생성
+     *
+     * @param dto 가입 폼으로부터 전달된 사용자 정보 DTO (이름, 생년월일, 성별, 이메일 등 포함)
+     * @return DB에 저장된 후, 생성된 ID(PK)를 포함하여 반환된 Users 엔티티 객체
+     */
+    public Users register(UserJoinDto dto) {
         Users user = Users.builder()
                 .name(dto.getName())
                 .birthDay(dto.getBirthday())
@@ -129,17 +140,38 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    // public void registerUser(UserJoinDto dto){
-    //  Users user = saveUser(dto);
-    //  String token = UUID.randomUUID().toString();
-    //  EmailToken token = new EmailToken (
-    //     token,
-    //     user,
-    //     LocalDateTime.now().plusHours(24)
-    //     );
-    //  EmailTokenRepostiory
-    //  )
-    // }
+    /**
+     * ID 값을 기반으로 이메일을 발송
+     *
+     * @param userId
+     */
+    @Transactional
+     public void sendVerifyEmail(Long userId) throws MessagingException {
+         // ID로 유저를 다시 찾음 (객체를 직접 넘기는 것보다 안전함)
+          Users user = userRepository.findById(userId)
+                  .orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+          // 토큰 생성 및 DB 저장
+          String token = UUID.randomUUID().toString();
+          EmailToken emailToken = new EmailToken (
+             token,
+             user,
+             LocalDateTime.now().plusHours(24)
+             );
+          emailTokenRepository.save(emailToken);
+
+         // 메일 전송
+         /*
+         try {
+             emailService.sendVerifyEmail(user, token);
+         } catch (MessagingException e) {
+             log.error("메일 발송 실패 : {}" , e.getMessage());
+             throw new MessagingException("토큰은 생성되었으나 메일 전송에 실패했습니다.");
+         }
+         */
+         // @Transactional로 인해 모두취소 아니면 모두 전송임으로 메서드에서 throws MessagingException
+         emailService.sendVerifyEmail(user, token);
+     }
 
     public void deleteUsers(Long id) {
         userRepository.deleteById(id);

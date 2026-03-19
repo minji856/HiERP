@@ -1,6 +1,6 @@
-package com.minji.hi_erp.security.service;
+package com.minji.hi_erp.service;
 
-import com.minji.hi_erp.security.entity.Users;
+import com.minji.hi_erp.entity.Users;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

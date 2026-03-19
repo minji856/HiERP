@@ -1,4 +1,4 @@
-package com.minji.hi_erp.security.dto;
+package com.minji.hi_erp.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

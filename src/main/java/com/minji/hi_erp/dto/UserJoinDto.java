@@ -1,8 +1,6 @@
-package com.minji.hi_erp.security.dto;
+package com.minji.hi_erp.dto;
 
-import com.minji.hi_erp.Role;
 import com.minji.hi_erp.enums.Gender;
-import com.minji.hi_erp.security.entity.Users;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -11,7 +9,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * 폼을 통한 회원 가입 내용을 담을 dto 클래스 입니다.

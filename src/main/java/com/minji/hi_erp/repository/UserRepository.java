@@ -1,6 +1,6 @@
-package com.minji.hi_erp.security.repository;
+package com.minji.hi_erp.repository;
 
-import com.minji.hi_erp.security.entity.Users;
+import com.minji.hi_erp.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

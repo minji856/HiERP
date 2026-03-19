@@ -1,4 +1,4 @@
-package com.minji.hi_erp.security.entity;
+package com.minji.hi_erp.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Entity;

@@ -1,7 +1,7 @@
-package com.minji.hi_erp.security.service;
+package com.minji.hi_erp.service;
 
-import com.minji.hi_erp.security.entity.Users;
-import com.minji.hi_erp.security.repository.UserRepository;
+import com.minji.hi_erp.entity.Users;
+import com.minji.hi_erp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

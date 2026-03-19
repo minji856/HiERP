@@ -1,4 +1,4 @@
-package com.minji.hi_erp.security.dto;
+package com.minji.hi_erp.dto;
 
 import lombok.Getter;
 import lombok.Setter;
