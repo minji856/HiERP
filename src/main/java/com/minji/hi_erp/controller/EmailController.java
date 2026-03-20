@@ -1,12 +1,11 @@
 package com.minji.hi_erp.controller;
 
-import com.minji.hi_erp.security.dto.MailDto;
-import com.minji.hi_erp.security.service.EmailService;
+import com.minji.hi_erp.dto.MailDto;
+import com.minji.hi_erp.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 

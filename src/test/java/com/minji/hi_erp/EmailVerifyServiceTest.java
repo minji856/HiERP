@@ -1,17 +1,14 @@
 package com.minji.hi_erp;
 
-import com.minji.hi_erp.security.entity.EmailToken;
-import com.minji.hi_erp.security.entity.Users;
-import com.minji.hi_erp.security.repository.EmailTokenRepository;
-import com.minji.hi_erp.security.service.EmailVerifyService;
+import com.minji.hi_erp.entity.EmailToken;
+import com.minji.hi_erp.entity.Users;
+import com.minji.hi_erp.repository.EmailTokenRepository;
+import com.minji.hi_erp.service.EmailVerifyService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

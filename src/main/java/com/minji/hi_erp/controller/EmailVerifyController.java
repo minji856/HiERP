@@ -1,6 +1,6 @@
 package com.minji.hi_erp.controller;
 
-import com.minji.hi_erp.security.service.EmailVerifyService;
+import com.minji.hi_erp.service.EmailVerifyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

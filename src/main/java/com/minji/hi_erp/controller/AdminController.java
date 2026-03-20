@@ -1,6 +1,6 @@
 package com.minji.hi_erp.controller;
 
-import com.minji.hi_erp.security.service.UserService;
+import com.minji.hi_erp.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
