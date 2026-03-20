@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
         daySelect.options.length = 1;
 
         if (year && month) {
-            // 핵심 코드: 다음 달의 0번째 날짜를 구하면 '이번 달의 마지막 날'이 나옵니다.
+            // 다음 달의 0번째 날짜를 구하면 '이번 달의 마지막 날'이 나옵니다.
             // 예: new Date(2024, 2, 0) -> 2024년 2월의 마지막 날(29일)
             const lastDay = new Date(year, month, 0).getDate();
 
