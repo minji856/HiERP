@@ -1,12 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
 </head>
 <body>
-    <h3>Hi-E 이메일 인증</h3>
-    <p>[[${name}]]님, 아래 링크를 클릭해 인증을 완료해주세요.</p>
-    <a th:href="${verifyLink}">이메일 인증하기</a>
+    <div th:fragment="mail-content">
+        <h2 style="color:#222;">이메일 인증 안내</h2>
+        <p><strong th:text="${name}">사용자</strong>님, 안녕하세요!</p>
+        <p>아래 버튼을 클릭하여 회원가입 인증을 완료해 주세요.</p>
+
+        <div style="margin-top:30px; text-align:center;">
+            <a th:href="${verifyLink}"
+               style="background-color:#DD5555; color:#ffffff; padding:15px 25px; text-decoration:none; border-radius:5px; display:inline-block;">
+                이메일 인증하기
+            </a>
+        </div>
+    </div>
 </body>
 </html>
