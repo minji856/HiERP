@@ -1,8 +1,8 @@
 package com.minji.hi_erp.controller;
 
-import com.minji.hi_erp.security.dto.EventDto;
-import com.minji.hi_erp.security.entity.Event;
-import com.minji.hi_erp.security.service.EventService;
+import com.minji.hi_erp.dto.EventDto;
+import com.minji.hi_erp.entity.Event;
+import com.minji.hi_erp.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +51,7 @@ public class EventController {
     public List<Map<String, String>> getAllEvents() {
         List<Event> events = eventService.getAllEvent();
 
-        System.out.println("📅이벤트 개수: " + events.size());
+        System.out.println("이벤트 개수: " + events.size());
         for (Event e : events) {
             System.out.println("➡ " + e.getTitle() + " / " + e.getStartDate() + " ~ " + e.getEndDate());
         }
@@ -87,6 +87,7 @@ public class EventController {
      */
     @PutMapping("/{id}")
     public Event updateEvent(@PathVariable Long id, @RequestBody EventDto eventDto) {
+        System.out.println(eventDto + "updateEvent Put 메서드 실행");
         return eventService.updateEvent(id, eventDto);
     }
 
