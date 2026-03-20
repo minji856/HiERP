@@ -57,4 +57,10 @@ dependencies {
 }
 tasks.named('test') {
 	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed" // 성공, 스킵, 실패 이벤트 출력
+		showStandardStreams = true           // System.out.println 로그도 콘솔에 표시
+		showExceptions = true
+		exceptionFormat = "full"
+	}
 }
