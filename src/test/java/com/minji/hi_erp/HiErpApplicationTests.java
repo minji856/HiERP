@@ -1,10 +1,10 @@
 package com.minji.hi_erp;
 
 import com.minji.hi_erp.enums.Gender;
-import com.minji.hi_erp.security.dto.UserJoinDto;
-import com.minji.hi_erp.security.entity.Users;
-import com.minji.hi_erp.security.repository.UserRepository;
-import com.minji.hi_erp.security.service.UserService;
+import com.minji.hi_erp.dto.UserJoinDto;
+import com.minji.hi_erp.entity.Users;
+import com.minji.hi_erp.repository.UserRepository;
+import com.minji.hi_erp.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +25,7 @@ class HiErpApplicationTests {
 	@Test
 	void UserTest() {
 		Users savedUser = userRepository.save(
-				new Users("test",LocalDate.of(2020,8,8), Gender.FEMALE,"test@naver.com", "abcd123@","1","1", Role.USER , false));
+				new Users("test",LocalDate.of(2020,8,8), Gender.FEMALE,"test@naver.com", "abcd123@","1","1"));
 		String rawPassword = savedUser.getPassword(); // 저장된 원본 비밀번호
 		String encryptedPassword = passwordEncoder.encode(rawPassword); // 암호화된 비밀번호
 
@@ -44,7 +44,7 @@ class HiErpApplicationTests {
 		dto.setPassword("plainPassword");
 		dto.setPhoneNum("1234567890");
 		dto.setImageUrl("testImageUrl");
-		dto.setRole(Role.USER);
+		// dto.setRole(Role.USER);
 
 		// 에러 나서 주석 처리
 		// String savedEmail = userService.saveUser(dto);
