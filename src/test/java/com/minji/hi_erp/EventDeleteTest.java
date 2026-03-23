@@ -1,7 +1,7 @@
 package com.minji.hi_erp;
 
-import com.minji.hi_erp.security.entity.Event;
-import com.minji.hi_erp.security.repository.EventRepository;
+import com.minji.hi_erp.entity.Event;
+import com.minji.hi_erp.repository.EventRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
