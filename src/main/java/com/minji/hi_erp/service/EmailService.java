@@ -43,11 +43,13 @@ public class EmailService {
             // 템플릿을 통해 전달할 데이터 설정
             Context context = new Context();
             context.setVariables(mailDto.getContext()); // 내용 설정
+            context.setVariable("contentPage","mail/" + mailDto.getTemplates());
 
-            // 메일 내용 설정 - 템플릿 프로세스
-            String html = templateEngine.process(mailDto.getTemplates(), context);
+            // 메일 실행때는 공통 레이아웃 파일 실행
+            // String html = templateEngine.process(mailDto.getTemplates(), context);
+            String html = templateEngine.process("mail/email-layout", context);
+
             helper.setText(html, true);
-
             mailSender.send(mimeMessage);
     }
 
@@ -84,7 +86,11 @@ public class EmailService {
                 Map<String, Object> mailMap = new HashMap<>();
                 mailMap.put("name", user.getName());
                 mailMap.put("content", "Hi-E 메일 입니다.");
-                MailDto dto = new MailDto(user.getEmail(), "공지사항", mailMap, "mailTest");
+                MailDto dto = new MailDto(
+                        user.getEmail(),
+                        "공지사항",
+                        mailMap,
+                        "mail-test");
 
                 sendEmail(dto);
                 log.info("전체 메일 전송 성공: {}", user.getEmail());
@@ -103,7 +109,7 @@ public class EmailService {
                 user.getEmail(),
                 "임시 비밀번호 안내",
                 ctx,
-                "tempPassword"
+                "reset-password-email"
         );
 
         //sendEmail(dto);
