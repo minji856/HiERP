@@ -1,4 +1,4 @@
-package com.minji.hi_erp;
+package com.minji.hi_erp.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

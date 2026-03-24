@@ -1,6 +1,6 @@
 package com.minji.hi_erp.entity;
 
-import com.minji.hi_erp.Role;
+import com.minji.hi_erp.enums.Role;
 import com.minji.hi_erp.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
