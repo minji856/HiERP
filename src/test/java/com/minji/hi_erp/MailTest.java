@@ -39,18 +39,20 @@ public class MailTest {
     @InjectMocks
     private EmailService emailService;
 
-    //@Test
+    @Test
     @DisplayName("성공 : 가입된 모든 유저에게(ex.100명) 메일을 보낸다 ")
     public void send100Mail() throws Exception {
 
         // given 실제 SMTP 호출 방지
         when(mailSender.createMimeMessage())
                 .thenReturn(new MimeMessage((Session) null));
+        when(templateEngine.process(anyString(), any(org.thymeleaf.context.Context.class)))
+                .thenReturn("<html>가짜 메일 본문</html>");
 
         long start = System.currentTimeMillis();
 
         // when
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 100; i++) {
             Map<String, Object> ctx = new HashMap<>();
             ctx.put("name", "User" + i);
             ctx.put("content", "테스트 메일 " + i);
@@ -67,10 +69,10 @@ public class MailTest {
 
         // then
         long end = System.currentTimeMillis();
-        System.out.println("비동기 메일 10건 요청 소요 시간: " + (end - start) + "ms");
+        System.out.println("메일 100건 요청 소요 시간: " + (end - start) + "ms");
     }
 
-    @Test
+    //@Test
     @DisplayName("성공 : 이메일 인증 링크 생성 및 전송한다.")
     void sendVerifyEmailTest() throws MessagingException {
         // Given
