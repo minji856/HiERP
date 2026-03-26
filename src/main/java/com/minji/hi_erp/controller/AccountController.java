@@ -56,14 +56,14 @@ public class AccountController {
             return "account/join";
         }
 
-        Long userId = null;
         //회원 저장 -> userId 반환
         try {
-            userService.save(dto);
+            Long userId = userService.save(dto);
+
             userService.sendVerifyEmail(userId);
            return "redirect:/account/join-success";
         } catch (MessagingException e){
-            log.error("인증 메일 발송 실패 - 대상 : {}" , userId, e);
+            log.error("인증 메일 발송 실패 - 대상 : {}" , dto.getEmail(), e);
             model.addAttribute("error", "인증 메일 발송에 실패했습니다. 다시 시도해주세요.");
             return "account/join";
         }
