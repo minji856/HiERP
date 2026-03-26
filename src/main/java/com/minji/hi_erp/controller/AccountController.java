@@ -27,9 +27,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AccountController {
 
     private final UserService userService;
-    private final EmailService emailService;
-    private final EmailTokenRepository emailTokenRepository;
-    private final EmailVerifyService emailVerifyService;
 
     /**
      * 회원가입 페이지를 표시합니다.
@@ -37,7 +34,8 @@ public class AccountController {
      * @return 회원가입 페이지
      */
     @GetMapping("/join")
-    public String joinPage() {
+    public String joinPage(Model model) {
+        model.addAttribute("userJoinDto", new UserJoinDto());
         return "account/join";
     }
 
@@ -54,27 +52,15 @@ public class AccountController {
     public String joinUsers(@Valid @ModelAttribute("userJoinDto") UserJoinDto dto, BindingResult bindingResult, Model model) {
 
         if (bindingResult.hasErrors()){
-            log.info("회원가입 검증 에러 발생 : {}", bindingResult.getAllErrors());
+            // log.info("회원가입 검증 에러 발생 : {}", bindingResult.getAllErrors());
             return "account/join";
         }
 
         Long userId = null;
         //회원 저장 -> userId 반환
         try {
-            // 최종 가입 전 이메일 중복 확인
-            userService.isEmailDuplicate(dto.getEmail());
-            userId = userService.save(dto);
-        } catch (IllegalArgumentException e) {
-            // 중복 이메일 등 비즈니스 로직 에러
-            bindingResult.rejectValue("email", "duplicate", e.getMessage());
-            return "account/join";
-        } catch (Exception e) {
-            log.error("이메일 중복으로 회원 가입 실패 : {}", e.getMessage());
-            model.addAttribute("message", "사용중인 이메일 입니다. 다시 시도해주세요.");
-            return "account/join";
-        }
-        try{
-           userService.sendVerifyEmail(userId);
+            userService.save(dto);
+            userService.sendVerifyEmail(userId);
            return "redirect:/account/join-success";
         } catch (MessagingException e){
             log.error("인증 메일 발송 실패 - 대상 : {}" , userId, e);
