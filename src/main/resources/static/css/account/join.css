@@ -73,3 +73,13 @@ label {
     margin-bottom: 4px;
     display: block;
 }
+
+/* 에러 메시지 스타일 */
+.error-msg {
+    color: #e74c3c;
+    font-size: 11.5px;    /* 너무 작으면 가독성이 떨어지니 살짝 키움 */
+    margin: 4px 0 12px;  /* 위로 4px, 아래로 12px 간격 */
+    font-weight: 500;
+    line-height: 1.4;
+    display: block;       /* 반드시 block이어야 아래로 떨어짐 */
+}
