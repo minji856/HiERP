@@ -34,7 +34,11 @@ public class EmailToken {
         this.expiredAt = expiredAt;
     }
 
+    // 토큰이 만료되었는지 확인하는 메서드
     public boolean isExpired(){
+        if (this.expiredAt == null) {
+            return true; // 만료 시간이 없으면 만료된 것으로 간주
+        }
         return LocalDateTime.now().isAfter(expiredAt);
     }
 
