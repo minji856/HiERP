@@ -36,6 +36,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final EmailVerifyService emailVerifyService;
     private final EmailTokenRepository emailTokenRepository;
 
     /**
@@ -101,7 +102,7 @@ public class UserService {
      */
     public Long save(UserJoinDto dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+            throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         }
 
         // Builder 사용
@@ -156,19 +157,10 @@ public class UserService {
           EmailToken emailToken = new EmailToken (
              token,
              user,
-             LocalDateTime.now().plusHours(24)
+             LocalDateTime.now().plusMinutes(20) // 토큰 만료 시간 설정
              );
           emailTokenRepository.save(emailToken);
 
-         // 메일 전송
-         /*
-         try {
-             emailService.sendVerifyEmail(user, token);
-         } catch (MessagingException e) {
-             log.error("메일 발송 실패 : {}" , e.getMessage());
-             throw new MessagingException("토큰은 생성되었으나 메일 전송에 실패했습니다.");
-         }
-         */
          // @Transactional로 인해 모두취소 아니면 모두 전송임으로 메서드에서 throws MessagingException
          emailService.sendVerifyEmail(user, token);
      }
