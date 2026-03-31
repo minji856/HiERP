@@ -59,7 +59,6 @@ public class AccountController {
         //회원 저장 -> userId 반환
         try {
             Long userId = userService.save(dto);
-
             userService.sendVerifyEmail(userId);
            return "redirect:/account/join-success";
         } catch (MessagingException e){
