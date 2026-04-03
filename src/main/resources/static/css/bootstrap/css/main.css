@@ -3224,8 +3224,8 @@ h6,
 
 .signin-wrapper {
   background: #fff;
-  padding: 60px;
-  min-height: 600px;
+  padding: 40px;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
