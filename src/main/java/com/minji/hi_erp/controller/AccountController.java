@@ -2,7 +2,9 @@ package com.minji.hi_erp.controller;
 
 import com.minji.hi_erp.dto.ChangePasswordRequestDto;
 import com.minji.hi_erp.dto.UserJoinDto;
+import com.minji.hi_erp.entity.Users;
 import com.minji.hi_erp.repository.EmailTokenRepository;
+import com.minji.hi_erp.service.CustomUserDetails;
 import com.minji.hi_erp.service.EmailService;
 import com.minji.hi_erp.service.EmailVerifyService;
 import com.minji.hi_erp.service.UserService;
@@ -11,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -85,8 +88,32 @@ public class AccountController {
     }
 
     @GetMapping("/mypage")
-    public String mypage() {
-        return "account/mypage";
+    public String myPage(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+        // 1. 세션에 저장된 userDetails에서 현재 로그인한 유저 정보 가져오기
+        // (UserDetails를 어떻게 구현하셨느냐에 따라 userDetails.getUser() 등을 사용)
+        Users user = userDetails.getUsers();
+
+        // 2. 마스킹 처리 (이메일: min**@naver.com, 전화번호: 010-****-1234)
+        String maskedEmail = maskEmail(user.getEmail());
+        String maskedPhone = maskPhone(user.getPhoneNum());
+
+        // 3. 모델에 담아서 뷰로 전달
+        model.addAttribute("user", user);
+        model.addAttribute("maskedEmail", maskedEmail);
+        model.addAttribute("maskedPhone", maskedPhone);
+
+        return "account/mypage"; // 아까 만든 PlainAdmin 스타일 HTML 파일 경로
+    }
+
+    // 간단한 마스킹 로직 예시
+    private String maskEmail(String email) {
+        if (email == null || !email.contains("@")) return email;
+        return email.replaceAll("(?<=.{2}).(?=[^@]*?@)", "*");
+    }
+
+    private String maskPhone(String phone) {
+        if (phone == null || phone.length() < 10) return phone;
+        return phone.replaceAll("(\\d{3})-?(\\d{4})-?(\\d{4})", "$1-****-$3");
     }
 
     /**
