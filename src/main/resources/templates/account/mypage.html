@@ -1,52 +1,74 @@
 <!DOCTYPE html>
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/user-layout}">
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" th:href="@{/css/user/common.css}">
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/bootstrap/css/main.css}">
     <title>마이페이지</title>
 </head>
 <body>
-    <div class="container">
-    <h1>내 정보</h1>
-        전화번호
-        이메일 변경
-        <a th:href="@{/account/change-password}">비밀번호 변경</a>
-        탈퇴하기
-<!--        <div class="info-box">-->
-<!--            <div class="info-row">-->
-<!--                <div class="info-left">-->
-<!--                    <div class="info-label">이름</div>-->
-<!--                    <div class="info-value" th:text="${user.name}">이름</div>-->
-<!--                </div>-->
-<!--            </div>-->
+<div layout:fragment="content">
+    <div class="container-fluid">
+        <div class="title-wrapper pt-30">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="title mb-30">
+                        <h2>내 정보 관리</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<!--            <div class="info-row">-->
-<!--                <div class="info-left">-->
-<!--                    <div class="info-label">이메일</div>-->
-<!--                    <div class="info-value" th:text="${maskedEmail}">*****@gmail.com</div>-->
-<!--                </div>-->
-<!--                <a th:href="@{/account/edit-email}">-->
-<!--                    <button type="button" class="btn-sm">수정</button>-->
-<!--                </a>-->
-<!--            </div>-->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card-style mb-30">
+                    <h6 class="mb-25">기본 정보</h6>
 
-<!--            <div class="info-row">-->
-<!--                <div class="info-left">-->
-<!--                    <div class="info-label">전화번호</div>-->
-<!--                    <div class="info-value" th:text="${maskedPhone}">010-****-1234</div>-->
-<!--                </div>-->
-<!--                <a th:href="@{/account/edit-phone}">-->
-<!--                    <button type="button" class="btn-sm">수정</button>-->
-<!--                </a>-->
-<!--            </div>-->
-<!--        </div>-->
+                    <div class="input-style-1">
+                        <label>이름</label>
+                        <input type="text" th:value="${user.name}" readonly class="bg-light"/>
+                    </div>
 
-<!--        <div class="actions">-->
-<!--            <a th:href="@{/account/change-password}" class="action-link">비밀번호 변경</a>-->
-<!--            <a th:href="@{/account/delete}" class="action-link secondary">회원 탈퇴</a>-->
-<!--        </div>-->
+                    <div class="input-style-1">
+                        <label>이메일</label>
+                        <div class="d-flex gap-2">
+                            <input type="email" th:value="${maskedEmail}" readonly class="bg-light"/>
+                            <a th:href="@{/account/edit-email}" class="main-btn primary-btn-outline btn-hover">
+                                변경
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="input-style-1">
+                        <label>전화번호</label>
+                        <div class="d-flex gap-2">
+                            <input type="text" th:value="${maskedPhone}" readonly class="bg-light"/>
+                            <a th:href="@{/account/edit-phone}" class="main-btn primary-btn-outline btn-hover">
+                                변경
+                            </a>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h6 class="mb-25">계정 설정</h6>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a th:href="@{/account/change-password}" class="main-btn primary-btn btn-hover">
+                            <i class="lni lni-key mr-10"></i> 비밀번호 변경
+                        </a>
+
+                        <a th:href="@{/account/delete}" class="main-btn danger-btn-outline btn-hover">
+                            <i class="lni lni-trash-can mr-10"></i> 탈퇴하기
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 </body>
 </html>
