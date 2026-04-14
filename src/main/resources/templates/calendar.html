@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/user-layout}">
 <head>
     <meta charset="UTF-8">
     <title>Hi-E 일정</title>
@@ -18,6 +20,8 @@
     </style>
 </head>
 <body>
+<div layout:fragment="content">
+    <section class="section">
     <div th:fragment="calendarFragment">
         <div id="calendar" class="calendar-container"></div>
         <!-- <script th:inline="/js/calendar.js"></script> Thymleaf 사용-->
@@ -31,5 +35,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
             crossorigin="anonymous"></script>
+    </section>
+</div>
 </body>
 </html>
