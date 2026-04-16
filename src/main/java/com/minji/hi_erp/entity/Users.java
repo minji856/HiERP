@@ -75,13 +75,25 @@ public class Users {
         this.password=passwordEncoder.encode(password);
     }
 
-    // 계정상태 활성화 처리하는 메서드입니다. (이메일 인증 또는 관리자 승인 완료 시 호출)
+    // 계정상태 활성화 처리 (이메일 인증 또는 관리자 승인 완료 시 호출)
     public void enableAccount() {
         this.enabled = true;
     }
 
-    // 계정상태를 비활성화 처리하는 메서드입니다.
+    // 계정상태를 비활성화 처리
     public void disableAccount() {
         this.enabled = false;
+    }
+
+    // 관리자가 회원 권한을 변경
+    public void updateRole(Role newRole) {
+        if (newRole == null) {
+            throw new IllegalArgumentException("권한은 비어있을 수 없습니다.");
+        }
+        // 예: MASTER 권한은 함부로 부여하거나 뺏지 못하게 방어 로직 추가 가능
+        if (this.role == Role.ADMIN || newRole == Role.ADMIN) {
+            // 별도의 관리자 승인 로직이나 예외 처리
+        }
+        this.role = newRole;
     }
 }
