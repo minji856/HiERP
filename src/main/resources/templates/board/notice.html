@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/user-layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>공지사항</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container-fluid">
+            <div class="title-wrapper pt-30">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="title mb-30">
+                            <h2>공지사항</h2>
+                        </div>
+                    </div>
+                    <div class="col-md-6" sec:authorize="hasRole('ADMIN')">
+                        <div class="text-end mb-30">
+                            <a th:href="@{/notice/write}" class="main-btn primary-btn btn-hover">
+                                <i class="lni lni-plus mr-5"></i> 글쓰기
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tables-wrapper">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card-style mb-30">
+                            <h6 class="mb-10">전체 공지 내역</h6>
+                            <div class="table-wrapper table-responsive">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="lead-info"><h6>번호</h6></th>
+                                        <th class="lead-email"><h6>제목</h6></th>
+                                        <th class="lead-phone"><h6>작성자</h6></th>
+                                        <th class="lead-company"><h6>작성일</h6></th>
+                                        <th><h6>조회수</h6></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="notice : ${notices}">
+                                        <td><p th:text="${notice.id}">1</p></td>
+                                        <td>
+                                            <a th:href="@{/notice/detail/{id}(id=${notice.id})}"
+                                               th:text="${notice.title}" class="text-dark fw-bold">제목</a>
+                                        </td>
+                                        <td><p th:text="${notice.author.realname}">관리자</p></td>
+                                        <td><p th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}">2026-04-20</p></td>
+                                        <td><p th:text="${notice.viewCount}">0</p></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>
