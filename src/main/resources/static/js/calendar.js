@@ -22,6 +22,13 @@ document.addEventListener('DOMContentLoaded', function () {
     let calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ko',
+        // 부모 컨테이너(카드) 높이에 딱 맞게 조절
+        height: 'auto',
+        // 화면 비율에 맞춰서 유지하고 싶다면 (낮을수록 세로가 길어짐)
+        aspectRatio: 1,
+        // 캘린더 내부의 셀 높이를 균등하게 배분
+        expandRows: true,
+        handleWindowResize: true,
         // 기본 옵션인 날짜에 숫자+일에서 '일' 글자 지우는 옵션
         dayCellContent: arg => ({html: arg.dayNumberText.replace('일', '')}),
         headerToolbar: {
