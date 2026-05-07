@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,7 +50,7 @@ public class BoardController {
 
     // 글쓰기 페이지 이동 (GET)
     @GetMapping("/notice/write")
-    @PreAuthorize("hasRole('ADMIN')") // 서버 사이드에서도 한 번 더 권한 체크
+    //@PreAuthorize("hasRole('ADMIN')") // 서버 사이드에서도 한 번 더 권한 체크
     public String writeForm() {
         return "board/write";
     }
