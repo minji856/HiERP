@@ -18,12 +18,19 @@
                             <h2>공지사항</h2>
                         </div>
                     </div>
+                    <!-- 관리자에게만 글쓰기 보임
                     <div class="col-md-6" sec:authorize="hasRole('ADMIN')">
                         <div class="text-end mb-30">
                             <a th:href="@{/notice/write}" class="main-btn primary-btn btn-hover">
                                 <i class="lni lni-plus mr-5"></i> 글쓰기
                             </a>
                         </div>
+                    </div>
+                    -->
+                    <div class="text-end mb-30">
+                        <a th:href="@{/notice/write}" class="main-btn primary-btn btn-hover">
+                            <i class="lni lni-plus mr-5"></i> 글쓰기
+                        </a>
                     </div>
                 </div>
             </div>
