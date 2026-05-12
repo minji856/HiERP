@@ -43,20 +43,20 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         // requestMatchers().permitAll() 에 지정된 Url 들은 인증,인가 없이도 접근 가능
-                        // 테스트를 위해 h2-console/** 추가함 (배포시 제거)
-                        .requestMatchers("/signUp","/","/login","/join","/account/**", "/css/**", "/js/**", "/h2-console/**", "/api/**", "/calendar" ,"/mail")
+                        // 테스트를 위해 h2-console/**, admin 추가함 (배포시 제거)
+                        .requestMatchers("/signUp","/","/login","/admin/**","/board/**","/join","/account/**", "/css/**", "/js/**", "/h2-console/**", "/api/**", "/calendar" ,"/mail")
                         .permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // ==== .requestMatchers("/admin/**").hasRole("ADMIN") 테스트때문에 임시로 주석처리 ====//
                         .requestMatchers("/user/**").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
                         .anyRequest().authenticated())
 
                 /* 폼 로그인 처리 */
-                .formLogin(form -> form.loginPage("/account/login") // 커스텀 로그인 페이지 지정
+                .formLogin(form -> form.loginPage("/") // 커스텀 로그인 페이지 지정
                         .loginProcessingUrl("/account/login-process") // submit 받을 url
                         .usernameParameter("email") // submit할 아이디
                         .passwordParameter("password") // submit할 비밀번호
-                        .defaultSuccessUrl("/", true) // 정상적 인증 처리 후 이동하는 페이지
-                        .failureUrl("/account/login-form?error") // 로그인 실패 시 이동 페이지
+                        .defaultSuccessUrl("/account/main", true) // 정상적 인증 처리 후 이동하는 페이지
+                        .failureUrl("/?error") // 로그인 실패 시 이동 페이지
                         .permitAll())
 
                 /* 폼 로그아웃 처리 */
