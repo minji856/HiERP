@@ -1,6 +1,8 @@
 package com.minji.hi_erp.service;
 
+import com.minji.hi_erp.dto.NoticeRequestDto;
 import com.minji.hi_erp.entity.Notice;
+import com.minji.hi_erp.entity.Users;
 import com.minji.hi_erp.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,7 +30,7 @@ public class NoticeService {
     @Transactional
     public Notice findById(Long id) {
         Notice notice = noticeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 공지사항이 존재하지 않습니다. id=" + id));
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id=" + id));
 
         // 조회수 증가 로직 (엔티티에 메서드를 만들어두면 좋습니다)
         notice.increaseViewCount();
@@ -39,21 +41,26 @@ public class NoticeService {
     /**
      * 공지사항 작성
      */
-    @Transactional
-    public Long save(Notice notice) {
-        return noticeRepository.save(notice).getId();
+    @Transactional // 쓰기 작업이므로 별도의 트랜잭션 적용
+    public void save(NoticeRequestDto dto, Users author) {
+        Notice notice = Notice.builder()
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .author(author)
+                .build();
+        noticeRepository.save(notice);
     }
 
     /**
      * 공지사항 수정
      */
     @Transactional
-    public void update(Long id, String title, String content) {
+    public void update(Long id, NoticeRequestDto dto) {
         Notice notice = noticeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 공지사항이 없습니다. id=" + id));
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id=" + id));
 
         // Dirty Checking을 이용한 업데이트
-        notice.update(title, content);
+        notice.update(dto.getTitle(), dto.getContent());
     }
 
     /**
@@ -62,7 +69,7 @@ public class NoticeService {
     @Transactional
     public void delete(Long id) {
         Notice notice = noticeRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 공지사항이 없습니다. id=" + id));
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id=" + id));
 
         noticeRepository.delete(notice);
     }
