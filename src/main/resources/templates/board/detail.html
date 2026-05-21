@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/user-layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>공지사항</title>
+</head>
+<div layout:fragment="content" class="container-fluid">
+    <div class="title-wrapper pt-30">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="title mb-30">
+                    <h2>공지사항 상세보기</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card-style mb-30">
+                <div class="pb-20 mb-20 border-bottom d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-10" th:text="${notice.title}">게시글 제목이 들어갑니다.</h4>
+                        <p class="text-sm">
+                            <span class="text-medium">작성자:</span> <span th:text="${notice.author.name}">관리자</span>
+                            <span class="mx-2">|</span>
+                            <span class="text-medium">작성일:</span> <span
+                                th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd HH:mm')}">2026-05-14</span>
+                            <span class="mx-2">|</span>
+                            <span class="text-medium">조회수:</span> <span th:text="${notice.viewCount}">0</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="content-wrapper mb-30" style="min-height: 300px;">
+                    <div class="text-dark" th:utext="${#strings.replace(notice.content, '\n', '<br/>')}"
+                         style="line-height: 1.6; white-space: pre-wrap;">
+                        게시글 본문 내용이 여기에 출력됩니다.
+                    </div>
+                </div>
+
+                <div class="action-buttons d-flex justify-content-between border-top pt-20">
+                    <a th:href="@{/notice}" class="main-btn primary-btn-outline rounded-md btn-hover">
+                        <i class="lni lni-list mr-10"></i> 목록으로
+                    </a>
+
+                    <div class="d-flex gap-2">
+                        <a th:href="@{/notice/update/{id}(id=${notice.id})}"
+                           class="main-btn info-btn rounded-md btn-hover">수정</a>
+                        <button type="button" class="main-btn danger-btn rounded-md btn-hover"
+                                onclick="deleteNotice()">삭제
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        function deleteNotice() {
+            if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+                // 삭제 로직 구현 (AJAX 혹은 폼 전송)
+                const id = [[${notice.id}]];
+                location.href = "/notice/delete/" + id;
+            }
+        }
+    </script>
+</th:block>
+</html>
