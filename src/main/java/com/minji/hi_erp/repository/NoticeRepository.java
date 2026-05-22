@@ -15,4 +15,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
     // 특정 작성자가 쓴 공지사항 목록 조회
     List<Notice> findByAuthorId(Long authorId);
+
+    // 가장 최신 5개글만
+    List<Notice> findTop5ByOrderByCreatedDateDesc();
 }
