@@ -27,12 +27,12 @@ public class NoticeService {
     /**
      * 공지사항 상세 조회 (조회수 증가 포함)
      */
-    @Transactional
+    @Transactional // 조회수가 증가하여 데이터가 변하기 때문에 readOnly 옵션 제거
     public Notice findById(Long id) {
         Notice notice = noticeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id=" + id));
 
-        // 조회수 증가 로직 (엔티티에 메서드를 만들어두면 좋습니다)
+        // 조회수 증가 로직
         notice.increaseViewCount();
 
         return notice;
