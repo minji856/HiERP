@@ -15,8 +15,8 @@
     <!-- BootStrap4버전 이상부터 viewport 태그 추가 필수 -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/css/bootstrap/css/main.css}">
-    <link rel="stylesheet" th:href="@{/css/fullCalendar.css}">
-    <!--    <link rel="stylesheet" th:href="@{/css/bootstrap/css/fullcalendar.css}">-->
+    <!--<link rel="stylesheet" th:href="@{/css/fullCalendar.css}">-->
+    <link rel="stylesheet" th:href="@{/css/bootstrap/css/fullcalendar.css}">
     <style>
     </style>
 </head>
@@ -35,7 +35,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card-style calendar-card mb-30">
-                <div th:fragment="calendarFragment">
+                <div th:id="${wrapperId ?: 'calendar-full'}" class="fc fc-media-screen fc-direction-ltr fc-theme-standard" th:fragment="calendarFragment(wrapperId)">
                     <div id="calendar" class="calendar-container"></div>
                     <script src="/js/calendar.js"></script>
                     <div th:replace="~{modal/eventDetailModal :: eventDetail}"></div>
