@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/bootstrap/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap/css/fullcalendar.css}">
     <title>Hi-E</title>
 </head>
 
@@ -21,7 +22,9 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="title">
-                            <h2><font dir="auto" style="vertical-align: inherit;"><font dir="auto" style="vertical-align: inherit;">HiE 대시보드</font></font></h2>
+                            <h2><font dir="auto" style="vertical-align: inherit;"><font dir="auto"
+                                                                                        style="vertical-align: inherit;">HiE
+                                대시보드</font></font></h2>
                         </div>
                     </div>
                     <!-- end col -->
@@ -45,7 +48,9 @@
                 </div>
                 <div class="col-lg-5">
                     <div class="card-style calendar-card mb-30">
-                        <div th:replace="~{calendar :: calendarFragment}" class="calendar-container"></div>
+<!--                        <div id="calendar-mini" class="fc fc-media-screen fc-direction-ltr fc-theme-standard">-->
+                            <div th:replace="~{calendar :: calendarFragment('calendar-mini')}"></div>
+<!--                        </div>-->
                     </div>
                 </div>
             </div>
