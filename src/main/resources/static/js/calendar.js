@@ -19,16 +19,22 @@ document.addEventListener('DOMContentLoaded', function () {
     let eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
     let eventDetailModal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
 
+    // 달력을 감싸고 있는 부모의 ID가 'calendar-mini'인지 확인
+    let isMini = calendarEl.closest('#calendar-mini') !== null;
+
     let calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'ko',
-        // 부모 컨테이너(카드) 높이에 딱 맞게 조절
-        height: 'auto',
         // 화면 비율에 맞춰서 유지하고 싶다면 (낮을수록 세로가 길어짐)
-        aspectRatio: 1,
+        // aspectRatio: 1,
         // 캘린더 내부의 셀 높이를 균등하게 배분
-        expandRows: true,
+        // expandRows: true,
         handleWindowResize: true,
+        // 높이와 행 확장 옵션을 상황에 맞게 분기 처리
+        // main(Mini)에서는 undefined를 줘서 기본 설정대로 동작하게 하고,
+        // Full에서는 800px(또는 원하는 높이)를 줘서 큼직하게 만듭니다.
+        height: isMini ? undefined : 800,
+        expandRows: !isMini, // Full 화면일 때만 내부 칸들이 800px 안에서 꽉 차게 팽창함
         // 기본 옵션인 날짜에 숫자+일에서 '일' 글자 지우는 옵션
         dayCellContent: arg => ({html: arg.dayNumberText.replace('일', '')}),
         headerToolbar: {
