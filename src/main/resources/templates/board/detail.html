@@ -24,10 +24,10 @@
                     <div>
                         <h4 class="mb-10" th:text="${notice.title}">게시글 제목이 들어갑니다.</h4>
                         <p class="text-sm">
-                            <span class="text-medium">작성자:</span> <span th:text="${notice.author.name}">관리자</span>
+                            <span class="text-medium">작성자:</span> <span th:text="${notice.authorName}">관리자</span>
                             <span class="mx-2">|</span>
                             <span class="text-medium">작성일:</span> <span
-                                th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd HH:mm')}">2026-05-14</span>
+                                th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd HH:mm')}"></span>
                             <span class="mx-2">|</span>
                             <span class="text-medium">조회수:</span> <span th:text="${notice.viewCount}">0</span>
                         </p>
