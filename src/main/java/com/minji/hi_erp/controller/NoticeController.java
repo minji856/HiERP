@@ -1,10 +1,12 @@
 package com.minji.hi_erp.controller;
 
 import com.minji.hi_erp.dto.NoticeRequestDto;
+import com.minji.hi_erp.dto.NoticeResponseDto;
 import com.minji.hi_erp.entity.Notice;
 import com.minji.hi_erp.entity.Users;
 import com.minji.hi_erp.service.CustomUserDetails;
 import com.minji.hi_erp.service.NoticeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +15,10 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -39,17 +44,17 @@ public class NoticeController {
 
     // 글쓰기 저장
     @PostMapping("/write")
-    public String write(NoticeRequestDto requestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails, RedirectAttributes rattr) {
+    public String write(@Valid NoticeRequestDto requestDto, @AuthenticationPrincipal CustomUserDetails customUserDetails, RedirectAttributes rattr) {
         try {
             // 로그인한 사용자 엔티티 가져오기
             Users author = customUserDetails.getUsers();
             noticeService.save(requestDto, author);
 
             rattr.addFlashAttribute("successMessage", "게시글이 등록되었습니다.");
-            return "redirect:/board/notice";
+            return "redirect:/notice";
         } catch (Exception e) {
             rattr.addFlashAttribute("errorMessage", "등록 중 오류가 발생했습니다.");
-            return "redirect:/board/write";
+            return "redirect:/write";
         }
     }
 
@@ -59,8 +64,8 @@ public class NoticeController {
      */
     @GetMapping("/{id}")
     public String detail(@PathVariable Long id, Model model){
-        Notice notice = noticeService.findById(id);
-        model.addAttribute("notice", notice);
+        NoticeResponseDto responseDto = noticeService.findById(id);
+        model.addAttribute("notice", responseDto);
 
         return "board/detail";
    }
