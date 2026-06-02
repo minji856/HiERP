@@ -1,5 +1,6 @@
 package com.minji.hi_erp.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NoticeRequestDto {
+    @NotBlank
     private String title;
+    
+    @NotBlank(message = "내용을 입력해 주세요.")
     private String content;
 }
