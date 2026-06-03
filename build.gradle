@@ -39,13 +39,15 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
-
 	/* Lombok */
 	implementation 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
 	/* db */
+	// MySQL
 	runtimeOnly 'com.mysql:mysql-connector-j:9.5.0'
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	/* Swagger */
 	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
