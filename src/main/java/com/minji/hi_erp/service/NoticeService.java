@@ -8,6 +8,7 @@ import com.minji.hi_erp.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class NoticeService {
 
     private final NoticeRepository noticeRepository;
+    private final RedisTemplate redisTemplate;
 
     /**
      * 공지사항 전체 목록 조회 (페이징 처리)
@@ -74,4 +76,21 @@ public class NoticeService {
 
         noticeRepository.delete(notice);
     }
+
+    // Redis 적용 코드
+    /*
+    public NoticeResponseDto getNotice(Long noticeId, Long userId){
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id=" + noticeId));
+
+        // Redis에서 현재 글의 진짜 최신 조회수 꺼내오기
+        String viewKey = "notice:viewCount:" + noticeId;
+        String countStr = (String) redisTemplate.opsForValue().get(viewKey);
+
+        // Redis에 값이 없으면 DB 값을 쓰고, 값이 있으면 숫자로 변환
+        int currentViewCount = (countStr == null) ? notice.getViewCount() : Integer.parseInt(countStr);
+
+        return new NoticeResponseDto(notice, currentViewCount);
+    }
+    */
 }

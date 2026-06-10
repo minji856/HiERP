@@ -26,6 +26,7 @@ public class NoticeResponseDto {
         this.createdDate = notice.getCreatedDate(); // BaseTimeEntity 상속
         this.lastModifiedDate = notice.getLastModifiedDate(); // BaseTimeEntity 상속
         this.viewCount = notice.getViewCount();
+        // this.viewCount = redisViewCount; redis 적용할 때
         this.authorName = notice.getAuthor().getName();
     }
 }
