@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class NoticeRequestDto {
     @NotBlank
     private String title;
-    
+
     @NotBlank(message = "내용을 입력해 주세요.")
     private String content;
 }
