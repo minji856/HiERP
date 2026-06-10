@@ -42,3 +42,16 @@
     background-color: rgba(129, 199, 132, 0.15); /* 연한 초록빛 하이라이트 */
     border-radius: 8px; /* 살짝 둥글게 (선택 사항) */
 }
+
+/* 캘린더 크기 수정 */
+.calendar-card {
+    height: auto !important; /* 고정 높이 해제 */
+    min-height: 500px;        /* 최소 높이만 지정 */
+    padding: 20px !important; /* 이미지처럼 여백을 적당히 주려면 padding 유지 */
+    display: block;           /* 레이아웃 방식 확인 */
+}
+
+/* 캘린더 자체 컨테이너 */
+.calendar-container {
+    width: 100%;
+}
