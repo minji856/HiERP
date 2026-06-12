@@ -28,17 +28,26 @@ public class NoticeService {
     }
 
     /**
-     * 공지사항 상세 조회 (조회수 증가 포함)
+     * 공지사항 상세 조회
      */
-    @Transactional // 조회수가 증가하여 데이터가 변하기 때문에 readOnly 옵션 제거
+    @Transactional(readOnly = true) // 데이터 변경이 없으므로 최전화
     public NoticeResponseDto findById(Long id) {
         Notice notice = noticeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id=" + id));
 
-        // 조회수 증가 로직
-        notice.increaseViewCount();
-
         return new NoticeResponseDto(notice); // 엔티티를 DTO로 변환
+    }
+
+    /**
+     * 쿠키 검사를 통과한 것만 조회수 증가
+     */
+    @Transactional
+    public void increaseViewCount(Long id){
+        Notice notice = noticeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id=" + id));
+
+        // Entity 내부의 viewCount++ 호출
+        notice.increaseViewCount();
     }
 
     /**
