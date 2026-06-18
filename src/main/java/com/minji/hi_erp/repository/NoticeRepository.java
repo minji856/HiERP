@@ -22,7 +22,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
     // 가장 최신 5개글만
     List<Notice> findTop5ByOrderByCreatedDateDesc();
 
-    @Modifying // 💡 INSERT, UPDATE, DELETE 쿼리임을 나타냄 (필수)
+    @Modifying(clearAutomatically = true) // INSERT, UPDATE, DELETE 쿼리임을 나타냄 (필수)
     @Query("UPDATE Notice n SET n.viewCount = n.viewCount + 1 WHERE n.id = :id")
     int updateViewCount(@Param("id") Long id);
 }

@@ -41,6 +41,7 @@ public class NoticeService {
     /**
      * 쿠키 검사를 통과한 것만 조회수 증가
      */
+    /*
     @Transactional
     public void increaseViewCount(Long id){
         Notice notice = noticeRepository.findById(id)
@@ -48,6 +49,16 @@ public class NoticeService {
 
         // Entity 내부의 viewCount++ 호출
         notice.increaseViewCount();
+    }
+    */
+
+    /**
+     * DB에서 조회수 증가
+     * @param id
+     */
+    @Transactional // @Modifying 쿼리 실행시 Transactional 필요
+    public void increasViewCountatDB(Long id){
+        noticeRepository.updateViewCount(id);
     }
 
     /**

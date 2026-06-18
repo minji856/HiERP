@@ -48,7 +48,8 @@ public class NoticeViewTest {
                     readyLatch.countDown();
                     startLatch.await();
 
-                    noticeService.increaseViewCount(noticeId);
+                    //noticeService.increaseViewCount(noticeId); 기존 ++ 메서드
+                    noticeService.increasViewCountatDB(noticeId);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {

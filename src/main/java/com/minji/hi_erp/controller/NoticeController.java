@@ -96,7 +96,8 @@ public class NoticeController {
             // 현재 게시글 ID가 쿠키 값에 포함되어 있지 않은지 확인합니다. (예: "[1][3][5]")
             if (!oldCookie.getValue().contains("[" + id + "]")){
                 // 조회수 증가
-                noticeService.increaseViewCount(id);
+                //noticeService.increaseViewCount(id);
+                noticeService.increasViewCountatDB(id);
                 // 쿠키 값 뒤에 현재 글 ID를 이어 붙입니다. (예: "[1][3]" -> "[1][3][5]")
                 oldCookie.setValue(oldCookie.getValue() + "[" + id + "]");
                 oldCookie.setPath("/");
@@ -108,7 +109,8 @@ public class NoticeController {
 
         // 게시판을 처음 보는 사람
         else {
-            noticeService.increaseViewCount(id);
+            //noticeService.increaseViewCount(id);
+            noticeService.increasViewCountatDB(id);
             Cookie newCookie = new Cookie("noticeView", "[" + id + "]");
             newCookie.setPath("/"); // 모든 경로에서 접근 가능
             // newCookie.setMaxAge(60 * 60 * 24);
