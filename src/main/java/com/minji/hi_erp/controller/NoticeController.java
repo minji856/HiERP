@@ -63,8 +63,13 @@ public class NoticeController {
      *
      */
     @GetMapping("/{id}")
-    public String detail(@PathVariable Long id, Model model){
-        NoticeResponseDto responseDto = noticeService.findById(id);
+    public String detail(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails, Model model){
+        // NoticeResponseDto responseDto = noticeService.findById(id);
+        // 유저 엔티티나 세션에서 id를 꺼냅니다.
+        Long userId = userDetails.getUsers().getId();
+
+        NoticeResponseDto responseDto = noticeService.getNotice(id, userId);
+
         model.addAttribute("notice", responseDto);
 
         return "board/detail";
