@@ -120,4 +120,22 @@ public class NoticeService {
             redisTemplate.opsForValue().set(userKey, "true", 24, TimeUnit.HOURS); // 24시간 뒤 자동 만료
         }
     }
+
+    // 목록에서도 조회수 동기화
+    public Page<NoticeResponseDto> getNoticeList(Pageable pageable) {
+        // 1. DB에서 일단 공지사항 페이징 데이터를 가져옵니다.
+        Page<Notice> noticePage = noticeRepository.findAll(pageable);
+
+        // 2. 각 게시글마다 Redis에서 실시간 조회수를 꺼내서 DTO로 변환합니다.
+        return noticePage.map(notice -> {
+            String viewKey = "notice:viewCount:" + notice.getId();
+            String countStr = redisTemplate.opsForValue().get(viewKey);
+
+            // Redis에 캐싱된 값이 있으면 그걸 쓰고, 없으면 DB에 있던 기존 조회수를 사용합니다.
+            int currentViewCount = (countStr == null) ? notice.getViewCount() : Integer.parseInt(countStr);
+
+            // 상세조회 때 만들어둔 생성자(Notice, viewCount)를 그대로 재활용!
+            return new NoticeResponseDto(notice, currentViewCount);
+        });
+    }
 }

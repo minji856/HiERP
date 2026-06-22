@@ -63,7 +63,7 @@
                                             <a th:href="@{/notice/{id}(id=${notice.id})}"
                                                th:text="${notice.title}" class="text-dark fw-bold">제목</a>
                                         </td>
-                                        <td class="min-width"><p th:text="${notice.author.name}">관리자</p></td>
+                                        <td class="min-width"><p th:text="${notice.authorName}">관리자</p></td>
                                         <td class="min-width"><p th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}">
                                             2026-04-20</p></td>
                                         <td class="min-width"><p th:text="${notice.viewCount}">0</p></td>
