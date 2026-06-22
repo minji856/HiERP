@@ -2,7 +2,6 @@ package com.minji.hi_erp.controller;
 
 import com.minji.hi_erp.dto.NoticeRequestDto;
 import com.minji.hi_erp.dto.NoticeResponseDto;
-import com.minji.hi_erp.entity.Notice;
 import com.minji.hi_erp.entity.Users;
 import com.minji.hi_erp.service.CustomUserDetails;
 import com.minji.hi_erp.service.NoticeService;
@@ -30,7 +29,9 @@ public class NoticeController {
 
     @GetMapping("")
     public String list(Model model, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<Notice> noticeList = noticeService.findAll(pageable);
+        //Page<Notice> noticeList = noticeService.findAll(pageable);
+        Page<NoticeResponseDto> noticeList = noticeService.getNoticeList(pageable);
+
         model.addAttribute("notices", noticeList);
         return "board/notice";
     }
