@@ -12,6 +12,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -117,7 +120,16 @@ public class NoticeService {
         // 해당 글을 오늘 처음 보는 유저라면
         if (Boolean.FALSE.equals(hasViewed)) {
             redisTemplate.opsForValue().increment(viewKey, 1); // 조회수 +1
-            redisTemplate.opsForValue().set(userKey, "true", 24, TimeUnit.HOURS); // 24시간 뒤 자동 만료
+            // 1. 현재 시간과 내일 자정 시간 구하기
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime nextMidnight = LocalDate.now().plusDays(1).atStartOfDay(); // 내일 00시 00분 00초
+
+            // 2. 자정까지 남은 시간을 초(Seconds) 단위로 계산하기
+            long secondsUntilMidnight = Duration.between(now, nextMidnight).getSeconds();
+
+            // 3. 남은 시간만큼만 Redis 키가 살아있도록 설정
+            redisTemplate.opsForValue().set(userKey, "true", secondsUntilMidnight, TimeUnit.SECONDS);
+            // redisTemplate.opsForValue().set(userKey, "true", 24, TimeUnit.HOURS); // 24시간 뒤 자동 만료
         }
     }
 
