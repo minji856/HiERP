@@ -44,7 +44,12 @@
                             <div class="table-wrapper table-responsive">
                                 <table class="table">
                                     <colgroup>
-                                        <col style="width: 10%;"> <col style="width: auto;"> <col style="width: 15%;"> <col style="width: 20%;"> <col style="width: 10%;"> </colgroup>
+                                        <col style="width: 10%;">
+                                        <col style="width: auto;">
+                                        <col style="width: 15%;">
+                                        <col style="width: 20%;">
+                                        <col style="width: 10%;">
+                                    </colgroup>
 
                                     <thead>
                                     <tr>
@@ -57,16 +62,18 @@
                                     </thead>
                                     <!-- end thead-->
                                     <tbody>
-                                    <tr th:each="notice : ${notices}">
+                                    <tr th:each="notice : ${notices}" class="notice-row" th:data-id="${notice.id}">
                                         <td class="min-width"><p th:text="${notice.id}">1</p></td>
                                         <td class="min-width">
                                             <a th:href="@{/notice/{id}(id=${notice.id})}"
                                                th:text="${notice.title}" class="text-dark fw-bold">제목</a>
                                         </td>
                                         <td class="min-width"><p th:text="${notice.authorName}">관리자</p></td>
-                                        <td class="min-width"><p th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}">
+                                        <td class="min-width"><p
+                                                th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}">
                                             2026-04-20</p></td>
-                                        <td class="min-width"><p th:text="${notice.viewCount}">0</p></td>
+                                        <td class="min-width"><p th:text="${notice.viewCount}" class="view-count">0</p>
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -78,7 +85,46 @@
             <!-- end noticeFragment-->
         </div>
     </div>
+    <script>
+        function updateRealTimeViewCounts() {
+            // 현재 화면에 렌더링된 모든 공지사항 행(Row)을 찾아서 ID 목록을 수집합니다.
+            const rows = document.querySelectorAll('.notice-row');
+            const ids = [];
+            rows.forEach(row => {
+                ids.push(row.getAttribute('data-id'));
+            });
+
+            if (ids.length === 0) return;
+
+            // 쿼리 스트링 형태로 URL을 조립합니다. (예: /api/notice/view-counts?ids=5,4,3)
+            const url = `/api/notice/view-counts?ids=${ids.join(',')}`;
+
+            // 비동기 Fetch API를 통해 최신 데이터를 가져옵니다.
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Redis에서 받아온 최신 조회수 데이터:", data);
+                    // data 예시: {"5": 125, "6": 42}
+                    rows.forEach(row => {
+                        const id = row.getAttribute('data-id');
+                        if (data[id] !== undefined) {
+                            // 해당 행 내부의 view-count 클래스를 가진 p태그의 텍스트를 변경합니다.
+                            row.querySelector('.view-count').innerText = data[id];
+                        }
+                    });
+                })
+                .catch(error => console.error('조회수 동기화 실패:', error));
+        }
+
+        // 페이지가 처음 로드되고 나서 한 번 실행
+        document.addEventListener("DOMContentLoaded", function () {
+            updateRealTimeViewCounts();
+
+            // 10초(10000ms)마다 새로고침 없이 뒷단에서 조회수를 계속 업데이트합니다.
+            // 실서버 반영 시에는 시스템 부하를 고려해 30초~1분(30000~60000) 추천
+            setInterval(updateRealTimeViewCounts, 10000);
+        });
+    </script>
 </div>
-</th:block>
 </body>
 </html>
