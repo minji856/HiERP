@@ -3,10 +3,7 @@ package com.minji.hi_erp.controller;
 import com.minji.hi_erp.dto.ChangePasswordRequestDto;
 import com.minji.hi_erp.dto.UserJoinDto;
 import com.minji.hi_erp.entity.Users;
-import com.minji.hi_erp.repository.EmailTokenRepository;
 import com.minji.hi_erp.service.CustomUserDetails;
-import com.minji.hi_erp.service.EmailService;
-import com.minji.hi_erp.service.EmailVerifyService;
 import com.minji.hi_erp.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -72,7 +69,13 @@ public class AccountController {
     }
 
     @GetMapping("/join-success")
-    public String joinSuccess() {
+    public String joinSuccess(Model model) {
+        if (!model.containsAttribute("message")) {
+            model.addAttribute("message", null);
+        }
+        if (!model.containsAttribute("error")) {
+            model.addAttribute("error", null);
+        }
         return "account/join-success";
     }
 
