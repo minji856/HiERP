@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/bootstrap/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap/css/lineicons.css}">
+    <title>아이디 찾기 결과</title>
+</head>
+<body class="bg-light">
+
+<div class="row g-0 auth-row justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="col-11 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+
+        <div class="auth-card-wrapper bg-white rounded-3 shadow-sm p-4 p-sm-5 border">
+
+            <div class="text-center mb-4">
+                <div class="icon-shape bg-primary-soft text-primary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+                     style="width: 60px; height: 60px; background-color: rgba(74, 108, 247, 0.1);">
+                    <i class="lni lni-user fs-2 text-primary"></i>
+                </div>
+                <h3 class="fw-bold text-dark mb-2">아이디 찾기 결과</h3>
+            </div>
+
+            <div class="alert bg-light text-center border-0 p-4 mb-4 rounded-3">
+                <p class="text-dark fw-medium mb-2">
+                    <strong th:text="${username}" class="text-primary">홍길동</strong> 사원님의 정보와 일치하는 아이디입니다.
+                </p>
+
+                <div class="bg-white border rounded py-2 px-3 my-3 fw-bold text-primary d-inline-block fs-5">
+                    <i class="lni lni-envelope me-2"></i>
+                    <span th:text="${maskedEmail}">ex****@domain.com</span>
+                </div>
+
+                <p class="text-muted small mb-0">
+                    <i class="lni lni-lock me-1"></i> 보안을 위해 아이디의 일부를 마스킹 처리하였습니다.
+                </p>
+            </div>
+
+            <div class="d-flex flex-column gap-2">
+                <a th:href="@{/main}" class="btn btn-primary w-100 py-2.5 fw-medium shadow-sm">
+                    <i class="lni lni-enter me-2"></i>로그인하러 가기
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
