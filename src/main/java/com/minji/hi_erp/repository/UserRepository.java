@@ -28,4 +28,9 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     @Modifying
     @Query("UPDATE Users u SET u.password = :newPassword WHERE u.email = :email")
     void updatePassword(@Param("email") String email, @Param("newPassword") String newPassword);
+
+    /**
+     * 이름과 휴대전화로 유저를 찾는 쿼리 문입니다.
+     */
+    Optional<Users> findByNameAndPhoneNum(String name, String phoneNum);
 }
