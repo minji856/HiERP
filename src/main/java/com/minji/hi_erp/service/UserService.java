@@ -225,8 +225,9 @@ public class UserService {
     }
 
     // 임시 비밀번호 저장하고 메일 보내는 메서드 입니다.
-    @Transactional(readOnly = true)
+    @Transactional
     public void resetPasswordAndSendMail(String email) {
+        // 사용자 검증
         Users user = validateUser(email);
 
         String tempPassword = generateTempassword();
@@ -252,8 +253,43 @@ public class UserService {
             emailService.sendEmail(dto);
         } catch (MessagingException e) {
             log.error("임시 비밀번호 메일 발송 실패. email={}", email, e);
-
             throw new IllegalStateException("메일 발송 실패", e);
         }
+    }
+
+    public String findMaskedEmailByNameAndPhone(String name, String phone) {
+        // DB에서 이름과 전화번호로 유저 조회 (조회 조건에 맞는 메서드가 UserRepository에 선언되어 있어야 합니다)
+        Users user = userRepository.findByNameAndPhoneNum(name, phone)
+                .orElseThrow(() -> new IllegalArgumentException("입력하신 정보와 일치하는 계정이 존재하지 않습니다."));
+
+        // 유저의 원래 이메일을 가져와서 마스킹 처리 후 반환
+        return maskEmail(user.getEmail());
+    }
+
+    /**
+     * 이메일 마스킹 유틸리티 메서드
+     * 예: example123@gmail.com -> exa******@gmail.com
+     */
+    private String maskEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            return email;
+        }
+
+        String[] parts = email.split("@");
+        String localPart = parts[0];  // @ 앞부분 (아이디)
+        String domainPart = parts[1]; // @ 뒷부분 (도메인)
+
+        int length = localPart.length();
+
+        // 아이디 길이가 너무 짧은 경우 예외 처리
+        if (length <= 2) {
+            return localPart.charAt(0) + "*" + "@" + domainPart;
+        }
+
+        // 앞 3글자만 남기고 나머지는 * 자로 채우기 (Java 11+ .repeat() 사용)
+        String visiblePart = localPart.substring(0, 3);
+        String maskedPart = "*".repeat(length - 3);
+
+        return visiblePart + maskedPart + "@" + domainPart;
     }
 }
