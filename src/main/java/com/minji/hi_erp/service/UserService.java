@@ -246,7 +246,7 @@ public class UserService {
                 user.getEmail(),
                 "임시 비밀번호 안내",
                 ctx,
-                "tempPassword"
+                "reset-password-email"
         );
 
         try {
