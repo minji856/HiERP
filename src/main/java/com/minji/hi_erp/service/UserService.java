@@ -182,7 +182,7 @@ public class UserService {
      *
      * @param requestDto
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public void changePassword(ChangePasswordRequestDto requestDto) {
         // 로그인중인지 확인
         Users users = getCurrentLoggedInMember();
