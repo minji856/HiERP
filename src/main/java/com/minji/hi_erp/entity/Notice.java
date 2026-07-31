@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class Notice extends BaseTimeEntity { // 생성일, 수정일 자동 관리를 위해 상속
 
     @Id
+    @Column(name = "NOTICE_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
