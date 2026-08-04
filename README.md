@@ -56,36 +56,99 @@ HiERP/
 │   ├── main/
 │   │   ├── java/
 │   │   │   └── com/
-│   │   │       └── example/
-│   │   │           ├── domain/                      # 비즈니스 로직 (컨트롤러, 서비스, 리포지토리)
-│   │   │           │   ├── account/                 # 계정 및 사원 관리
-│   │   │           │   ├── admin/                   # 관리자 전용 기능
-│   │   │           │   ├── board/                   # 사내 게시판
-│   │   │           │   ├── calendar/                # 일정 관리
-│   │   │           │   └── mail/                    # 사내 메일
-│   │   │           └── global/                      # 공통 설정 (Security, Exception 등)
+│   │   │       └── minji/
+│   │   │           └── hi_erp/
+│   │   │               ├── HiErpApplication.java
+│   │   │               │
+│   │   │               ├── controller/                       # 웹 & API 컨트롤러
+│   │   │               │   ├── AccountController.java
+│   │   │               │   ├── AdminController.java
+│   │   │               │   ├── ApiKeyController.java
+│   │   │               │   ├── AttendanceController.java
+│   │   │               │   ├── EmailController.java
+│   │   │               │   ├── EmailVerifyController.java
+│   │   │               │   ├── EventController.java
+│   │   │               │   ├── NoticeApiController.java
+│   │   │               │   ├── NoticeController.java
+│   │   │               │   ├── ValidController.java
+│   │   │               │   └── ViewController.java
+│   │   │               │
+│   │   │               ├── service/                          # 비즈니스 로직
+│   │   │               │   ├── AdminService.java
+│   │   │               │   ├── CustomUserDetails.java
+│   │   │               │   ├── CustomUserDetailsService.java
+│   │   │               │   ├── EmailService.java
+│   │   │               │   ├── EmailVerifyService.java
+│   │   │               │   ├── EventService.java
+│   │   │               │   ├── NoticeService.java
+│   │   │               │   └── UserService.java
+│   │   │               │
+│   │   │               ├── entity/                           # JPA 도메인 엔티티
+│   │   │               │   ├── Attendance.java               # 근태
+│   │   │               │   ├── BaseTimeEntity.java           # 생성/수정일 공통 엔티티
+│   │   │               │   ├── EmailToken.java               # 이메일 인증 토큰
+│   │   │               │   ├── Event.java                    # 캘린더/일정
+│   │   │               │   ├── Notice.java                   # 공지사항
+│   │   │               │   └── Users.java                    # 사용자/사원
+│   │   │               │
+│   │   │               ├── repository/                       # JPA 리포지토리
+│   │   │               │   ├── EmailTokenRepository.java
+│   │   │               │   ├── EventRepository.java
+│   │   │               │   ├── NoticeRepository.java
+│   │   │               │   └── UserRepository.java
+│   │   │               │
+│   │   │               ├── dto/                              # 데이터 전송 객체
+│   │   │               │   ├── AttendanceDto.java
+│   │   │               │   ├── ChangePasswordRequestDto.java
+│   │   │               │   ├── EventDto.java
+│   │   │               │   ├── MailDto.java
+│   │   │               │   ├── NoticeRequestDto.java
+│   │   │               │   ├── NoticeResponseDto.java
+│   │   │               │   ├── UserJoinDto.java
+│   │   │               │   └── UserLoginDto.java
+│   │   │               │
+│   │   │               ├── security/config/                  # 보안 및 인프라 설정
+│   │   │               │   ├── RedisConfig.java
+│   │   │               │   └── SecurityConfig.java
+│   │   │               │
+│   │   │               ├── enums/                            # 공통 열거형
+│   │   │               │   ├── Gender.java
+│   │   │               │   └── Role.java
+│   │   │               │
+│   │   │               └── scheduler/                        # 주기적 스케줄링 작업
+│   │   │                   └── NoticeViewScheduler.java
 │   │   │
 │   │   └── resources/
-│   │       ├── static/                              # 정적 자원
-│   │       │   ├── css/                             # 스타일시트
-│   │       │   └── js/                              # 자바스크립트 파일
-│   │       ├── templates/                           # Thymeleaf 뷰 템플릿
-│   │       │   ├── account/                         # 계정/사원 관련 뷰
-│   │       │   ├── admin/                           # 시스템 관리자 뷰
-│   │       │   ├── board/                           # 게시판 뷰
-│   │       │   ├── error/                           # 예외 처리 페이지
-│   │       │   ├── layout/                          # 공통 레이아웃 (Header, Sidebar, Footer)
-│   │       │   ├── mail/                            # 메일 송수신 뷰
-│   │       │   ├── modal/                           # 공통 모달 팝업 템플릿
-│   │       │   ├── calendar.html                    # 캘린더/일정 관리 뷰
-│   │       │   └── main.html                        # 메인 대시보드 뷰
-│   │       ├── application.properties               # 메인 환경 설정
-│   │       └── application-API-KEY.properties       # API 키 및 보안 관련 설정
+│   │       ├── static/                                       # 정적 자원 (css, js)
+│   │       │   ├── css/
+│   │       │   └── js/
+│   │       ├── templates/                                    # Thymeleaf 뷰 템플릿
+│   │       │   ├── account/
+│   │       │   ├── admin/
+│   │       │   ├── board/
+│   │       │   ├── error/
+│   │       │   ├── layout/
+│   │       │   ├── mail/
+│   │       │   ├── modal/
+│   │       │   ├── calendar.html
+│   │       │   └── main.html
+│   │       ├── application.properties                        # 기본 환경 설정
+│   │       └── application-API-KEY.properties                # API 키 및 보안 프로퍼티
 │   │
-│   └── test/                                        # 단위 및 통합 테스트
+│   └── test/
 │       └── java/
 │           └── com/
-│               └── example/
+│               └── minji/
+│                   └── hi_erp/                               # 단위 및 통합 테스트
+│                       ├── AccountControllerTest.java
+│                       ├── EmailVerifyServiceTest.java
+│                       ├── EventDeleteTest.java
+│                       ├── HiErpApplicationTests.java
+│                       ├── MailRenderTest.java
+│                       ├── MailTest.java
+│                       ├── RedisTest.java
+│                       ├── ResetPasswordTest.java
+│                       └── UserTest.java
 │
 ├── .gitignore
 ├── build.gradle
@@ -93,25 +156,54 @@ HiERP/
 └── README.md
 ```
 
-## 📂 Directory Structure
+## 📂 프론트앤드 Directory Structure
 
 ```text
-src/main/
-├── java/com/example/             # 백엔드 자바 로직 (Domain & Global)
-└── resources/
-    ├── static/                 # css, js 등 정적 파일
-    ├── templates/              # Thymeleaf HTML 페이지
-    │   ├── account/            # 계정 관리 뷰
-    │   ├── admin/              # 관리자 뷰
-    │   ├── board/              # 게시판 뷰
-    │   ├── error/              # 에러 페이지
-    │   ├── layout/             # 공통 레이아웃
-    │   ├── mail/               # 메일 시스템 뷰
-    │   ├── modal/              # 모달 팝업
-    │   ├── calendar.html       # 일정 페이지
-    │   └── main.html           # 메인 대시보드
-    ├── application.properties          # 메인 설정
-    └── application-API-KEY.properties  # API 키 설정
+src/main/resources/
+├── static/                                       # 정적 자원 (Static Assets)
+│   ├── css/                                      # 글로벌 & 페이지별 스타일시트
+│   └── js/                                       # Fetch API / AJAX 이벤트 스크립트
+│
+└── templates/                                    # Thymeleaf 뷰 템플릿 Engine
+    ├── account/                                  # 계정 / 회원가입 / 인증 뷰
+    │   ├── change-password.html                  # 비밀번호 변경
+    │   ├── find-id-success.html                  # 아이디 찾기 완료
+    │   ├── find-password.html                    # 비밀번호 찾기 신청
+    │   ├── find-password-success.html            # 비밀번호 찾기 안내 완료
+    │   ├── join.html                             # 회원가입 양식
+    │   ├── join-success.html                     # 회원가입 완료 안내
+    │   ├── login.html                            # 로그인
+    │   ├── main.html                             # 계정 관리 서브 메인
+    │   └── mypage.html                           # 마이페이지 (개인정보 수정)
+    │
+    ├── admin/                                    # 관리자 전용 뷰
+    │   └── admin-setting.html                    # 관리자 대시보드 & 권한 설정
+    │
+    ├── board/                                    # 게시판 (공지사항) 뷰
+    │   ├── detail.html                           # 게시글 상세 보기
+    │   ├── notice.html                           # 공지사항 목록
+    │   └── write.html                            # 게시글 작성 및 수정
+    │
+    ├── error/                                    # 예외 처리 뷰
+    │   └── 404.html                              # 404 Not Found 페이지
+    │
+    ├── layout/                                   # 공통 프레임워크 레이아웃
+    │   ├── user-layout.html                      # 기본 페이지 틀 (Layout Dialect)
+    │   └── fragments/                            # 재사용 컴포넌트 조각
+    │       └── sidebar.html                      # 좌측 사이드바 내비게이션
+    │
+    ├── mail/                                     # 발송용 이메일 HTML 템플릿
+    │   ├── email-layout.html                     # 이메일 공통 레이아웃
+    │   ├── email-verify.html                     # 회원가입 이메일 인증 템플릿
+    │   ├── mail-test.html                        # 메일 발송 테스트 페이지
+    │   └── reset-password-email.html             # 비밀번호 재설정 인증 메일 템플릿
+    │
+    ├── modal/                                    # 레이어 팝업 (모달) 템플릿
+    │   ├── eventDetailModal.html                 # 캘린더 일정 상세 조회/삭제 모달
+    │   └── eventModal.html                       # 캘린더 일정 등록/수정 모달
+    │
+    ├── calendar.html                             # 캘린더 / 일정 관리 메인 페이지
+    └── main.html                                 # ERP 서비스 메인 대시보드
 ```
 
 # 🚀 Getting Started
