@@ -157,6 +157,7 @@ HiERP/
 ```
 
 ## 📂 프론트앤드 Directory Structure
+HiERP의 프론트엔드는 **Thymeleaf Template Engine**과 **Thymeleaf Layout Dialect**를 기반으로 화면 레이아웃 및 모듈형 템플릿을 분리하여 구성되어 있습니다.
 
 ```text
 src/main/resources/
