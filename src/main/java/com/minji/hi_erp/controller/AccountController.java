@@ -131,7 +131,12 @@ public class AccountController {
     }
 
     @GetMapping("/change-password")
-    public String changePasswordForm() {
+    public String changePasswordForm(Model model) {
+        // 현재 로그인한 유저 정보 조회
+        Users user = userService.getCurrentLoggedInMember();
+        // 임시 비밀번호 사용 여부를 Model에 전달 (예: user.isTempPassword() 또는 user.getIsTempPwdYn())
+        model.addAttribute("isTempPassword", user.isTempPassword());
+
         return "account/change-password"; // 비밀번호 변경 폼 페이지
     }
 
@@ -156,17 +161,10 @@ public class AccountController {
     @PostMapping("/find-password")
     public String findPassword(@RequestParam String email,
                                RedirectAttributes redirectAttributes) {
-//            userService.resetPasswordAndSendMail(email);
-//
-//            redirectAttributes.addFlashAttribute(
-//                    "message",
-//                    "임시 비밀번호가 이메일로 발송되었습니다."
-//            );
-//            return "redirect:/account/login";
         try {
             userService.resetPasswordAndSendMail(email);
             redirectAttributes.addFlashAttribute("message", "임시 비밀번호가 이메일로 발송되었습니다.");
-            return "redirect:/account/login";
+            return "redirect:/account/find-password-success";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", "입력하신 이메일로 가입된 계정을 찾을 수 없습니다.");
             redirectAttributes.addFlashAttribute("errorCode", "USER_NOT_FOUND");
@@ -174,8 +172,24 @@ public class AccountController {
         }
     }
 
-    @GetMapping("/find-id")
-    public String findId(){
-        return "account/find-id";
+    @PostMapping("/find-id")
+    public String fingdId(@RequestParam String name, String phone, Model model) {
+        try {
+            String maskedEmail = userService.findMaskedEmailByNameAndPhone(name, phone);
+            // 결과를 모델에 담아 결과 화면으로 이동
+            model.addAttribute("username", name);
+            model.addAttribute("maskedEmail", maskedEmail);
+
+            return "account/find-id-success"; // 성공 페이지 뷰 이름
+        }
+        catch (IllegalArgumentException e) {
+            // 유저를 찾지 못했을 경우 기존 화면에 에러 메시지 노출
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("errorCode", "USER_NOT_FOUND");
+            // 아이디 찾기에서 에러가 났을 때 아이디 찾기 탭을 유지하라고 신호를 보냄
+            model.addAttribute("activeTab", "id");
+
+            return "account/find-password"; // 원래 찾기 폼이 있던 뷰 이름
+        }
     }
 }
