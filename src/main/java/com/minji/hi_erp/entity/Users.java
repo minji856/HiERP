@@ -96,4 +96,19 @@ public class Users {
         }
         this.role = newRole;
     }
+
+    // 임시 비밀번호 여부 플래그 (기본값 false)
+    private boolean isTempPassword = false;
+
+    // 비밀번호 변경 시 임시 비밀번호 상태 해제 메서드
+    public void updateTempPassword(String newEncryptedPassword) {
+        this.password = newEncryptedPassword;
+        this.isTempPassword = false; // 정식 비밀번호로 변경했으므로 false 처리
+    }
+
+    // 임시 비밀번호 발급 시 상태 변경 메서드
+    public void tempPassword(String tempEncryptedPassword) {
+        this.password = tempEncryptedPassword;
+        this.isTempPassword = true; // 임시 비밀번호 상태로 변경
+    }
 }
