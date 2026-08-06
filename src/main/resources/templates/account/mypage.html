@@ -22,6 +22,12 @@
                 </div>
             </div>
         </div>
+        <!-- 마이페이지 최상단에 메시지 박스 배치 -->
+        <div th:if="${message}" class="alert-box success-alert mb-20">
+            <div class="alert">
+                <p class="text-medium" th:text="${message}">성공 메시지</p>
+            </div>
+        </div>
 
         <div class="row">
             <div class="col-lg-12">
