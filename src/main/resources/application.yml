@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: hi_erp
+
+  # Database
+  datasource:
+    url: jdbc:mysql://localhost:3306/jpa?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: mysql
+
+  # Redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  # JPA / Hibernate
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+  # 기존 include 대신 import 사용
+  config:
+    import:
+      - optional:file:src/main/resources/application-API-KEY.yml  # 로컬 개발 환경용
+
+  # Mail
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  # Thymeleaf
+  thymeleaf:
+    cache: false
+    check-template-location: true
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
