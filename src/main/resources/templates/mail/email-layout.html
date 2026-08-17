@@ -18,7 +18,7 @@
 
                 <tr>
                     <td style="padding:50px 30px; line-height: 1.6; font-family: sans-serif;">
-                        <div th:replace="${contentPage} :: mail-content">
+                        <div th:replace="~{${contentPage} :: mail-content}">
                         </div>
                     </td>
                 </tr>
