@@ -25,19 +25,20 @@ public class NoticeViewScheduler {
      ** /
      */
     @Transactional
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 */30 * * * *")
     public void syncViewCountFromRedisToMySql() {
-        log.info(">>>> [스케줄러] Redis의 조회수를 MySQL DB에 동기화 시작 <<<<");
-
-        // 1. Redis에 저장된 조회수 Key 패턴들을 전부 찾아옵니다. (예: notice:viewCount:*)
+        // 일단 Redis에서 키가 있는지 조용히 찾아옵니다. (로그 안 찍음)
         Set<String> keys = redisTemplate.keys("notice:viewCount:*");
 
+        // 만약 키가 없으면 아무 일도 없었다는 듯이 조용히 리턴(종료)합니다.
         if (keys == null || keys.isEmpty()) {
-            log.info("[스케줄러] 동기화할 Redis 조회수 데이터가 없습니다.");
             return;
         }
 
-        // 2. 찾아온 Key들을 하나씩 돌면서 처리합니다.
+        // 진짜 동기화할 데이터가 존재할 때만 요란하게 로그를 찍기 시작합니다!
+        log.info(">>>> [스케줄러] Redis ➡️ MySQL 조회수 동기화 시작 (총 {}건) <<<<", keys.size());
+
+        // 찾아온 Key들을 하나씩 돌면서 처리합니다.
         for (String key : keys) {
             // key 예시: "notice:viewCount:5" -> 여기서 맨 끝의 게시글 ID "5"만 쏙 빼냅니다.
             String[] parts = key.split(":");
@@ -53,7 +54,7 @@ public class NoticeViewScheduler {
                 noticeRepository.findById(noticeId).ifPresent(notice -> {
                     // SELETE 없이 UPDATE 쿼리로 초고속 반영
                     noticeRepository.updateViewCount(noticeId, redisViewCount);
-                    log.info("게시글 ID {}번의 조회수를 {}로 MySQL에 반영했습니다.", noticeId, redisViewCount);
+                    // log.info("게시글 ID {}번의 조회수를 {}로 MySQL에 반영했습니다.", noticeId, redisViewCount);
                 });
             }
         }
