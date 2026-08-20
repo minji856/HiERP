@@ -22,6 +22,7 @@ public class EmailVerifyService {
 
         // 토큰 만료 시간 확인
         if (emailToken.isExpired()){
+            emailTokenRepository.delete(emailToken); // 만료된 토큰 정리
             throw new IllegalArgumentException("토큰이 만료되었습니다.");
         }
 
