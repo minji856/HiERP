@@ -7,6 +7,7 @@ build/
 
 ### API KEY ###
 application-API-KEY.properties
+application-API-KEY.yml
 
 ### STS ###
 .apt_generated
