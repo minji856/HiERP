@@ -23,6 +23,21 @@
                 <h3 class="fw-bold text-dark mb-2">회원가입 완료</h3>
             </div>
 
+            <div class="mt-4">
+                <div th:if="${message != null}"
+                     class="alert alert-success d-flex align-items-center py-2 px-3 border-0 rounded-3 mb-0"
+                     role="alert">
+                    <i class="lni lni-alert me-2 small"></i>
+                    <div class="small" th:text="${message}">성공 메시지</div>
+                </div>
+                <div th:if="${error != null}"
+                     class="alert alert-danger d-flex align-items-center py-2 px-3 border-0 rounded-3 mb-0"
+                     role="alert">
+                    <i class="lni lni-close-circle me-2 small"></i>
+                    <div class="small" th:text="${error}">에러 메시지</div>
+                </div>
+            </div>
+
             <div class="alert bg-light text-center border-0 p-4 mb-4 rounded-3">
                 <p class="text-dark fw-medium mb-3">
                     회원가입이 정상적으로 완료되었습니다.
@@ -46,6 +61,7 @@
                 </a>
 
                 <form th:action="@{/account/resend-verification}" method="post" class="w-100">
+                    <!--  -->
                     <input type="hidden" name="email" th:value="${email}">
                     <button type="submit" class="btn btn-outline-secondary w-100 py-2.5 fw-medium text-dark">
                         <i class="lni lni-reload me-2"></i>인증 메일 재전송
@@ -53,20 +69,6 @@
                 </form>
             </div>
 
-            <div class="mt-4">
-                <div th:if="${message != null}"
-                     class="alert alert-success d-flex align-items-center py-2 px-3 border-0 rounded-3 mb-0"
-                     role="alert">
-                    <i class="lni lni-alert me-2 small"></i>
-                    <div class="small" th:text="${message}">성공 메시지</div>
-                </div>
-                <div th:if="${error != null}"
-                     class="alert alert-danger d-flex align-items-center py-2 px-3 border-0 rounded-3 mb-0"
-                     role="alert">
-                    <i class="lni lni-close-circle me-2 small"></i>
-                    <div class="small" th:text="${error}">에러 메시지</div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
