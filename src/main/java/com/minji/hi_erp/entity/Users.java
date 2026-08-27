@@ -17,6 +17,8 @@ import java.time.LocalDate;
 @Table(name = "users")
 @Entity // DB 테이블과 1:1 매핑
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class Users {
 
     @Id
@@ -28,7 +30,7 @@ public class Users {
     private String name;
 
     @Column(name = "birth_day")
-    private LocalDate birthday;
+    private LocalDate birthDay;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -45,28 +47,35 @@ public class Users {
 
     private String imageUrl;
 
-    // 추후 role,enabled는 제거 예정
-    @Builder
-    public Users(String name, LocalDate birthDay, Gender gender, String email,  String password, String phoneNum, String imageUrl) {
-        this.name = name;
-        this.birthday= birthDay;
-        this.gender = gender;
-        this.email = email;
-        this.password = password;
-        this.phoneNum = phoneNum;
-        this.imageUrl = imageUrl;
-        // 회원가입 시 권한은 서버에서 기본 USER로 고정 (권한 상승/조작 방지)
-        this.role = Role.USER;
-        // 회원가입 시 인증 전에는 false로 설정하여 로그인 불가. 이메일 인증시 true로 변환
-        this.enabled = false;
+    // 일반 회원가입용 팩토리 메서드(정적 메서드)를 따로 두면 편합니다.
+    public static Users createDefaultUser(String name, LocalDate birthday, Gender gender, String email, String password, String phoneNum, String imageUrl) {
+        return Users.builder()
+                .name(name)
+                .birthDay(birthday)
+                .gender(gender)
+                .email(email)
+                .password(password)
+                .phoneNum(phoneNum)
+                .imageUrl(imageUrl)
+                .role(Role.USER) // 회원가입 시 권한은 서버에서 기본 USER로 고정 (권한 상승/조작 방지)
+                .enabled(false) // 회원가입 시 인증 전에는 false로 설정하여 로그인 불가. 이메일 인증시 true로 변환
+                .tempPassword(false)
+                .build();
     }
 
     // Enum 이름을 문자열로 저장 (ORDINAL은 순서 변경 시 데이터 꼬임 위험 있음)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @Builder.Default
+    private Role role = Role.USER;
 
     @Column(nullable = false)
-    private boolean enabled;
+    @Builder.Default
+    private boolean enabled = false;
+
+    // 임시 비밀번호 여부 플래그 (기본값 false)
+    // 빌더 사용 시에도 기본값(false) 유지
+    @Builder.Default
+    private boolean tempPassword = false;
 
     @CreationTimestamp
     private Timestamp createDate;
@@ -97,18 +106,15 @@ public class Users {
         this.role = newRole;
     }
 
-    // 임시 비밀번호 여부 플래그 (기본값 false)
-    private boolean isTempPassword = false;
-
     // 비밀번호 변경 시 임시 비밀번호 상태 해제 메서드
-    public void updateTempPassword(String newEncryptedPassword) {
+    public void changeTempPassword(String newEncryptedPassword) {
         this.password = newEncryptedPassword;
-        this.isTempPassword = false; // 정식 비밀번호로 변경했으므로 false 처리
+        this.tempPassword = false; // 정식 비밀번호로 변경했으므로 false 처리
     }
 
     // 임시 비밀번호 발급 시 상태 변경 메서드
     public void tempPassword(String tempEncryptedPassword) {
         this.password = tempEncryptedPassword;
-        this.isTempPassword = true; // 임시 비밀번호 상태로 변경
+        this.tempPassword = true; // 임시 비밀번호 상태로 변경
     }
 }
