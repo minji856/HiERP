@@ -49,11 +49,37 @@ document.addEventListener('DOMContentLoaded', function () {
             day: '일'
         },
         // 날짜 클릭 시 그 날짜로 자동 입력 되면서 일정 추가 모달창 활성화
-        dateClick: (info) => openEventModal(info.dateStr),
+        dateClick: (info) => {
+            // 관리자가 아닐 경우 차단
+            if (typeof isAdmin !== 'undefined' && !isAdmin) {
+                //alert('일정 추가 권한이 없습니다.');
+                return;
+            }
+            // 관리자일 경우 기존 모달 오픈 함수 실행
+            openEventModal(info.dateStr);
+        },
         // 일정 클릭 시 일정 상세보기 표시 와 수정, 삭제버튼
         eventClick: function (info) {
             const event = info.event;
             const updateBtn = document.getElementById('updateEventBtn');
+
+            // 1. 관리자가 아닐 경우: 수정/삭제 버튼을 숨기고 모달만 띄움
+            if (typeof isAdmin !== 'undefined' && !isAdmin) {
+                if (updateBtn) updateBtn.style.display = 'none';
+
+                // 공통 데이터 세팅 (상세보기 텍스트 채우기)
+                const start = event.startStr ?? event.start.toISOString().slice(0, 10);
+                const end = event.end ? event.end.toISOString().slice(0, 10) : start;
+
+                document.getElementById('detailEventTitle').textContent = event.title;
+                document.getElementById('detailEventStart').textContent = start;
+                document.getElementById('detailEventEnd').textContent = end;
+
+                eventDetailModal.show();
+                info.jsEvent.preventDefault();
+                return; // 일반 유저는 여기서 함수 종료 (수정/삭제 이벤트 바인딩 방지)
+            }
+
             // const deleteBtn = document.getElementById('deleteEventBtn');
             // 일정 상세보기 모달 표시
             eventDetailModal.show();
@@ -138,6 +164,11 @@ document.addEventListener('DOMContentLoaded', function () {
         customButtons: {
             addEventButton: {
                 text: '일정 추가', click: () => {
+                    // 관리자가 아닐 경우 차단
+                    if (typeof isAdmin !== 'undefined' && !isAdmin) {
+                        alert('일정 추가 권한이 없습니다.');
+                        return;
+                    }
                     openEventModal(); // 날짜 미선택
                 }
             }

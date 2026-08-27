@@ -31,6 +31,13 @@
             </div>
         </div>
     </div>
+    <!-- 타임리프를 이용해 현재 로그인한 사용자가 관리자인지 여부를 자바스크립트 변수로 전달 -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // 예: Spring Security 기준 ROLE_ADMIN이 있는지 확인
+        const isAdmin = /*[[${#authorization.expression('hasRole(''ADMIN'')')}]]*/ false;
+        /*]]>*/
+    </script>
 
     <div class="row">
         <div class="col-12">
