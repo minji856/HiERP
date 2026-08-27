@@ -1,10 +1,11 @@
 package com.minji.hi_erp;
 
-import com.minji.hi_erp.enums.Gender;
 import com.minji.hi_erp.dto.UserJoinDto;
 import com.minji.hi_erp.entity.Users;
+import com.minji.hi_erp.enums.Gender;
 import com.minji.hi_erp.repository.UserRepository;
 import com.minji.hi_erp.service.UserService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
 
-import static org.springframework.test.util.AssertionErrors.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class HiErpApplicationTests {
@@ -23,18 +25,31 @@ class HiErpApplicationTests {
     private BCryptPasswordEncoder passwordEncoder;
 
 	@Test
+	@DisplayName("성공: updatePassword()가 비밀번호를 암호화 하는지 확인")
 	void UserTest() {
-		Users savedUser = userRepository.save(
-				new Users("test",LocalDate.of(2020,8,8), Gender.FEMALE,"test@naver.com", "abcd123@","1","1"));
-		String rawPassword = savedUser.getPassword(); // 저장된 원본 비밀번호
-		String encryptedPassword = passwordEncoder.encode(rawPassword); // 암호화된 비밀번호
+		String rawPassword = "abcd123@";
+
+		Users user = Users.builder()
+				.name("test")
+				.birthDay(LocalDate.of(2020, 8, 8))
+				.gender(Gender.FEMALE)
+				.email("test@naver.com")
+				.password(rawPassword)
+				.phoneNum("010-1234-5678")
+				.imageUrl("1")
+				.build();
+
+		user.updatePassword(rawPassword, passwordEncoder);
+
+		String encryptedPassword = user.getPassword();
 
 		System.out.println("Raw Password: " + rawPassword);
 		System.out.println("Encrypted Password: " + encryptedPassword);
-		System.out.println(userRepository.findAll() + "이름 : " + savedUser.getName());
 
 		assertNotEquals(rawPassword, encryptedPassword, "암호화된 비밀번호는 원본 비밀번호와 달라야 합니다.");
+		assertTrue(passwordEncoder.matches(rawPassword, encryptedPassword));
 	}
+
 
 	@Test
 	void UserServiceSaveTest() {
