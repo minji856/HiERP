@@ -7,9 +7,6 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/bootstrap/css/main.css}">
-    <link rel="stylesheet" th:href="@{/css/bootstrap/css/fullcalendar.css}">
     <title>Hi-E</title>
 </head>
 
@@ -48,6 +45,14 @@
                 </div>
                 <div class="col-lg-5">
                     <div class="card-style calendar-card mb-30">
+                        <!-- [필수] 프래그먼트 내부 스크립트가 실행될 때 isAdmin 변수가 여기서 생성되도록 위치시킵니다 -->
+                        <script th:inline="javascript">
+                            /*<![CDATA[*/
+                            const isAdmin = /*[[${#authorization.expression('hasRole(''ADMIN'')')}]]*/ false;
+                            console.log("프래그먼트 내부에서 찍어본 isAdmin:", isAdmin);
+                            /*]]>*/
+                        </script>
+
 <!--                        <div id="calendar-mini" class="fc fc-media-screen fc-direction-ltr fc-theme-standard">-->
                             <div th:replace="~{calendar :: calendarFragment('calendar-mini')}"></div>
 <!--                        </div>-->
