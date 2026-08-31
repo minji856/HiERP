@@ -33,7 +33,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) throws Exception {
         http    .csrf(AbstractHttpConfigurer::disable) // RESTapi 이용으로 csrf(cross site request forgery)는 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable) // HTTP basic 비활성화
                 // h2-console 접근 시 localhost 거부로 인하여 xFrame 옵션 변경 (배포시 제거)
@@ -55,7 +55,8 @@ public class SecurityConfig {
                         .loginProcessingUrl("/account/login-process") // submit 받을 url
                         .usernameParameter("email") // submit할 아이디
                         .passwordParameter("password") // submit할 비밀번호
-                        .defaultSuccessUrl("/account/main", true) // 정상적 인증 처리 후 이동하는 페이지
+                        .successHandler(customAuthenticationSuccessHandler) // 임시 비밀번호 로그인 유저용 핸들러 장착
+                        // .defaultSuccessUrl("/account/main", true) // 정상적 인증 처리 후 이동하는 페이지
                         .failureUrl("/?error") // 로그인 실패 시 이동 페이지
                         .permitAll())
 
