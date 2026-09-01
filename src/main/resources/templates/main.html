@@ -14,6 +14,17 @@
 
 <body>
 <section class="signin-section">
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var serverMessage = /*[[${alertMessage}]]*/ null;
+        var serverError = /*[[${alertError}]]*/ null;
+
+        if (serverMessage) alert(serverMessage);
+        if (serverError) alert(serverError);
+        /*]]>*/
+    </script>
+
     <div class="container-fluid">
         <div class="row g-0 auth-row">
             <div class="col-lg-6">
