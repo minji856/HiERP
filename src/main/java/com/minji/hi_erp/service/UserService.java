@@ -1,27 +1,25 @@
 package com.minji.hi_erp.service;
 
 import com.minji.hi_erp.dto.ChangePasswordRequestDto;
-import com.minji.hi_erp.dto.MailDto;
 import com.minji.hi_erp.dto.UserJoinDto;
 import com.minji.hi_erp.entity.EmailToken;
 import com.minji.hi_erp.entity.Users;
 import com.minji.hi_erp.repository.EmailTokenRepository;
 import com.minji.hi_erp.repository.UserRepository;
+import com.minji.hi_erp.util.FormatUtil;
+import com.minji.hi_erp.util.PasswordUtil;
+import com.minji.hi_erp.util.SecurityUtil;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -31,145 +29,177 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true) // 전체적으로 읽기 전용 트랜잭션 적용 (성능 향상)
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
-    private final EmailVerifyService emailVerifyService;
     private final EmailTokenRepository emailTokenRepository;
 
+    // 재전송 도배 방지를 위한 시간 설정
+    private static final long RESEND_COOLDOWN_SECONDS = 60;
+
     /**
-     * 현재 로그인된 사용자 가져오는 메서드 입니다.
+     * 현재 로그인한 사용자의 정보를 SecurityContext에서 가져옵니다.
+     *
+     * @return 현재 인증된 {@link Users} 엔티티
+     * @throws IllegalArgumentException 인증 정보에 해당하는 사용자가 DB에 없을 경우
+     * @throws IllegalStateException SecurityContext에 인증 정보가 없을 경우
      */
     public Users getCurrentLoggedInMember() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("로그인한 사용자를 찾을 수 없습니다."));
+        String email = SecurityUtil.getCurrentUserEmail();
+        return validateUser(email);
     }
 
     /**
-     * email 중복을 체크합니다.
-     * 회원가입 기능 구현 시 사용
-     * 중복되면 강제로 예외처리로 프로그램 중단
+     * 이메일 중복 여부를 검증합니다.
+     * 이미 존재하는 경우 예외를 발생시킵니다.
+     *
+     * @param email 검증할 이메일 주소
+     * @throws IllegalArgumentException 이미 존재하는 이메일일 경우
      */
     public void validateDuplicateEmail(String email) {
-        if(userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
     }
 
     /**
-     * UX에서 가입시 간단한 중복체크를 합니다.
-     * 중복된 이메일이면 true 반환
+     * 이메일 중복 여부를 확인합니다.
+     *
+     * @param email 검증할 이메일 주소
+     * @return 중복된 이메일인 경우 true, 사용할 수 있는 이메일인 경우 false
      */
     public boolean isEmailDuplicate(String email) {
         return userRepository.existsByEmail(email);
     }
 
+    /**
+     * 전체 사용자 목록을 조회합니다.
+     *
+     * @return 전체 {@link Users} 엔티티 리스트
+     */
     public List<Users> findAll() {
         return userRepository.findAll();
     }
 
     /**
+     * 신규 사용자 정보를 저장하고 생성된 PK(ID)를 반환합니다.
      *
-     * 전화번호 정규화하고 db에 저장하기 쉽게 특수문자 "-"를 제거하는 메서드입니다.
-     *
-     * @param phoneNum 숫자 11자리 또는 -포함
-     * @return -가 제거된 숫자 11자리
-     */
-    private String normalizeAndValidatePhone(String phoneNum) {
-        if (phoneNum == null) {
-            throw new IllegalArgumentException("전화번호는 필수입니다.");
-        }
-
-        String normalized = phoneNum.replaceAll("[^0-9]", "");
-
-        if (!normalized.matches("^01[0-9]{8,9}$")) {
-            throw new IllegalArgumentException("전화번호 형식 오류");
-        }
-
-        return normalized;
-    }
-
-    /**
-     * 사용자 회원가입 처리를 수행하고 생성된 고유 식별자를 반환합니다.
-     *
-     * @param dto 회원가입 요청 정보가 담긴 DTO 객체
-     * @return 데이터베이스에 저장된 사용자의 고유 식별자 id 값
-     */
-    public Long save(UserJoinDto dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("이미 가입된 이메일입니다.");
-        }
-
-        // Builder 사용
-        Users user = Users.builder()
-                .name(dto.getName())
-                .birthDay(dto.getBirthday())
-                .gender(dto.getGender())
-                .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword())) // 비밀번호 암호화
-                .phoneNum(normalizeAndValidatePhone(dto.getPhoneNum())) // 전화번호 정규식
-                .imageUrl(dto.getImageUrl())
-                .build();
-
-        Users saveUsers = userRepository.save(user);
-        return saveUsers.getId();
-    }
-
-    /**
-     * 전달받은 가입 정보를 바탕으로 새로운 사용자 엔티티를 생성하고 데이터베이스에 저장합니다.
-     * 전화번호 정규화, 비밀번호 암호화, Builder 패턴을 통한 객체 생성
-     *
-     * @param dto 가입 폼으로부터 전달된 사용자 정보 DTO (이름, 생년월일, 성별, 이메일 등 포함)
-     * @return DB에 저장된 후, 생성된 ID(PK)를 포함하여 반환된 Users 엔티티 객체
-     */
-    public Users register(UserJoinDto dto) {
-        Users user = Users.builder()
-                .name(dto.getName())
-                .birthDay(dto.getBirthday())
-                .gender(dto.getGender())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .email(dto.getEmail())
-                .phoneNum(normalizeAndValidatePhone(dto.getPhoneNum()))
-                .imageUrl(dto.getImageUrl())
-                .build();
-
-        return userRepository.save(user);
-    }
-
-    /**
-     * ID 값을 기반으로 이메일을 발송
-     *
-     * @param userId
+     * @param dto 회원가입 요청 데이터 (이름, 생년월일, 성별, 이메일, 비밀번호 등)
+     * @return 저장된 사용자의 고유 식별자 (ID)
+     * @throws IllegalArgumentException 이메일이 중복되거나 전화번호 형식이 올바르지 않은 경우
      */
     @Transactional
-     public void sendVerifyEmail(Long userId) throws MessagingException {
-         // ID로 유저를 다시 찾음 (객체를 직접 넘기는 것보다 안전함)
-          Users user = userRepository.findById(userId)
-                  .orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+    public Long save(UserJoinDto dto) {
+        validateDuplicateEmail(dto.getEmail());
+        Users savedUser = userRepository.save(createUserEntity(dto));
+        return savedUser.getId();
+    }
 
-          // 토큰 생성 및 DB 저장
-          String token = UUID.randomUUID().toString();
-          EmailToken emailToken = new EmailToken (
-             token,
-             user,
-             LocalDateTime.now().plusMinutes(20) // 토큰 만료 시간 설정
-             );
-          emailTokenRepository.save(emailToken);
+    /**
+     * 신규 사용자 회원가입 처리를 수행하고 저장된 엔티티를 반환합니다.
+     *
+     * @param dto 회원가입 요청 데이터
+     * @return DB에 저장된 {@link Users} 엔티티
+     * @throws IllegalArgumentException 이메일이 중복되거나 전화번호 형식이 올바르지 않은 경우
+     */
+    @Transactional
+    public Users register(UserJoinDto dto) {
+        validateDuplicateEmail(dto.getEmail());
+        return userRepository.save(createUserEntity(dto));
+    }
 
-         // @Transactional로 인해 모두취소 아니면 모두 전송임으로 메서드에서 throws MessagingException
-         emailService.sendVerifyEmail(user, token);
-     }
+    /**
+     * UserJoinDto 객체를 바탕으로 Users 엔티티를 생성하는 헬퍼 메서드입니다.
+     * 비밀번호 암호화 및 전화번호 정규화 로직이 적용됩니다.
+     *
+     * @param dto 회원가입 요청 데이터
+     * @return 암호화 및 정규화가 완료된 {@link Users} 엔티티 객체
+     */
+    private Users createUserEntity(UserJoinDto dto) {
+        return Users.builder()
+                .name(dto.getName())
+                .birthDay(dto.getBirthday())
+                .gender(dto.getGender())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .phoneNum(FormatUtil.normalizeAndValidatePhone(dto.getPhoneNum()))
+                .imageUrl(dto.getImageUrl())
+                .build();
+    }
 
+    /**
+     * 이메일 인증 토큰을 생성하여 DB에 저장하고, 사용자에게 인증 메일을 발송합니다.
+     *
+     * @param userId 인증 메일을 받을 사용자의 ID
+     * @throws IllegalArgumentException 해당 ID의 사용자가 존재하지 않을 경우
+     * @throws MessagingException 메일 발송 과정에서 오류가 발생한 경우
+     */
+    @Transactional
+    public void sendVerifyEmail(Long userId) throws MessagingException {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        String token = UUID.randomUUID().toString();
+        EmailToken emailToken = new EmailToken(
+                token,
+                user,
+                LocalDateTime.now().plusMinutes(20)
+        );
+        emailTokenRepository.save(emailToken);
+
+        emailService.sendVerifyEmail(user, token);
+    }
+
+    // 이메일 인증코드를 재전송합니다.
+    @Transactional
+    public void resendVerifyEmail(String email) throws MessagingException {
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        if (user.isEnabled()) {
+            throw new IllegalStateException("이미 인증이 완료된 계정입니다.");
+        }
+
+        emailTokenRepository.findByUser(user).ifPresent(existing -> {
+            long secondsSinceSent = Duration.between(existing.getCreatedDate(), LocalDateTime.now()).getSeconds();
+            if (secondsSinceSent < RESEND_COOLDOWN_SECONDS) {
+                long wait = RESEND_COOLDOWN_SECONDS - secondsSinceSent;
+                throw new IllegalStateException(wait + "초 후에 다시 시도해주세요.");
+            }
+        });
+
+        // 기존 토큰 제거 후 재발급 (1:1이라 update보다 delete+insert가 단순)
+        emailTokenRepository.deleteByUser(user);
+        emailTokenRepository.flush(); // unique 제약(user_id, token) 충돌 방지용
+
+        String token = UUID.randomUUID().toString();
+        EmailToken emailToken = new EmailToken(token, user, LocalDateTime.now().plusMinutes(20));
+        emailTokenRepository.save(emailToken);
+
+        emailService.sendVerifyEmail(user, token);
+    }
+
+    /**
+     * 지정한 ID의 사용자 계정을 삭제합니다.
+     *
+     * @param id 삭제할 사용자의 ID
+     */
+    @Transactional
     public void deleteUsers(Long id) {
         userRepository.deleteById(id);
     }
 
-    @PreAuthorize("hasRole('ADMIN')") // admin만 접근 가능
+    /**
+     * 관리자 권한으로 사용자 계정을 삭제합니다. (ADMIN 권한 필요)
+     *
+     * @param id 삭제할 사용자의 ID
+     * @throws IllegalArgumentException 해당 ID의 사용자가 존재하지 않을 경우
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public void deleteUserByAdmin(Long id) {
         if (!userRepository.existsById(id)) {
             throw new IllegalArgumentException("해당 ID의 사용자가 존재하지 않습니다.");
@@ -178,118 +208,74 @@ public class UserService {
     }
 
     /**
-     * 유저 비밀번호 확인 후 비밀번호를 변경하는 메서드입니다.
+     * 현재 로그인한 사용자의 비밀번호를 변경합니다.
+     * 임시 비밀번호 사용 중이 아닌 경우 기존 비밀번호 일치 검증을 수행합니다.
      *
-     * @param requestDto
+     * @param requestDto 현재 비밀번호, 새 비밀번호, 새 비밀번호 확인 정보를 담은 DTO
+     * @throws IllegalArgumentException 새 비밀번호 불일치 또는 현재 비밀번호 검증 실패 시
      */
     @Transactional
     public void changePassword(ChangePasswordRequestDto requestDto) {
-        // 로그인중인지 확인
         Users users = getCurrentLoggedInMember();
 
-        if (!passwordEncoder.matches(requestDto.getExPassword(), users.getPassword()) || users == null) {
-            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
-        }
-
-        // 새 비밀번호와 확인 비밀번호 일치 여부 확인
         if (!requestDto.getNewPassword().equals(requestDto.getNewPasswordChk())) {
             throw new IllegalArgumentException("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
         }
 
-        // 새 비밀번호로 DB 업데이트
-        userRepository.updatePassword(
-                users.getEmail(),
-                passwordEncoder.encode(requestDto.getNewPassword()));
-    }
-
-    // 이메일로 사용자 검증하는 메서드입니다.
-    public Users validateUser(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("입력하신 이메일과 일치하는 사용자가 없습니다."));
-    }
-
-    // 임시 비밀번호를 발급해주는 메서드입니다.
-    public String generateTempassword(){
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder sb = new StringBuilder();
-        SecureRandom random = new SecureRandom();
-
-        for(int i=0; i < 10 ;i++){
-            int index = random.nextInt(chars.length());
-            sb.append(chars.charAt(index));
+        if (!users.isTempPassword()) {
+            if (requestDto.getExPassword() == null ||
+                    !passwordEncoder.matches(requestDto.getExPassword(), users.getPassword())) {
+                throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+            }
         }
 
-        // return UUID.randomUUID().toString().substring(0,10); 특수문자 들어가서 주석 처리함
-        return sb.toString();
-    }
-
-    // 임시 비밀번호 저장하고 메일 보내는 메서드 입니다.
-    @Transactional
-    public void resetPasswordAndSendMail(String email) {
-        // 사용자 검증
-        Users user = validateUser(email);
-
-        String tempPassword = generateTempassword();
-
-        // 임시 비밀번호 기존 DB에 저장
-        userRepository.updatePassword(
-                user.getEmail(),
-                passwordEncoder.encode(tempPassword)
-        );
-
-        Map<String, Object> ctx = new HashMap<>();
-        ctx.put("name", user.getName());
-        ctx.put("tempPassword", tempPassword);
-
-        MailDto dto = new MailDto(
-                user.getEmail(),
-                "임시 비밀번호 안내",
-                ctx,
-                "reset-password-email"
-        );
-
-        try {
-            emailService.sendEmail(dto);
-        } catch (MessagingException e) {
-            log.error("임시 비밀번호 메일 발송 실패. email={}", email, e);
-            throw new IllegalStateException("메일 발송 실패", e);
+        if (passwordEncoder.matches(requestDto.getNewPassword(), users.getPassword())) {
+            throw new IllegalArgumentException("새 비밀번호는 현재 비밀번호와 달라야 합니다.");
         }
-    }
 
-    public String findMaskedEmailByNameAndPhone(String name, String phone) {
-        // DB에서 이름과 전화번호로 유저 조회 (조회 조건에 맞는 메서드가 UserRepository에 선언되어 있어야 합니다)
-        Users user = userRepository.findByNameAndPhoneNum(name, phone)
-                .orElseThrow(() -> new IllegalArgumentException("입력하신 정보와 일치하는 계정이 존재하지 않습니다."));
-
-        // 유저의 원래 이메일을 가져와서 마스킹 처리 후 반환
-        return maskEmail(user.getEmail());
+        users.changeTempPassword(passwordEncoder.encode(requestDto.getNewPassword()));
     }
 
     /**
-     * 이메일 마스킹 유틸리티 메서드
-     * 예: example123@gmail.com -> exa******@gmail.com
+     * 이메일 주소로 사용자 존재 여부를 검증하고 유저 엔티티를 조회합니다.
+     *
+     * @param email 조회할 이메일 주소
+     * @return 조회된 {@link Users} 엔티티
+     * @throws IllegalArgumentException 해당 이메일을 가진 사용자가 없을 경우
      */
-    private String maskEmail(String email) {
-        if (email == null || !email.contains("@")) {
-            return email;
-        }
+    public Users validateUser(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("입력하신 이메일과 일치하는 사용자가 없습니다."));
+    }
 
-        String[] parts = email.split("@");
-        String localPart = parts[0];  // @ 앞부분 (아이디)
-        String domainPart = parts[1]; // @ 뒷부분 (도메인)
+    /**
+     * 임시 비밀번호를 생성하여 사용자 계정에 적용하고, 안내 이메일을 발송합니다.
+     *
+     * @param email 임시 비밀번호를 발급받을 사용자의 이메일 주소
+     * @throws IllegalStateException 메일 발송 실패 시
+     */
+    @Transactional
+    public void resetPasswordAndSendMail(String email) {
+        Users user = validateUser(email);
 
-        int length = localPart.length();
+        String tempPassword = PasswordUtil.generateTempPassword();
+        user.tempPassword(passwordEncoder.encode(tempPassword));
 
-        // 아이디 길이가 너무 짧은 경우 예외 처리
-        if (length <= 2) {
-            return localPart.charAt(0) + "*" + "@" + domainPart;
-        }
+        emailService.sendTempPasswordMail(user, tempPassword);
+    }
 
-        // 앞 3글자만 남기고 나머지는 * 자로 채우기 (Java 11+ .repeat() 사용)
-        String visiblePart = localPart.substring(0, 3);
-        String maskedPart = "*".repeat(length - 3);
+    /**
+     * 사용자의 이름과 전화번호로 계정을 조회하여 마스킹 처리된 이메일을 반환합니다.
+     *
+     * @param name  사용자 이름
+     * @param phone 사용자 전화번호
+     * @return 마스킹 처리된 이메일 문자열 (예: exa******@gmail.com)
+     * @throws IllegalArgumentException 입력 정보와 일치하는 계정이 없을 경우
+     */
+    public String findMaskedEmailByNameAndPhone(String name, String phone) {
+        Users user = userRepository.findByNameAndPhoneNum(name, phone)
+                .orElseThrow(() -> new IllegalArgumentException("입력하신 정보와 일치하는 계정이 존재하지 않습니다."));
 
-        return visiblePart + maskedPart + "@" + domainPart;
+        return FormatUtil.maskEmail(user.getEmail());
     }
 }
