@@ -125,7 +125,7 @@ public class AccountController {
                                  RedirectAttributes rttr) {
         try {
             userService.changePassword(requestDto);
-            rttr.addFlashAttribute("message", "비밀번호가 성공적으로 변경되었습니다. 다시 로그인해 주세요.");
+            rttr.addFlashAttribute("alertMessage", "비밀번호가 성공적으로 변경되었습니다. 다시 로그인해 주세요.");
 
             // 시큐리티 세션 로그아웃 처리
             performLogout(request, response);
@@ -133,7 +133,7 @@ public class AccountController {
             return "redirect:/";
 
         } catch (IllegalArgumentException e) {
-            rttr.addFlashAttribute("error", e.getMessage());
+            rttr.addFlashAttribute("alertError", e.getMessage());
             return "redirect:/account/change-password";
         }
     }
