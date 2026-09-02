@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -32,7 +33,9 @@ public class EmailService {
     private final UserRepository userRepository;
 
     // 이메일을 보내는 메서드 입니다.
-    public void sendEmail(MailDto mailDto) throws MessagingException {
+    @Async
+    public void sendEmail(MailDto mailDto){
+        try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             // 멀티파트 메세지 사용 설정
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "utf-8");
@@ -43,14 +46,20 @@ public class EmailService {
             // 템플릿을 통해 전달할 데이터 설정
             Context context = new Context();
             context.setVariables(mailDto.getContext()); // 내용 설정
-            context.setVariable("contentPage","mail/" + mailDto.getTemplates());
+            context.setVariable("contentPage", "mail/" + mailDto.getTemplates());
 
             // 메일 실행때는 공통 레이아웃 파일 실행
-            // String html = templateEngine.process(mailDto.getTemplates(), context);
             String html = templateEngine.process("mail/email-layout", context);
 
             helper.setText(html, true);
             mailSender.send(mimeMessage);
+
+            log.info("이메일 전송 성공 - 수신자: {}", mailDto.getSendTo()); // 성공 로그 (선택사항)
+
+        } catch (MessagingException e) {
+            // 비동기 스레드 안에서 예외를 안전하게 붙잡고 로그 기록
+            log.error("이메일 전송 실패 - 수신자: {}, 제목: {}", mailDto.getSendTo(), mailDto.getTitle(), e);
+        }
     }
 
     /**
@@ -59,7 +68,8 @@ public class EmailService {
      * @param user
      * @param token
      */
-    public void sendVerifyEmail(Users user, String token) throws MessagingException {
+    @Async
+    public void sendVerifyEmail(Users user, String token){
         Map<String, Object> ctx = new HashMap<>();
         ctx.put("name", user.getName());
         // 탬플릿의 ${verifyLink}
@@ -77,29 +87,30 @@ public class EmailService {
     }
 
     // 회원 모두에게 메일을 보내는 메서드입니다.
+    @Async
     public void sendEmailToAll() {
         // 모든 회원 리스트 가져오기
         List<Users> users = userRepository.findAll();
 
         for (Users user : users) {
-            try {
-                Map<String, Object> mailMap = new HashMap<>();
-                mailMap.put("name", user.getName());
-                mailMap.put("content", "Hi-E 메일 입니다.");
-                MailDto dto = new MailDto(
-                        user.getEmail(),
-                        "공지사항",
-                        mailMap,
-                        "mail-test");
+            Map<String, Object> mailMap = new HashMap<>();
+            mailMap.put("name", user.getName());
+            mailMap.put("content", "Hi-E 메일 입니다.");
 
-                sendEmail(dto);
-                log.info("전체 메일 전송 성공: {}", user.getEmail());
-            } catch (Exception e) {
-                log.error("메일 발송 실패: {}", user.getEmail(), e);
-            }
+            MailDto dto = new MailDto(
+                    user.getEmail(),
+                    "공지사항",
+                    mailMap,
+                    "mail-test"
+            );
+
+            // 예외 처리는 하위 sendEmail 내부에서 전담하므로, 여기서는 군더더기 없이 호출만 수행합니다.
+            sendEmail(dto);
+            log.info("전체 메일 발송 요청 완료: {}", user.getEmail());
         }
     }
 
+    @Async
     public void sendTempPasswordMail(Users user, String tempPassword) {
         Map<String, Object> ctx = new HashMap<>();
         ctx.put("name", user.getName());
@@ -112,6 +123,6 @@ public class EmailService {
                 "reset-password-email"
         );
 
-        //sendEmail(dto);
+        sendEmail(dto);
     }
 }
