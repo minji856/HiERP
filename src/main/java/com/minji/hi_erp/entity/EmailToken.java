@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EmailToken {
+public class EmailToken extends BaseTimeEntity{
 
     @Id @GeneratedValue
     private Long id;
