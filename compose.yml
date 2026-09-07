@@ -1,0 +1,44 @@
+# EC2 서버에 위치할 docker-compose.yml
+version: '3.8'
+
+services:
+  app:
+    image: ${DOCKERHUB_ID}/hierp:${IMAGE_TAG:-latest}
+    container_name: hierp-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: mysql
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: redis
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - hierp-network
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: jpa
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - hierp-network
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    networks:
+      - hierp-network
+
+networks:
+  hierp-network:
+
+volumes:
+  mysql-data:
