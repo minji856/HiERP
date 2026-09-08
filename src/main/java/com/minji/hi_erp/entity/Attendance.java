@@ -18,24 +18,24 @@ public class Attendance{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String username; // 사원 아이디 (Spring Security의 username)
+    // Users 엔티티와 다대일(N:1) 관계
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id", nullable = false)
+    private Users user;
 
     @Column(nullable = false)
     private LocalDate workDate; // 근무 일자 (ex: 2026-07-10)
 
-    private LocalDateTime workInTime;  // 출근 시간
-    private LocalDateTime workOutTime; // 퇴근 시간
+    private LocalDateTime clockInTime;  // 출근 시간
+    private LocalDateTime clockOutTime; // 퇴근 시간
 
-    // 출근 등록을 위한 생성자
-    public Attendance(String username, LocalDate workDate, LocalDateTime workInTime){
-        this.username = username;
+    public Attendance(Users user, LocalDate workDate, LocalDateTime clockInTime) {
+        this.user = user;
         this.workDate = workDate;
-        this.workInTime = workInTime;
+        this.clockInTime = clockInTime;
     }
 
-    // 퇴근 시간 업데이트 메서드
-    public void updateClockOut(LocalDateTime clockOutTime){
-        this.workOutTime = workOutTime;
+    public void updateClockOut(LocalDateTime clockOutTime) {
+        this.clockOutTime = clockOutTime;
     }
 }
