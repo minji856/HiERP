@@ -35,7 +35,35 @@ public class Attendance{
         this.clockInTime = clockInTime;
     }
 
+    // 퇴근시간을 변경합니다.
     public void updateClockOut(LocalDateTime clockOutTime) {
         this.clockOutTime = clockOutTime;
+    }
+
+    // 공통으로 쓰이는 '현재까지의 총 머문 시간(분)' 계산을 담당하는 내부 메서드
+    private long calculateRawMinutes() {
+        if (this.clockInTime == null) return 0;
+        LocalDateTime endTime = (this.clockOutTime != null) ? this.clockOutTime : LocalDateTime.now();
+        return java.time.Duration.between(this.clockInTime, endTime).toMinutes();
+    }
+
+    // 점심시간이 공제된 순수 근무 시간(분)
+    public long getNetWorkedMinutes(){
+        long totalMinutes = calculateRawMinutes();
+        long lunchBreakMinutes = (totalMinutes >= 240) ? 60 : 0;
+        return Math.max(totalMinutes - lunchBreakMinutes, 0);
+    }
+
+    // 화면에 "Xh Ym" 문자열로 변환
+    public String getWorkedTimeStr(){
+        long minutes = getNetWorkedMinutes();
+        long hours = minutes / 60;
+        long remMinutes = minutes % 60;
+        return hours + "h " + remMinutes + "m";
+    }
+
+    // 점심시간 공제 전의 총 머문 시간(분)
+    public long getTotalMinutes(){
+        return calculateRawMinutes();
     }
 }
