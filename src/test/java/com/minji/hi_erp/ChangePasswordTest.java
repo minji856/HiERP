@@ -1,4 +1,4 @@
-package com.minji.hi_erp.controller;
+package com.minji.hi_erp;
 
 import com.minji.hi_erp.entity.Users;
 import com.minji.hi_erp.enums.Gender;
