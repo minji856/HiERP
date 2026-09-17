@@ -18,6 +18,35 @@
     <link rel="stylesheet" th:href="@{/css/bootstrap/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/bootstrap/css/fullcalendar.css}">
     <link rel="stylesheet" th:href="@{/css/bootstrap/css/lineicons.css}">
+    <style>
+        /* 출퇴근 버튼 기본 공통 스타일 (테두리 없음, 부드러운 배경) */
+        .custom-attendance-btn {
+            border: none !important; /* 테두리 강제 제거 */
+            background-color: #e9ecef; /* 평소엔 연한 회색 배경 */
+            color: #495057; /* 텍스트 색상 */
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* 마우스 올렸을 때 (활성화 가능할 때) */
+        .custom-attendance-btn:not(:disabled):hover {
+            background-color: #0d6efd; /* 파란색 */
+            color: #fff;
+        }
+
+        /* 활성화 상태일 때 (출근/퇴근 가능 시 눈에 띄는 파란색으로 변경) */
+        .custom-attendance-btn:not(:disabled) {
+            background-color: #e7f1ff;
+            color: #0d6efd;
+        }
+
+        /* 비활성화(disabled) 되었을 때 확실하게 회색조 처리 */
+        .custom-attendance-btn:disabled {
+            background-color: #f1f3f5 !important;
+            color: #adb5bd !important;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    </style>
 </head>
 <body>
 
@@ -91,19 +120,36 @@
                                         7월 8일 (수) 17:58:52
                                     </div>
 
+                                    <!-- 출근 시간이 존재한다면 ISO 문자열로 전달 (예: 2026-07-08T09:00:00) -->
+                                    <div id="attendance-data"
+                                         th:data-clock-in="${attendance != null && attendance.clockInTime != null ? #temporals.format(attendance.clockInTime, 'yyyy-MM-dd HH:mm:ss') : ''}"
+                                         th:data-is-clocked-out="${attendance != null && attendance.clockOutTime != null}">
+                                    </div>
+                                    <!-- 주간 누적 데이터를 자바스크립트나 뷰에서 쓸 수 있게 심어두기 -->
+                                    <div id="weekly-attendance-data"
+                                         th:data-weekly-minutes="${weeklyMinutes != null ? weeklyMinutes : 0}">
+                                    </div>
+
                                     <div class="d-flex justify-content-between align-items-end mb-1">
-                                        <span class="fw-700 text-dark"
-                                              style="font-size: 26px; line-height: 1;">0h 0m</span>
+                                        <!-- 출근 기록이 있으면 계산된 시간을 보여주고, 없으면 "0h 0m" 출력 -->
+                                        <span class="fw-700 text-dark" style="font-size: 16px;">이번 주 누적</span>
+                                        <span class="fw-700 text-primary ms-1" id="weekly-time-display" style="font-size: 16px;"
+                                              th:text="${weeklyMinutes != null ? (weeklyMinutes / 60) + 'h ' + (weeklyMinutes % 60) + 'm' : '0h 0m'}">
+                                              0h 0m
+                                        </span>
                                         <span class="text-muted" style="font-size: 11px;">최대 52h</span>
                                     </div>
 
+                                    <!--이번 주 총 누적 근무시간 progress bar start-->
                                     <div class="position-relative my-2" style="height: 22px;">
                                         <div class="progress"
                                              style="height: 7px; background-color: #e9ecef; border-radius: 4px;">
-                                            <div class="progress-bar" role="progressbar"
-                                                 style="width: 12%; background-color: #dee2e6;"
-                                                 aria-valuenow="12"
-                                                 aria-valuemin="0" aria-valuemax="100"></div>
+                                            <div id="weekly-progress-bar" class="progress-bar bg-primary" role="progressbar"
+                                                 th:style="'width:' + ${weeklyProgressPercent} + '%;'"
+                                                 style="width: 0%;"
+                                                 th:attr="aria-valuenow=${weeklyProgressPercent}"
+                                                 aria-valuemin="0" aria-valuemax="100">
+                                            </div>
                                         </div>
                                         <div class="position-absolute"
                                              style="left: 75%; top: -5px; border-left: 1px dashed #dc3545; height: 16px;"></div>
@@ -111,7 +157,9 @@
                                              style="left: 70%; top: 11px; font-size: 9px;">최소 40h
                                         </div>
                                     </div>
+                                    <!--progress bar end-->
 
+                                    <!--출근|퇴근시간 출력 start-->
                                     <div class="card bg-light border-0 p-3 my-3"
                                          style="border-radius: 8px;">
                                         <div class="d-flex justify-content-between mb-2"
@@ -131,13 +179,16 @@
                                             </span>
                                         </div>
                                     </div>
+                                    <!--출근|퇴근시간 출력 end-->
 
+                                    <!--출근|퇴근하기 기능 start-->
                                     <div class="row g-2 mb-2">
                                         <div class="col-6">
                                             <form th:action="@{/attendance/clock-in}" method="post"
-                                                  style="margin:0;">
+                                                  style="margin:0;"
+                                                  onsubmit="return confirm('출근 처리하시겠습니까?');">
                                                 <button type="submit"
-                                                        class="btn btn-outline-secondary w-100 rounded-pill btn-sm py-1.5 fw-600"
+                                                        class="btn w-100 rounded-pill btn-sm py-1.5 fw-600 custom-attendance-btn"
                                                         style="font-size: 12px;"
                                                         th:disabled="${attendance != null && attendance.clockInTime != null}">
                                                     출근하기
@@ -146,30 +197,29 @@
                                         </div>
                                         <div class="col-6">
                                             <form th:action="@{/attendance/clock-out}" method="post"
-                                                  style="margin:0;">
+                                                  style="margin:0;"
+                                                  onsubmit="return confirm('퇴근 처리하시겠습니까?');">
                                                 <button type="submit"
-                                                        class="btn btn-outline-info text-info w-100 rounded-pill btn-sm py-1.5 fw-600"
-                                                        style="border-color: #5bc0de; font-size: 12px;"
+                                                        class="btn w-100 rounded-pill btn-sm py-1.5 fw-600 custom-attendance-btn"
+                                                        style="font-size: 12px;"
                                                         th:disabled="${attendance == null || attendance.clockInTime == null || attendance.clockOutTime != null}">
                                                     퇴근하기
                                                 </button>
                                             </form>
                                         </div>
                                     </div>
+                                    <!--출근|퇴근하기 기능 end-->
 
+                                    <!--상태변경-->
                                     <div class="mt-2">
                                         <select class="form-select form-select-sm rounded-pill text-center text-info fw-600"
                                                 style="border-color: #5bc0de; font-size: 12px;">
-                                            <option value="NORMAL" selected>상태변경 ∨</option>
+                                            <option value="NORMAL" selected>상태변경</option>
                                             <option value="RECCES">휴식</option>
                                             <option value="OUT">외근</option>
                                             <option value="MEETING">회의</option>
                                         </select>
                                     </div>
-                                </li>
-
-                                <li>
-                                    <hr class="dropdown-divider my-2">
                                 </li>
 
                                 <li>
@@ -209,6 +259,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/weeklyWorkTime.js}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const dropdownEl = document.getElementById('userDropDown');
