@@ -1,5 +1,6 @@
 package com.minji.hi_erp.entity;
 
+import com.minji.hi_erp.enums.AttendanceStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "attendance", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "work_date"}))
@@ -29,15 +31,46 @@ public class Attendance{
     private LocalDateTime clockInTime;  // 출근 시간
     private LocalDateTime clockOutTime; // 퇴근 시간
 
+    @Enumerated(EnumType.STRING) // 출근 상태를 위한 열거형 클래스 추가
+    private AttendanceStatus status;
+
+    private boolean late = false; // 지각여부
+
+    private boolean earlyLeave = false; // 조퇴여부 (DB칼럼: early_leave)
+
+    // 출근
     public Attendance(Users user, LocalDate workDate, LocalDateTime clockInTime) {
         this.user = user;
         this.workDate = workDate;
         this.clockInTime = clockInTime;
+        this.status = AttendanceStatus.NORMAL;
+
+        // 9시 기준 지각 판별
+        LocalTime standardInTime = LocalTime.of(9, 0, 0);
+
+        if (clockInTime.toLocalTime().isAfter(standardInTime)) {
+            this.late = true;
+        }
+    }
+
+    // 9시 기준 지각 판별 메서드입니다.
+    private AttendanceStatus determineStatus(LocalTime time) {
+        LocalTime standardInTime = LocalTime.of(9, 0, 0); // 출근 기준 시간 09:00:00
+        if (time.isAfter(standardInTime)) {
+            this.late = true; // 9시 초과면 지각
+        }
+        return AttendanceStatus.NORMAL; // 그 외엔 정상
     }
 
     // 퇴근시간을 변경합니다.
     public void updateClockOut(LocalDateTime clockOutTime) {
         this.clockOutTime = clockOutTime;
+
+        LocalTime standardOutTime = LocalTime.of(18, 0, 0);
+
+        if (clockOutTime.toLocalTime().isBefore(standardOutTime)) {
+            this.earlyLeave = true;
+        }
     }
 
     // 공통으로 쓰이는 '현재까지의 총 머문 시간(분)' 계산을 담당하는 내부 메서드
