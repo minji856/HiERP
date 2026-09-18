@@ -3,6 +3,7 @@ package com.minji.hi_erp;
 import com.minji.hi_erp.controller.AccountController;
 import com.minji.hi_erp.dto.UserJoinDto;
 import com.minji.hi_erp.repository.EmailTokenRepository;
+import com.minji.hi_erp.service.AttendanceService;
 import com.minji.hi_erp.service.EmailService;
 import com.minji.hi_erp.service.EmailVerifyService;
 import com.minji.hi_erp.service.UserService;
@@ -17,11 +18,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 // MessagingException 예외 클래스
 
@@ -42,6 +43,9 @@ public class AccountControllerTest {
 
     @MockitoBean
     private EmailTokenRepository emailTokenRepository;
+
+    @MockitoBean
+    private AttendanceService attendanceService;
 
     @Test
     @WithMockUser
