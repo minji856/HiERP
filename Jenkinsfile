@@ -46,7 +46,7 @@ pipeline {
             steps {
                 sshagent(credentials: ['ec2-ssh-key']) { // Jenkins Credentials에 등록
                     sh """
-                        ssh -o StrictHostKeyChecking=no ec2-user@${EC2_HOST} '
+                        ssh -o StrictHostKeyChecking=no ubuntu@${EC2_HOST} '
                             cd ~/hierp &&
                             IMAGE_TAG=${IMAGE_TAG} docker compose pull app &&
                             IMAGE_TAG=${IMAGE_TAG} docker compose up -d --no-deps app
