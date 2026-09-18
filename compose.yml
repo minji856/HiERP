@@ -25,7 +25,7 @@ services:
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: jpa
+      MYSQL_DATABASE: ${DB_NAME}
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
