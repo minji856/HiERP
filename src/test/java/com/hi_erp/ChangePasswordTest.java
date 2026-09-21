@@ -67,7 +67,7 @@ class ChangePasswordTest {
                         .param("newPasswordChk", newPassword))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/")) // 로그아웃 후 루트("/")로 리다이렉트 되는지 확인
-                .andExpect(flash().attributeExists("message"));
+                .andExpect(flash().attributeExists("alertMessage"));
 
         // DB에서 유저 정보를 다시 조회하여 상태 변화 검증
         Users updatedUser = userRepository.findByEmail("testuser@hi-erp.com").orElseThrow();
@@ -91,6 +91,6 @@ class ChangePasswordTest {
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/account/change-password")) // 다시 변경창으로 리다이렉트
-                .andExpect(flash().attributeExists("error"));
+                .andExpect(flash().attributeExists("alertError"));
     }
 }
