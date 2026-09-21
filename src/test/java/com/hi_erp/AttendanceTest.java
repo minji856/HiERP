@@ -38,7 +38,7 @@ class AttendanceTest {
     }
 
     @Test
-    @DisplayName("9시 이후(09:01)에 출근하면 상태가 LATE(지각)이어야 한다.")
+    @DisplayName("9시 이후(09:01)에 출근하면 출근하면 지각 여부가 true이어야 한다.")
     void commute_late_after_nine() {
         // given: 09시 01분 출근 (9시 초과)
         Users user = Users.builder()
@@ -56,8 +56,8 @@ class AttendanceTest {
         // when: 출근 생성
         Attendance attendance = new Attendance(user, workDate, clockInTime);
 
-        // then: 상태가 지각이어야 함
-        assertThat(attendance.getStatus()).isEqualTo(attendance.isLate());
+        // then
+        assertThat(attendance.isLate()).isTrue();
     }
 
     //@Test
