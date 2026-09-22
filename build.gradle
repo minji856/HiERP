@@ -58,9 +58,11 @@ dependencies {
 	testImplementation 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'com.h2database:h2'
 }
 tasks.named('test') {
 	useJUnitPlatform()
+	systemProperty 'spring.profiles.active', 'test' // jenkins test db용 profile 설정
 	testLogging {
 		events "passed", "skipped", "failed" // 성공, 스킵, 실패 이벤트 출력
 		showStandardStreams = true           // System.out.println 로그도 콘솔에 표시
