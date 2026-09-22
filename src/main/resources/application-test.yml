@@ -9,3 +9,7 @@ spring:
     hibernate:
       ddl-auto: create-drop
     database-platform: org.hibernate.dialect.H2Dialect #SQL을 H2 문법으로 생성
+
+google:
+  api:
+    key: test-key
