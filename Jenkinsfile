@@ -5,7 +5,7 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials') // Jenkins Credentials에 등록
         IMAGE_NAME = 'maymin/hierp'
         IMAGE_TAG = "${env.BUILD_NUMBER}"
-        EC2_HOST = 'ec2-public-ip'
+        EC2_HOST = credentials('ec2-public-ip')
     }
 
     stages {
