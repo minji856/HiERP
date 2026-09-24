@@ -30,6 +30,7 @@ spring:
   config:
     import:
       - optional:file:src/main/resources/application-API-KEY.yml  # 로컬 개발 환경용
+      - optional:file:/config/application-API-KEY.yml # Ec2 배포용
 
   # Mail
   mail:
@@ -37,6 +38,7 @@ spring:
     port: 587
     properties:
       mail:
+        debug: true
         smtp:
           auth: true
           starttls:
