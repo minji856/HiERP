@@ -53,8 +53,19 @@ public class UserService {
     }
 
     /**
+     * 이메일 중복 여부를 단순 체크용으로 확인합니다. (Controller에서 사용)
+     *
+     * @param email 검증할 이메일 주소
+     * @return "이메일이 중복인가요?" -> 네(true) / 아니오(false)
+     */
+    public boolean isEmailDuplicate(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    /**
      * 이메일 중복 여부를 검증합니다.
-     * 이미 존재하는 경우 예외를 발생시킵니다.
+     * 강제 검증용 (Service 내부 save() 등에서 사용)
+     * "이메일 중복을 검증합니다." -> 중복이면 예외 발생, 아니면 통과
      *
      * @param email 검증할 이메일 주소
      * @throws IllegalArgumentException 이미 존재하는 이메일일 경우
@@ -63,16 +74,6 @@ public class UserService {
         if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
-    }
-
-    /**
-     * 이메일 중복 여부를 확인합니다.
-     *
-     * @param email 검증할 이메일 주소
-     * @return 중복된 이메일인 경우 true, 사용할 수 있는 이메일인 경우 false
-     */
-    public boolean isEmailDuplicate(String email) {
-        return userRepository.existsByEmail(email);
     }
 
     /**
