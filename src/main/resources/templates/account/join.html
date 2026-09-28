@@ -92,9 +92,22 @@
                 <!-- 이메일 입력 -->
                 <div class="input-style-1 mb-3">
                     <label for="email" class="fw-medium text-dark">이메일</label>
-                    <input type="email" th:field="*{email}" id="email" placeholder="이메일을 입력하세요" class="form-control"/>
-                    <p class="text-danger small mt-1 mb-0" th:if="${#fields.hasErrors('email')}"
-                       th:errors="*{email}"></p>
+
+                    <div class="d-flex gap-2">
+                        <input type="email"
+                               th:field="*{email}"
+                               id="email"
+                               placeholder="이메일을 입력하세요"
+                               class="form-control"/>
+                    </div>
+
+                    <p id="emailMsg" class="small mt-1 mb-0"></p>
+
+                    <p id="emailError"
+                       class="text-danger small mt-1 mb-0"
+                       th:if="${#fields.hasErrors('email')}"
+                       th:errors="*{email}">
+                    </p>
                 </div>
 
                 <!-- 비밀번호 입력 -->
@@ -164,5 +177,6 @@
     <!-- JavaScript 파일 -->
     <script th:src="@{/js/validation.js}"></script>
     <script th:src="@{/js/birthValid.js}"></script>
+    <script th:src="@{/js/emailValid.js}"></script>
 </body>
 </html>
