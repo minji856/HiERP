@@ -63,7 +63,9 @@
                         </div>
                     </div>
                     <input type="hidden" id="birthday" name="birthday">
-                    <p class="text-danger small mt-1 mb-0" th:if="${#fields.hasErrors('birthday')}"
+                    <p id="birthdayError"
+                       class="text-danger validation-error small mt-1 mb-0"
+                       th:if="${#fields.hasErrors('birthday')}"
                        th:errors="*{birthday}"></p>
                 </div>
 
@@ -85,7 +87,7 @@
                         </div>
 
                     </div>
-                    <p class="text-danger small mt-1 mb-0" th:if="${#fields.hasErrors('gender')}"
+                    <p class="text-danger validation-error small mt-1 mb-0" th:if="${#fields.hasErrors('gender')}"
                        th:errors="*{gender}"></p>
                 </div>
 
@@ -101,12 +103,10 @@
                                class="form-control"/>
                     </div>
 
-                    <p id="emailMsg" class="small mt-1 mb-0"></p>
-
-                    <p id="emailError"
-                       class="text-danger small mt-1 mb-0"
-                       th:if="${#fields.hasErrors('email')}"
-                       th:errors="*{email}">
+                    <p id="emailMsg"
+                       class="small mt-1 mb-0"
+                       th:classappend="${#fields.hasErrors('email') ? 'text-danger' : ''}"
+                       th:text="${#fields.hasErrors('email') ? #fields.errors('email')[0] : ''}">
                     </p>
                 </div>
 
@@ -135,7 +135,7 @@
                     <label for="phoneNum" class="fw-medium text-dark">전화번호</label>
                     <input type="tel" th:field="*{phoneNum}" id="phoneNum" maxlength="11" placeholder="-없이 숫자만 입력해주세요"
                            class="form-control"/>
-                    <p class="text-danger small mt-1 mb-0" th:if="${#fields.hasErrors('phoneNum')}"
+                    <p class="text-danger validation-error small mt-1 mb-0" th:if="${#fields.hasErrors('phoneNum')}"
                        th:errors="*{phoneNum}"></p>
                 </div>
 
@@ -175,8 +175,9 @@
         <!-- /auth-card-wrapper -->
     </div>
     <!-- JavaScript 파일 -->
-    <script th:src="@{/js/validation.js}"></script>
+    <script th:src="@{/js/passwordValid.js}"></script>
     <script th:src="@{/js/birthValid.js}"></script>
     <script th:src="@{/js/emailValid.js}"></script>
+    <script th:src="@{/js/validation.js}"></script>
 </body>
 </html>
