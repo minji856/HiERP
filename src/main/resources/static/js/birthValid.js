@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const monthSelect = document.getElementById('birth-month');
     const daySelect = document.getElementById('birth-day');
     const birthdayHidden = document.getElementById('birthday');
+    const birthdayError = document.getElementById('birthdayError');
 
     // 초기화: 연도(1950~현재)와 월(1~12) 채우기
     const now = new Date();
@@ -12,11 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const maxYear = currentYear - 19;
     const minYear = currentYear - 65;
 
-    /*
-    for (let i = currentYear; i >= 1950; i--) {
-        yearSelect.add(new Option(i, i));
-    }
-    */
     for (let i = maxYear; i >= minYear; i--) {
         yearSelect.add(new Option(i, i));
     }
@@ -56,8 +52,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (year && month && day) {
             birthdayHidden.value = `${year}-${month}-${day}`;
+
+            // 생년월일이 완성되면 validation 에러 숨기기
+            if (birthdayError) {
+                birthdayError.style.display = "none";
+            }
         } else {
             birthdayHidden.value = ""; // 하나라도 선택 안 되면 비움
+
+            // 하나라도 비어 있으면 에러 다시 표시
+            if (birthdayError) {
+                birthdayError.style.display = "block";
+            }
         }
     }
 
