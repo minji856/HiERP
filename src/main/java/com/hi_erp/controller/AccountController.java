@@ -49,6 +49,18 @@ public class AccountController {
                             BindingResult bindingResult,
                             Model model,
                             RedirectAttributes rttr) {
+        // 이메일 기본 검증을 통과한 경우에만 중복 검사
+        if (!bindingResult.hasFieldErrors("email")
+                && userService.isEmailDuplicate(dto.getEmail())) {
+
+            bindingResult.rejectValue(
+                    "email",
+                    "duplicate",
+                    "이미 존재하는 이메일입니다."
+            );
+        }
+
+        // 기본 validation 또는 이메일 중복 오류가 있으면 회원가입 페이지로
         if (bindingResult.hasErrors()) {
             return "account/join";
         }
@@ -77,6 +89,13 @@ public class AccountController {
             return "redirect:/";
         }
         return "account/join-success";
+    }
+
+    // 이메일 중복 확인
+    @GetMapping("/check-email")
+    @ResponseBody // @Controller이기 때문에 ResponseBody 추가
+    public boolean checkEmail(@RequestParam String email) {
+        return userService.isEmailDuplicate(email);
     }
 
     // ==========================================
