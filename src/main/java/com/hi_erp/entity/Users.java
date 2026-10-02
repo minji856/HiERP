@@ -36,7 +36,7 @@ public class Users {
     @Column(nullable = false)
     private Gender gender;
 
-    @Column(nullable = false, unique = true, length = 30)
+    @Column(nullable = false, unique = true, length = 255)
     private String email;
 
     @Column(nullable = false)
