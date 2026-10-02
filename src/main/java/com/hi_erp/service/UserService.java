@@ -59,7 +59,7 @@ public class UserService {
      * @return "이메일이 중복인가요?" -> 네(true) / 아니오(false)
      */
     public boolean isEmailDuplicate(String email) {
-        return userRepository.existsByEmail(email);
+        return userRepository.existsByEmail(FormatUtil.normalizeEmail(email));
     }
 
     /**
@@ -71,7 +71,7 @@ public class UserService {
      * @throws IllegalArgumentException 이미 존재하는 이메일일 경우
      */
     public void validateDuplicateEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmail(FormatUtil.normalizeEmail(email))) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
     }
@@ -94,22 +94,13 @@ public class UserService {
      */
     @Transactional
     public Long save(UserJoinDto dto) {
-        validateDuplicateEmail(dto.getEmail());
-        Users savedUser = userRepository.save(createUserEntity(dto));
+        // 이메일 정제 (소문자 변환 + 공백 제거)
+        String email = FormatUtil.normalizeEmail(dto.getEmail());
+        // 이메일 중복 강제 검증
+        validateDuplicateEmail(email);
+        // 정제된 이메일로 엔티티 생성 및 저장
+        Users savedUser = userRepository.save(createUserEntity(dto, email));
         return savedUser.getId();
-    }
-
-    /**
-     * 신규 사용자 회원가입 처리를 수행하고 저장된 엔티티를 반환합니다.
-     *
-     * @param dto 회원가입 요청 데이터
-     * @return DB에 저장된 {@link Users} 엔티티
-     * @throws IllegalArgumentException 이메일이 중복되거나 전화번호 형식이 올바르지 않은 경우
-     */
-    @Transactional
-    public Users register(UserJoinDto dto) {
-        validateDuplicateEmail(dto.getEmail());
-        return userRepository.save(createUserEntity(dto));
     }
 
     /**
@@ -119,12 +110,12 @@ public class UserService {
      * @param dto 회원가입 요청 데이터
      * @return 암호화 및 정규화가 완료된 {@link Users} 엔티티 객체
      */
-    private Users createUserEntity(UserJoinDto dto) {
+    private Users createUserEntity(UserJoinDto dto, String normalizedEmail) {
         return Users.builder()
                 .name(dto.getName())
                 .birthDay(dto.getBirthday())
                 .gender(dto.getGender())
-                .email(dto.getEmail())
+                .email(normalizedEmail)
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .phoneNum(FormatUtil.normalizeAndValidatePhone(dto.getPhoneNum()))
                 .imageUrl(dto.getImageUrl())

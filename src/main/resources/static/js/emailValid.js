@@ -14,7 +14,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // 입력을 끝내고 다른 곳으로 이동하면 중복 확인
     emailInput.addEventListener("blur", async function () {
 
-        const email = emailInput.value.trim();
+        // 공백 제거 후 소문자로 변환
+        const email = emailInput.value.trim().toLowerCase();
 
         // 이메일이 비어있으면 검사하지 않음
         if (!email) {
@@ -25,7 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!emailInput.validity.valid) {
             messageElement.innerText =
                 "올바른 이메일 형식을 입력해주세요.";
-
             messageElement.classList.remove("text-success");
             messageElement.classList.add("text-danger");
 
