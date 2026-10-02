@@ -5,6 +5,16 @@ public class FormatUtil {
     private FormatUtil() {} // 인스턴스화 방지
 
     /**
+     * 이메일 정제 (공백 제거 및 소문자 변환)
+     */
+    public static String normalizeEmail(String email) {
+        if (email == null) {
+            return null;
+        }
+        return email.trim().toLowerCase();
+    }
+
+    /**
      * 전화번호 정규화 및 유효성 검사
      */
     public static String normalizeAndValidatePhone(String phoneNum) {
