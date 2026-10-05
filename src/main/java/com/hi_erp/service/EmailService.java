@@ -7,10 +7,12 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
@@ -31,6 +33,9 @@ public class EmailService {
 
     private final SpringTemplateEngine templateEngine;
     private final UserRepository userRepository;
+
+    @Value("${app.base-url}")
+    private String baseUrl; // final 없이
 
     // 이메일을 보내는 메서드 입니다.
     @Async
@@ -70,11 +75,15 @@ public class EmailService {
      */
     @Async
     public void sendVerifyEmail(Users user, String token){
+        String verifyLink = UriComponentsBuilder.fromUriString(baseUrl)
+                .path("/account/verify")
+                .queryParam("token", token)
+                .build()
+                .toUriString();
+
         Map<String, Object> ctx = new HashMap<>();
         ctx.put("name", user.getName());
-        // 탬플릿의 ${verifyLink}
-        ctx.put("verifyLink",
-                "http://localhost:8080/account/verify?token=" + token);
+        ctx.put("verifyLink", verifyLink); // 탬플릿의 ${verifyLink}
 
         MailDto dto = new MailDto(
                 user.getEmail(),
