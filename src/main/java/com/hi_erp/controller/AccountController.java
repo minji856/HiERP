@@ -72,6 +72,7 @@ public class AccountController {
             // 이메일 마스킹 처리 후 Flash 정보로 전달
             String maskedEmail = FormatUtil.maskEmail(dto.getEmail());
             rttr.addFlashAttribute("maskedEmail", maskedEmail);
+            rttr.addFlashAttribute("email", dto.getEmail());
 
             return "redirect:/account/join-success";
 
