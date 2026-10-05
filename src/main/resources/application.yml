@@ -53,10 +53,15 @@ spring:
     mode: HTML
     encoding: UTF-8
 
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+
 server:
   port: 8080
 
 logging:
   level:
+    root: INFO
+    com.hi_erp: DEBUG  # DEBUG 이상 로그 출력
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
