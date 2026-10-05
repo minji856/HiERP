@@ -2,6 +2,7 @@ package com.hi_erp.service;
 
 import com.hi_erp.entity.Users;
 import com.hi_erp.repository.UserRepository;
+import com.hi_erp.util.FormatUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,19 +17,18 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     /**
      * 유저를 이메일로 불러오는 메서드입니다.
+     * 대문자로 입력해도 소문자로 검색할 수 있습니다.
      * @param email
      * @return
      * @throws UsernameNotFoundException
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Users users = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("이메일이 존재하지 않습니다.: " + email));
+        String normalizedEmail = FormatUtil.normalizeEmail(email);
+
+        Users users = userRepository.findByEmail(normalizedEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("이메일이 존재하지 않습니다.: " + normalizedEmail));
 
         return new CustomUserDetails(users);
-
-//        return userRepository.findByEmail(email)
-//                .map(user -> new CustomUserDetails(user))
-//                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
     }
 }
