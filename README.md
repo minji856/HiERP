@@ -4,14 +4,19 @@
 
 ---
 
+## 목차
+- [HiERP ERD](#hierp-erd)
+
+---
+
 ## 🛠 Tech Stack
 
 ### Backend
 - **Java**: 17
-- **Framework**: Spring Boot 3.x
-- **Security**: Spring Security
+- **Framework**: Spring Boot 3.4
+- **Security**: Spring Security 6
 - **Persistence**: Spring Data JPA
-- **Build Tool**: Gradle
+- **Build Tool**: Gradle, Jenkins, Docker
 
 ### Frontend
 - **Template Engine**: Thymeleaf (Thymeleaf Layout Dialect)
@@ -21,33 +26,28 @@
 
 ## ✨ Key Features (주요 기능)
 
-### 1. 📊 메인 대시보드 (`main.html`)
+### 1. [📊 메인 대시보드 (`main.html`)](/src/main/resources/templates/account/main.html)
 - 로그인 후 접속하는 사내 메인 화면
 - 주요 업무 현황, 공지사항 요약, 주요 일정 실시간 확인
 
-### 2. 📅 일정 관리 (`calendar.html`)
+### 2. [📅 일정 관리 (`calendar.html`)](/src/main/resources/templates/calendar.html)
 - 개인 및 부서 단위 업무 일정 등록/수정/삭제
-- 달력 기반의 스케줄링 시각화
+- FullCalendar 기반의 스케줄링 시각화
+- 공휴일 공지
 
-### 3. 👤 계정 관리 (`templates/account/`)
+### 3. [👤 계정 관리 (`templates/account/`)](/src/main/resources/templates/admin/admin-setting.html)
 - 사용자 프로필 관리 및 비밀번호 변경
 - 사용자 권한 확인 및 조직 정보 조회
 
-### 4. ✉️ 사내 메일 시스템 (`templates/mail/`)
-- 임직원 간 내부 메일 작성, 발송 및 수신함 관리
-- 첨부파일 및 메일 읽음 처리 기능
-
-### 5. 📌 사내 게시판 (`templates/board/`)
+### 4. [📌 공지사항 게시판 (`templates/board/`)](/src/main/resources/templates/board/notice.html)
 - 전사 공지사항 및 부서별 자유게시판
 - 게시글 작성, 수정, 삭제 및 댓글 소통 기능
 
-### 6. ⚙️ 관리자 전용 메뉴 (`templates/admin/`)
-- 시스템 관리자 전용 권한 설정 및 계정 승인/관리
-- 공통 코드 및 시스템 설정 제어
-
-### 7. 🧩 공통 컴포넌트 & 레이아웃 (`templates/layout/`, `modal/`, `error/`)
+### 5. [🧩 공통 컴포넌트 & 레이아웃 (`templates/layout/`, `modal/`)](/src/main/resources/templates/layout/user-layout.html)
 - Thymeleaf 레이아웃 분리로 통일된 UI 제공
 - 공통 모달(Modal) 팝업 처리 및 커스텀 에러 페이지 제공
+- 출/퇴근 버튼. 총 누적 시간 표시
+- 로그아웃, 마이페이지 이동가능
 
 # 전체구조
 ```
@@ -206,6 +206,10 @@ src/main/resources/
     ├── calendar.html                             # 캘린더 / 일정 관리 메인 페이지
     └── main.html                                 # ERP 서비스 메인 대시보드
 ```
+
+
+## HiERP ERD
+<img width="1574" height="1334" alt="image" src="https://github.com/user-attachments/assets/dc9b8b99-2fef-45d9-b16f-207d69f901a2" />
 
 # 🚀 Getting Started
 Prerequisites
