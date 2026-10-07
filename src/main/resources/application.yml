@@ -63,5 +63,10 @@ logging:
   level:
     root: INFO
     com.hi_erp: DEBUG  # DEBUG 이상 로그 출력
+    org:
+      springframework:
+        scheduling: DEBUG
+        aop:
+          interceptor: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
