@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: bug
+labels: bug, feature
 assignees: ''
 
 ---
@@ -14,6 +14,10 @@ assignees: ''
 ## 어떤 상황에서 발생한 버그인가요?
 
 > (가능하면) Given-When-Then 형식으로 서술해주세요
+
+## 오류 메세지/로그
+```
+```
 
 ## 예상 결과
 
