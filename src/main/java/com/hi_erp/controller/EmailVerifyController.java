@@ -49,7 +49,7 @@ public class EmailVerifyController {
         attributes.addFlashAttribute("email", email);
 
         try {
-            userService.resendVerifyEmail(email);
+            emailVerifyService.resendVerifyEmail(email);
             attributes.addFlashAttribute("message", "인증 메일을 재전송했습니다.");
 
         } catch (IllegalArgumentException e) {
@@ -65,6 +65,8 @@ public class EmailVerifyController {
             log.error("인증 메일 재전송 실패 - 대상: {}", email, e);
             attributes.addFlashAttribute("error", "인증 메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.");
         }
+        // 성공이든 실패(쿨다운 에러 포함)든 최신 잔여 시간을 다시 계산해서 넘김
+        attributes.addFlashAttribute("cooldownSeconds", emailVerifyService.getResendCooldownRemaining(email));
 
         return "redirect:/account/join-success";
     }}
