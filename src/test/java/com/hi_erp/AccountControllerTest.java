@@ -55,7 +55,7 @@ public class AccountControllerTest {
         // void 메서드(중복체크) 통과 설정
         given(userService.isEmailDuplicate(anyString())).willReturn(false);
         given(userService.save(any(UserJoinDto.class))).willReturn(1L);
-        willDoNothing().given(userService).sendVerifyEmail(anyLong()); // 이메일 발송 성공 설정
+        willDoNothing().given(emailVerifyService).sendVerifyEmail(anyLong()); // 이메일 발송 성공 설정
 
         // when
         mockMvc.perform(post("/account/join")
