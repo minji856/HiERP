@@ -4,6 +4,7 @@ import com.hi_erp.dto.ChangePasswordRequestDto;
 import com.hi_erp.dto.UserJoinDto;
 import com.hi_erp.entity.Users;
 import com.hi_erp.service.CustomUserDetails;
+import com.hi_erp.service.EmailVerifyService;
 import com.hi_erp.service.UserService;
 import com.hi_erp.util.FormatUtil;
 import jakarta.mail.MessagingException;
@@ -33,6 +34,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AccountController {
 
     private final UserService userService;
+    private final EmailVerifyService emailVerifyService;
 
     // ==========================================
     // 1. 회원가입 관련 (Join)
@@ -67,12 +69,13 @@ public class AccountController {
 
         try {
             Long userId = userService.save(dto);
-            userService.sendVerifyEmail(userId);
+            emailVerifyService.sendVerifyEmail(userId);
 
             // 이메일 마스킹 처리 후 Flash 정보로 전달
             String maskedEmail = FormatUtil.maskEmail(dto.getEmail());
             rttr.addFlashAttribute("maskedEmail", maskedEmail);
             rttr.addFlashAttribute("email", dto.getEmail());
+            rttr.addFlashAttribute("cooldownSeconds", emailVerifyService.getResendCooldownRemaining(dto.getEmail()));
 
             return "redirect:/account/join-success";
 
@@ -86,8 +89,12 @@ public class AccountController {
     @GetMapping("/join-success")
     public String joinSuccess(Model model) {
         // 비정상적인 접근(FlashAttribute 없음) 차단
-        if (!model.containsAttribute("maskedEmail")) {
+        if (!model.containsAttribute("maskedEmail") || !model.containsAttribute("email")) {
             return "redirect:/";
+        }
+        // 새로고침 시에도 유지되게 없으면 0 기본값으로 넣어줍니다.
+        if (!model.containsAttribute("cooldownSeconds")) {
+            model.addAttribute("cooldownSeconds", 0L);
         }
         return "account/join-success";
     }
