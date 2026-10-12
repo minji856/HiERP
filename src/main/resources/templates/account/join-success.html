@@ -63,8 +63,11 @@
                 <form th:action="@{/account/resend-verification}" method="post" class="w-100">
                     <!--  -->
                     <input type="hidden" name="email" th:value="${email}">
-                    <button type="submit" class="btn btn-outline-secondary w-100 py-2.5 fw-medium text-dark">
-                        <i class="lni lni-reload me-2"></i>인증 메일 재전송
+                    <button type="submit"
+                            id="resendBtn"
+                            class="btn btn-outline-secondary w-100 py-2.5 fw-medium text-dark">
+                        <i class="lni lni-reload me-2"></i>
+                        <span id="resendBtnText">인증 메일 재전송</span>
                     </button>
                 </form>
             </div>
@@ -73,5 +76,36 @@
     </div>
 </div>
 
+<!--재전송 시간 표시-->
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        let remaining = /*[[${cooldownSeconds}]]*/ 0;
+
+        const btn = document.getElementById("resendBtn");
+        const btnText = document.getElementById("resendBtnText");
+
+        function render() {
+            if (remaining <= 0) {
+                btn.disabled = false;
+                btnText.innerText = "인증 메일 재전송";
+                return;
+            }
+            btn.disabled = true;
+            btnText.innerText = `재전송 가능까지 ${remaining}초`;
+        }
+
+        render();
+
+        if (remaining > 0) {
+            const timer = setInterval(function () {
+                remaining -= 1;
+                render();
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                }
+            }, 1000);
+        }
+    });
+</script>
 </body>
 </html>
