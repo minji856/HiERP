@@ -1,7 +1,7 @@
 package com.hi_erp.entity;
 
-import com.hi_erp.enums.Role;
 import com.hi_erp.enums.Gender;
+import com.hi_erp.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 회원 정보를 나타내는 엔티티 클래스입니다.
@@ -116,5 +117,27 @@ public class Users {
     public void tempPassword(String tempEncryptedPassword) {
         this.password = tempEncryptedPassword;
         this.tempPassword = true; // 임시 비밀번호 상태로 변경
+    }
+
+    // 재전송 횟수 제한을 위한 필드
+    @Column(name = "resend_count", nullable = false)
+    private int resendCount = 0; // 오늘 재전송한 횟수
+
+    @Column(name = "last_resend_at")
+    private LocalDateTime lastResendAt; // 마지막으로 재전송 요청한 일시
+
+    /**
+     * 재전송 횟수 1 증가 및 마지막 발송 일시 갱신
+     */
+    public void increaseResendCount(LocalDateTime now) {
+        this.resendCount++;
+        this.lastResendAt = now;
+    }
+
+    /**
+     * 일일 재전송 횟수 초기화
+     */
+    public void resetResendCount() {
+        this.resendCount = 0;
     }
 }
