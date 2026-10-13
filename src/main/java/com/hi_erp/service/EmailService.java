@@ -38,8 +38,7 @@ public class EmailService {
     private String baseUrl; // final 없이
 
     // 이메일을 보내는 메서드 입니다.
-    @Async
-    public void sendEmail(MailDto mailDto){
+    private void sendEmail(MailDto mailDto){
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             // 멀티파트 메세지 사용 설정
@@ -73,7 +72,7 @@ public class EmailService {
      * @param user
      * @param token
      */
-    @Async
+    @Async("mailTaskExecutor")
     public void sendVerifyEmail(Users user, String token){
         String verifyLink = UriComponentsBuilder.fromUriString(baseUrl)
                 .path("/account/verify")
@@ -96,7 +95,7 @@ public class EmailService {
     }
 
     // 회원 모두에게 메일을 보내는 메서드입니다.
-    @Async
+    @Async("mailTaskExecutor")
     public void sendEmailToAll() {
         // 모든 회원 리스트 가져오기
         List<Users> users = userRepository.findAll();
@@ -119,7 +118,7 @@ public class EmailService {
         }
     }
 
-    @Async
+    @Async("mailTaskExecutor")
     public void sendTempPasswordMail(Users user, String tempPassword) {
         Map<String, Object> ctx = new HashMap<>();
         ctx.put("name", user.getName());
