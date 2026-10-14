@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 
 /**
@@ -33,4 +34,13 @@ public interface UserRepository extends JpaRepository<Users, Long> {
      * 이름과 휴대전화로 유저를 찾는 쿼리 문입니다.
      */
     Optional<Users> findByNameAndPhoneNum(String name, String phoneNum);
+
+    /**
+     * 3일동안 미인증 계정일 시 삭제하는 쿼리 문입니다.
+     * @param cutoffDate
+     * @return
+     */
+    @Modifying
+    @Query("DELETE FROM Users u WHERE u.enabled = false and u.createDate < :cutoffDate")
+    int deleteUnverifiedUsersBefore(@Param("cutoffDate") Timestamp cutoffDate);
 }
