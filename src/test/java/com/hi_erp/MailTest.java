@@ -1,30 +1,26 @@
 package com.hi_erp;
 
-import com.hi_erp.dto.MailDto;
 import com.hi_erp.entity.Users;
 import com.hi_erp.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class MailTest {
@@ -39,40 +35,43 @@ public class MailTest {
     @InjectMocks
     private EmailService emailService;
 
+    @BeforeEach
+    void setUp() {
+        // @Value("${app.base-url}") 대신 테스트에서 직접 값 주입
+        ReflectionTestUtils.setField(
+                emailService,
+                "baseUrl",
+                "http://localhost:8080"
+        );
+    }
+
     @Test
     @DisplayName("성공 : 가입된 모든 유저에게(ex.100명) 메일을 보낸다 ")
     public void send100Mail() throws Exception {
-
-        // given 실제 SMTP 호출 방지
         when(mailSender.createMimeMessage())
-                .thenReturn(new MimeMessage((Session) null));
-        when(templateEngine.process(anyString(), any(org.thymeleaf.context.Context.class)))
-                .thenReturn("<html>가짜 메일 본문</html>");
+                .thenAnswer(invocation ->
+                        new MimeMessage((Session) null));
 
-        long start = System.currentTimeMillis();
+        when(templateEngine.process(
+                anyString(),
+                any(org.thymeleaf.context.Context.class)
+        )).thenReturn("<html>가짜 메일 본문</html>");
 
-        // when
         for (int i = 1; i <= 100; i++) {
-            Map<String, Object> ctx = new HashMap<>();
-            ctx.put("name", "User" + i);
-            ctx.put("content", "테스트 메일 " + i);
+            Users user = Users.builder()
+                    .name("User" + i)
+                    .email("test" + i + "@example.com")
+                    .build();
 
-            MailDto dto = new MailDto(
-                    "test" + i + "@example.com",
-                    "테스트 메일",
-                    ctx,
-                    "/mail/mailTest"
-            );
-
-            emailService.sendEmail(dto); // @Async 메서드
+            emailService.sendVerifyEmail(user, "token-" + i);
         }
 
-        // then
-        long end = System.currentTimeMillis();
-        System.out.println("메일 100건 요청 소요 시간: " + (end - start) + "ms");
+        verify(mailSender, times(100)).send(
+                any(MimeMessage.class)
+        );
     }
 
-    //@Test
+    @Test
     @DisplayName("성공 : 이메일 인증 링크 생성 및 전송한다.")
     void sendVerifyEmailTest() throws MessagingException {
         // Given
@@ -92,18 +91,24 @@ public class MailTest {
         // When
         emailService.sendVerifyEmail(user, token);
 
-        // Then
-        // sendEmail이 호출될 때 MailDto의 내용이 예상과 일치하는지 검증
-        ArgumentCaptor<MailDto> captor = ArgumentCaptor.forClass(MailDto.class);
-        verify(emailService).sendEmail(captor.capture());
+        // Then: 메일 생성 및 전송 요청 검증
+        verify(mailSender, times(1)).createMimeMessage();
+        verify(mailSender, times(1)).send(mimeMessage);
 
-        MailDto sentDto = captor.getValue();
-        // 콘솔 확인용
-        System.out.println("전송된 이메일: " + sentDto.getSendTo());
-        System.out.println("생성된 링크: " + sentDto.getContext().get("verifyLink"));
+        // Thymeleaf 템플릿 처리 검증
+        verify(templateEngine).process(
+                org.mockito.ArgumentMatchers.eq("mail/email-layout"),
+                any(org.thymeleaf.context.Context.class)
+        );
 
-        assertThat(sentDto.getContext().get("verifyLink"))
-                .isEqualTo("http://localhost:8080/account/verify?token=test-token-123");
-        assertThat(sentDto.getSendTo()).isEqualTo("test@example.com");
+        // 실제 생성된 MIME 메시지의 수신자와 제목 검증
+        assertThat(mimeMessage.getAllRecipients())
+                .isNotNull();
+
+        assertThat(mimeMessage.getAllRecipients()[0].toString())
+                .isEqualTo("test@example.com");
+
+        assertThat(mimeMessage.getSubject())
+                .isEqualTo("HI-E 이메일 인증 안내");
     }
 }
