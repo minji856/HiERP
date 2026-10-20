@@ -13,3 +13,7 @@ spring:
 google:
   api:
     key: test-key
+
+scheduler:
+  user-cleanup:
+    cron: "-"

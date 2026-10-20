@@ -1,0 +1,13 @@
+#EC2 배포용 개발 설정 파일입니다.
+spring:
+  config:
+    import:
+      - optional:file:/config/application-API-KEY.yml
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+scheduler:
+  user-cleanup:
+    cron: "0 0 3 * * *"
