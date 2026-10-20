@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@Profile("prod") // prod 환경에서만 이 스케줄러가 활성화됨
+@Profile({"prod", "test"}) // prod 환경에서만 이 스케줄러가 활성화됨
 public class UserCleanupScheduler {
 
     private final UserRepository userRepository;
@@ -22,7 +22,7 @@ public class UserCleanupScheduler {
     /**
      * 매일 새벽 3시에 3일(72시간) 동안 미인증(enabled = false) 상태인 계정과 토큰을 정리
      */
-    @Scheduled(cron = "0 0 3 * * *")
+    @Scheduled(cron = "${scheduler.user-cleanup.cron:-}")
     @Transactional
     public void cleanupUnverifiedUsers() {
         Timestamp threshold = Timestamp.valueOf(LocalDateTime.now().minusDays(3)); // 72시간 전
