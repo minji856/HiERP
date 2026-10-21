@@ -89,6 +89,18 @@
                                     </p>
                                 </div>
                                 <!-- end errorMessage -->
+                                <!-- 이메일 인증 결과 메시지 -->
+                                <div th:if="${message}" class="mb-3">
+                                    <p style="color: #198754; font-size: 0.9rem; font-weight: bold;">
+                                        <i class="lni lni-checkmark-circle mr-10"></i> <span th:text="${message}"></span>
+                                    </p>
+                                </div>
+                                <div th:if="${verifyError}" class="mb-3">
+                                    <p style="color: #d9534f; font-size: 0.9rem; font-weight: bold;">
+                                        <i class="lni lni-warning mr-10"></i> <span th:text="${verifyError}"></span>
+                                    </p>
+                                </div>
+                                <!-- 이메일 인증 결과 메세지 끝  -->
                                 <div class="col-12">
                                     <div class="button-group d-flex justify-content-center flex-wrap">
                                         <button type="submit" class="main-btn primary-btn btn-hover w-100 text-center"><font

@@ -25,19 +25,19 @@ public class EmailVerifyController {
         try {
             emailVerifyService.verifyEmail(token);
             attributes.addFlashAttribute("message", "이메일 인증이 완료되었습니다. 로그인해주세요!");
-            return "redirect:/account/login";
+            return "redirect:/";
 
         } catch (IllegalArgumentException e) {
             // 예상된 비즈니스 예외 (토큰 없음/만료) - 메시지 그대로 노출 OK
-            attributes.addFlashAttribute("error", e.getMessage());
+            attributes.addFlashAttribute("verifyError", e.getMessage());
             log.warn("이메일 인증 실패 - token: {}, reason: {}", token, e.getMessage());
-            return "redirect:/account/login";
+            return "redirect:/";
 
         } catch (Exception e) {
             // 예상 못한 예외 - 사용자에겐 일반 메시지만
-            attributes.addFlashAttribute("error", "인증 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
+            attributes.addFlashAttribute("verifyError", "인증 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
             log.error("이메일 인증 중 예상치 못한 오류 - token: {}", token, e);
-            return "redirect:/account/login";
+            return "redirect:/";
         }
     }
 
