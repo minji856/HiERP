@@ -188,6 +188,11 @@ public class AccountController {
         }
     }
 
+    @GetMapping("/find-password-success")
+    public String findPasswordSuccess() {
+        return "account/find-password-success";
+    }
+
     @PostMapping("/find-id")
     public String findId(@RequestParam String name,
                          @RequestParam String phone, // 명시적 어노테이션 추가
