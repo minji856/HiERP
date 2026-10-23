@@ -53,15 +53,6 @@ public class Attendance{
         }
     }
 
-    // 9시 기준 지각 판별 메서드입니다.
-    private AttendanceStatus determineStatus(LocalTime time) {
-        LocalTime standardInTime = LocalTime.of(9, 0, 0); // 출근 기준 시간 09:00:00
-        if (time.isAfter(standardInTime)) {
-            this.late = true; // 9시 초과면 지각
-        }
-        return AttendanceStatus.NORMAL; // 그 외엔 정상
-    }
-
     // 퇴근시간을 변경합니다.
     public void updateClockOut(LocalDateTime clockOutTime) {
         this.clockOutTime = clockOutTime;
