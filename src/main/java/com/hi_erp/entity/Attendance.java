@@ -39,29 +39,18 @@ public class Attendance{
     private boolean earlyLeave = false; // 조퇴여부 (DB칼럼: early_leave)
 
     // 출근
-    public Attendance(Users user, LocalDate workDate, LocalDateTime clockInTime) {
+    public Attendance(Users user, LocalDate workDate, LocalDateTime clockInTime, LocalTime standardInTime) {
         this.user = user;
         this.workDate = workDate;
         this.clockInTime = clockInTime;
         this.status = AttendanceStatus.NORMAL;
-
-        // 9시 기준 지각 판별
-        LocalTime standardInTime = LocalTime.of(9, 0, 0);
-
-        if (clockInTime.toLocalTime().isAfter(standardInTime)) {
-            this.late = true;
-        }
+        this.late = clockInTime.toLocalTime().isAfter(standardInTime);
     }
 
     // 퇴근시간을 변경합니다.
-    public void updateClockOut(LocalDateTime clockOutTime) {
+    public void updateClockOut(LocalDateTime clockOutTime, LocalTime standardOutTime) {
         this.clockOutTime = clockOutTime;
-
-        LocalTime standardOutTime = LocalTime.of(18, 0, 0);
-
-        if (clockOutTime.toLocalTime().isBefore(standardOutTime)) {
-            this.earlyLeave = true;
-        }
+        this.earlyLeave = clockOutTime.toLocalTime().isBefore(standardOutTime);
     }
 
     // 공통으로 쓰이는 '현재까지의 총 머문 시간(분)' 계산을 담당하는 내부 메서드
