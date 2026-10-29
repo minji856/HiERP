@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
@@ -21,6 +22,10 @@ public class AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
     private final UserRepository userRepository;
+
+    // 기준 근무 시간 (고정근무제: 9시 출근 / 18시 퇴근)
+    private static final LocalTime STANDARD_IN_TIME = LocalTime.of(9, 0);
+    private static final LocalTime STANDARD_OUT_TIME = LocalTime.of(18, 0);
 
     // 오늘의 출근/퇴근 기록을 조회하여 현재 근태 상태를 반환 (UI 버튼 제어용)
     public Attendance getTodayAttendance(String email) {
@@ -45,7 +50,7 @@ public class AttendanceService {
                     throw new IllegalStateException("이미 출근 처리되었습니다.");
                 });
 
-        Attendance attendance = new Attendance(user, today, LocalDateTime.now());
+        Attendance attendance = new Attendance(user, today, LocalDateTime.now(), STANDARD_IN_TIME);
         attendanceRepository.save(attendance);
     }
 
@@ -65,7 +70,7 @@ public class AttendanceService {
             throw new IllegalStateException("이미 퇴근 처리되었습니다.");
         }
 
-        attendance.updateClockOut(LocalDateTime.now());
+        attendance.updateClockOut(LocalDateTime.now(), STANDARD_OUT_TIME);
     }
 
     // 주간 누적 근무 시간(분)을 계산하는 메서드 예시
