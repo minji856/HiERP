@@ -9,16 +9,18 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AttendanceTest {
 
-    @Test
-    @DisplayName("9시 이전에 출근하면 상태가 NORMAL(정상)이어야 한다.")
-    void commute_normal_on_time() {
-        // given: 08시 50분 출근
-        Users user = Users.builder()
+    private static final LocalTime STANDARD_IN = LocalTime.of(9, 0);
+    private static final LocalTime STANDARD_OUT = LocalTime.of(18, 0);
+    private static final LocalDate WORK_DATE = LocalDate.of(2026, 10, 29); // now() 대신 고정 날짜
+
+    private Users createUser() {
+        return Users.builder()
                 .name("test")
                 .birthDay(LocalDate.of(2020, 8, 8))
                 .gender(Gender.FEMALE)
@@ -27,67 +29,91 @@ class AttendanceTest {
                 .phoneNum("010-1234-5678")
                 .imageUrl("1")
                 .build();
-        LocalDate workDate = LocalDate.now();
-        LocalDateTime clockInTime = LocalDateTime.of(workDate, java.time.LocalTime.of(8, 50, 0));
+    }
 
-        // when: 출근 생성
-        Attendance attendance = new Attendance(user, workDate, clockInTime);
+    private LocalDateTime at(int hour, int minute, int second) {
+        return LocalDateTime.of(WORK_DATE, LocalTime.of(hour, minute, second));
+    }
 
-        // then: 상태가 정상이어야 함
+    // ===== 출근 =====
+
+    @Test
+    @DisplayName("9시 이전에 출근하면 상태는 NORMAL, 지각은 false여야 한다.")
+    void clockIn_before_standard_is_normal() {
+        Attendance attendance = new Attendance(createUser(), WORK_DATE, at(8, 50, 0), STANDARD_IN);
+
         assertThat(attendance.getStatus()).isEqualTo(AttendanceStatus.NORMAL);
+        assertThat(attendance.isLate()).isFalse();
     }
 
     @Test
-    @DisplayName("9시 이후(09:01)에 출근하면 출근하면 지각 여부가 true이어야 한다.")
-    void commute_late_after_nine() {
-        // given: 09시 01분 출근 (9시 초과)
-        Users user = Users.builder()
-                .name("test")
-                .birthDay(LocalDate.of(2020, 8, 8))
-                .gender(Gender.FEMALE)
-                .email("test@naver.com")
-                .password("1234")
-                .phoneNum("010-1234-5678")
-                .imageUrl("1")
-                .build();
-        LocalDate workDate = LocalDate.now();
-        LocalDateTime clockInTime = LocalDateTime.of(workDate, java.time.LocalTime.of(9, 1, 0));
+    @DisplayName("9시 정각에 출근하면 지각이 아니다. (경계값)")
+    void clockIn_exactly_at_standard_is_not_late() {
+        Attendance attendance = new Attendance(createUser(), WORK_DATE, at(9, 0, 0), STANDARD_IN);
 
-        // when: 출근 생성
-        Attendance attendance = new Attendance(user, workDate, clockInTime);
+        assertThat(attendance.isLate()).isFalse();
+    }
 
-        // then
+    @Test
+    @DisplayName("9시 0분 1초에 출근하면 지각이다. (경계값)")
+    void clockIn_one_second_after_standard_is_late() {
+        Attendance attendance = new Attendance(createUser(), WORK_DATE, at(9, 0, 1), STANDARD_IN);
+
         assertThat(attendance.isLate()).isTrue();
     }
 
-    //@Test
-    @DisplayName("아침에 지각한 사람이 저녁 18시 이후에 퇴근해도 지각(LATE) 상태가 유지되어야 한다.")
-    void late_status_preserved_after_late_checkout() {
-        // given: 09시 10분 지각 출근
-        Users user = Users.builder()
-                .name("test")
-                .birthDay(LocalDate.of(2020, 8, 8))
-                .gender(Gender.FEMALE)
-                .email("test@naver.com")
-                .password("1234")
-                .phoneNum("010-1234-5678")
-                .imageUrl("1")
-                .build();
-        LocalDate workDate = LocalDate.now();
-        LocalDateTime clockInTime = LocalDateTime.of(workDate, java.time.LocalTime.of(9, 10, 0));
-        Attendance attendance = new Attendance(user, workDate, clockInTime);
+    @Test
+    @DisplayName("9시 이후(09:01)에 출근하면 지각 여부가 true이다.")
+    void clockIn_after_standard_is_late() {
+        Attendance attendance = new Attendance(createUser(), WORK_DATE, at(9, 1, 0), STANDARD_IN);
 
-        // 검증 1: 출근 직후엔 지각
-        // assertThat(attendance.getStatus()).isEqualTo(AttendanceStatus.LATE);
-        // 검증 1: 출근 시간이 09시 이후이므로 지각 여부가 true인지 확인 (수정후)
+        assertThat(attendance.isLate()).isTrue();
+    }
+
+    // ===== 퇴근 =====
+
+    @Test
+    @DisplayName("18시 이전에 퇴근하면 조퇴이다.")
+    void clockOut_before_standard_is_early_leave() {
+        Attendance attendance = new Attendance(createUser(), WORK_DATE, at(9, 0, 0), STANDARD_IN);
+
+        attendance.updateClockOut(at(17, 59, 59), STANDARD_OUT);
+
+        assertThat(attendance.isEarlyLeave()).isTrue();
+    }
+
+    @Test
+    @DisplayName("18시 정각에 퇴근하면 조퇴가 아니다. (경계값)")
+    void clockOut_exactly_at_standard_is_not_early_leave() {
+        Attendance attendance = new Attendance(createUser(), WORK_DATE, at(9, 0, 0), STANDARD_IN);
+
+        attendance.updateClockOut(at(18, 0, 0), STANDARD_OUT);
+
+        assertThat(attendance.isEarlyLeave()).isFalse();
+    }
+
+    @Test
+    @DisplayName("지각한 사람이 18시 이후에 퇴근해도 지각 상태가 유지되어야 한다.")
+    void late_is_preserved_after_clockOut() {
+        Attendance attendance = new Attendance(createUser(), WORK_DATE, at(9, 10, 0), STANDARD_IN);
         assertThat(attendance.isLate()).isTrue();
 
-        // when: 야근을 하여 저녁 19시 00분에 퇴근
-        LocalDateTime clockOutTime = LocalDateTime.of(workDate, java.time.LocalTime.of(19, 0, 0));
-        attendance.updateClockOut(clockOutTime);
+        attendance.updateClockOut(at(19, 0, 0), STANDARD_OUT);
 
-        // then: 18시 이후 퇴근이더라도 아침의 지각(LATE) 상태가 NORMAL로 덮어씌워지지 않고 유지되어야 함!
-        // assertThat(attendance.getStatus()).isEqualTo(AttendanceStatus.LATE);
         assertThat(attendance.isLate()).isTrue();
+        assertThat(attendance.isEarlyLeave()).isFalse();
+    }
+
+    // ===== 근무 시간 =====
+
+    @Test
+    @DisplayName("9시~18시 근무하면 점심 1시간이 공제되어 8시간 근무로 계산된다.")
+    void net_worked_minutes_deducts_lunch() {
+        Attendance attendance = new Attendance(createUser(), WORK_DATE, at(9, 0, 0), STANDARD_IN);
+        attendance.updateClockOut(at(18, 0, 0), STANDARD_OUT);
+
+        assertThat(attendance.getTotalMinutes()).isEqualTo(540);     // 9시간
+        assertThat(attendance.getNetWorkedMinutes()).isEqualTo(480); // 8시간
+        assertThat(attendance.getWorkedTimeStr()).isEqualTo("8h 0m");
     }
 }
