@@ -8,20 +8,28 @@ import java.time.LocalDateTime;
 
 public record AttendanceResponse(
         Long id,
+        String name,
         LocalDate workDate,
         LocalDateTime clockInTime,
         LocalDateTime clockOutTime,
         AttendanceStatus status,
         String statusTitle,
-        boolean late,
-        boolean earlyLeave,
+        Boolean late, // null값이 될 수 있어야 하므로 Boolean 참조타입으로 선언
+        Boolean earlyLeave, // null값이 될 수 있어야 하므로 Boolean 참조타입으로 선언
         String workedTime
 ) {
 
     public static AttendanceResponse from(Attendance a) {
         return new AttendanceResponse(
-                a.getId(), a.getWorkDate(), a.getClockInTime(), a.getClockOutTime(),
-                a.getStatus(), a.getStatus().getTitle(),
-                a.isLate(), a.isEarlyLeave(), a.getWorkedTimeStr());
+                a.getId(),
+                a.getUser().getName(),
+                a.getWorkDate(),
+                a.getClockInTime(),
+                a.getClockOutTime(),
+                a.getStatus(),
+                a.getStatus().getTitle(),
+                a.isLate(),
+                a.isEarlyLeave(),
+                a.getWorkedTimeStr());
     }
 }
