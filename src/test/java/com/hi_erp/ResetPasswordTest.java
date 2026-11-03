@@ -86,4 +86,10 @@ class ResetPasswordTest {
                         anyString()
                 );
     }
+
+//    @Test
+//    void test(){
+//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+//        System.out.println(encoder.encode("1234"));
+//    }
 }
