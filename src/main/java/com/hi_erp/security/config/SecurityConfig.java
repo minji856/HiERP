@@ -10,9 +10,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 /**
  * Spring Security 인증과 폼 로그인 설정관련 환경설정 Class 입니다.
@@ -32,6 +35,17 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // 세션 정보 관리 빈 등록
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
+
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler) throws Exception {
         http    .csrf(AbstractHttpConfigurer::disable) // RESTapi 이용으로 csrf(cross site request forgery)는 비활성화
@@ -44,7 +58,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // requestMatchers().permitAll() 에 지정된 Url 들은 인증,인가 없이도 접근 가능
                         // 테스트를 위해 h2-console/**, admin 추가함 (배포시 제거)
-                        .requestMatchers("/signUp","/","/login","/admin/**","/notice/**","/join","/account/**", "/css/**", "/js/**", "/h2-console/**", "/api/**", "/calendar" ,"/mail")
+                        .requestMatchers("/signUp","/","/login","/admin/**","/notice/**",
+                                "/join","/account/**", "/css/**", "/js/**", "/h2-console/**",
+                                "/api/**", "/calendar" ,"/mail" , "/attendance/**")
                         .permitAll()
                         // ==== .requestMatchers("/admin/**").hasRole("ADMIN") 테스트때문에 임시로 주석처리 ====//
                         .requestMatchers("/user/**").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
@@ -67,9 +83,12 @@ public class SecurityConfig {
                         .permitAll()
                         .invalidateHttpSession(true)) // 로그아웃 후 세션 무효화
 
-                // 세션 정책(추후 JWT 토큰으로 변경예정)
+                // 세션 정책
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .maximumSessions(-1)
+                        .sessionRegistry(sessionRegistry())
+                        .expiredUrl("/?expired")
                 );
 
         return http.build();

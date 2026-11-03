@@ -160,5 +160,10 @@
         }
     }
 </script>
+
+<!-- 세션 만료 알림 -->
+<script th:if="${sessionExpired}" th:inline="javascript">
+    alert(/*[[${sessionExpiredMessage}]]*/ '세션이 만료되었습니다.');
+</script>
 </body>
 </html>
