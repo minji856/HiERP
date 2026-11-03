@@ -82,13 +82,29 @@
                                     </div>
                                 </td>
                                 <td class="min-width">
-                                    <span th:if="${user.enabled}" class="status-btn success-btn">활성화</span>
+                                    <!-- 활성화된 사용자 -->
+                                    <form th:if="${user.enabled}"
+                                          th:action="@{/admin/{id}/disable(id=${user.id})}"
+                                          method="post"
+                                          onsubmit="return confirm('해당 사용자를 비활성화하시겠습니까?');">
 
+                                        <button type="submit"
+                                                class="main-btn deactive-btn-light rounded-full btn-hover"
+                                                style="width: auto; padding: 10px 20px; font-size: 14px;">
+                                            비활성화
+                                        </button>
+                                    </form>
+
+                                    <!-- 비활성화된 사용자 -->
                                     <form th:unless="${user.enabled}"
                                           th:action="@{/admin/{id}/approve(id=${user.id})}"
-                                          method="post">
-                                        <button type="submit" class="status-btn close-btn btn-hover">
-                                            <i class="lni lni-checkmark-circle mr-5"></i> 승인하기
+                                          method="post"
+                                          onsubmit="return confirm('해당 사용자를 활성화하시겠습니까?');">
+
+                                        <button type="submit"
+                                                class="main-btn active-btn-light rounded-full btn-hover"
+                                                style="width: auto; padding: 10px 20px; font-size: 14px;">
+                                            승인하기 <i class="lni lni-checkmark-circle"></i>
                                         </button>
                                     </form>
                                 </td>
