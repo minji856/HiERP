@@ -1,6 +1,7 @@
 package com.hi_erp.service;
 
 import com.hi_erp.entity.Users;
+import com.hi_erp.enums.Role;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -56,9 +57,11 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
+    // 계정 정지 여부 검사
+    // false를 반환해야 계정이 잠긴다. 기본값 true
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return users.getRole() != Role.BANNED;
     }
 
     @Override
