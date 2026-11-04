@@ -63,10 +63,17 @@ public class AdminController{
     }
 
 
-    // 유저를 활성화합니다.
+    // 사용자를 활성화합니다.
     @PostMapping("/{id}/approve")
     public String approveUser(@PathVariable Long id) {
         adminService.approveUser(id);
+        return "redirect:/admin/admin-setting";
+    }
+
+    // 사용자 비활성화합니다.
+    @PostMapping("/{id}/disable")
+    public String disableUser(@PathVariable Long id) {
+        adminService.disableUser(id);
         return "redirect:/admin/admin-setting";
     }
 }
