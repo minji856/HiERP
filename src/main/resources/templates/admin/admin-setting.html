@@ -36,6 +36,7 @@
                             <thead>
                             <tr>
                                 <th><h6>ID</h6></th>
+                                <th><h6>이름</h6></th>
                                 <th><h6>Email</h6></th>
                                 <th><h6>전화번호</h6></th>
                                 <th><h6>권한</h6></th>
@@ -47,6 +48,9 @@
                             <tr th:each="user : ${users}">
                                 <td class="min-width">
                                     <p th:text="${user.id}"></p>
+                                </td>
+                                <td class="min-width">
+                                    <p th:text="${user.name}"></p>
                                 </td>
                                 <td class="min-width">
                                     <p th:text="${user.email}"></p>
