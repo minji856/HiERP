@@ -153,10 +153,18 @@
 <script th:inline="javascript">
     // 페이지 로드 시 실행
     window.onload = function() {
-        // 주소창에 ?error가 포함되어 있다면
-        if (window.location.search.includes('error')) {
-            // 주소창에서 파라미터만 제거 (페이지 새로고침은 안 함)
-            window.history.replaceState({}, document.title, window.location.pathname);
+        const params = new URLSearchParams(window.location.search);
+        // 주소창에 ?error,?banned,?expired 가 포함되어 있다면
+        // 주소창에서 파라미터만 제거 (페이지 새로고침은 안 함) 알림창이 1번만 나오게 됩니다.
+        if (params.has('error') ||
+            params.has('banned') ||
+            params.has('expired')) {
+
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
         }
     }
 </script>
@@ -164,6 +172,9 @@
 <!-- 세션 만료 알림 -->
 <script th:if="${sessionExpired}" th:inline="javascript">
     alert(/*[[${sessionExpiredMessage}]]*/ '세션이 만료되었습니다.');
+</script>
+<script th:if="${banned}">
+    alert("정지된 계정입니다. 관리자에게 문의하세요.");
 </script>
 </body>
 </html>

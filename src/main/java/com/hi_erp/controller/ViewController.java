@@ -14,6 +14,7 @@ public class ViewController {
      */
     @GetMapping("/")
     public String mainPage(@RequestParam(value = "error", required = false) String error,
+                           @RequestParam(value = "banned", required = false) String banned,
                            @RequestParam(value = "expired", required = false) String expired,
                            Model model) {
         // 로그인 실패 시 ?error 파라미터가 붙어서 오면 실행됩니다.
@@ -21,6 +22,11 @@ public class ViewController {
             model.addAttribute("loginError", true);
             model.addAttribute("errorMessage",
                     "이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 정지된 유저일 경우
+        if (banned != null) {
+            model.addAttribute("banned", true);
         }
 
         // 세션 만료
