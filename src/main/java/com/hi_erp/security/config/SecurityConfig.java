@@ -4,6 +4,7 @@ package com.hi_erp.security.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -57,12 +58,12 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         // requestMatchers().permitAll() 에 지정된 Url 들은 인증,인가 없이도 접근 가능
-                        // 테스트를 위해 h2-console/**, admin 추가함 (배포시 제거)
-                        .requestMatchers("/signUp","/","/login","/admin/**","/notice/**",
-                                "/join","/account/**", "/css/**", "/js/**", "/h2-console/**",
-                                "/api/**", "/calendar" ,"/mail" , "/attendance/**")
+                        // 테스트를 위해 h2-console/**(배포시 제거)
+                        .requestMatchers("/admin/**","/api/admin/**").hasRole("ADMIN") // 관리자만 접근 가능
+                        .requestMatchers("/signUp","/","/login","/notice/**",
+                        "/join","/account/**", "/css/**", "/js/**", "/h2-console/**",
+                        "/api/**", "/calendar" ,"/mail" , "/attendance/**")
                         .permitAll()
-                        // ==== .requestMatchers("/admin/**").hasRole("ADMIN") 테스트때문에 임시로 주석처리 ====//
                         .requestMatchers("/user/**").hasRole("USER") // ROLE_USER 를 가진 사용자만 접근 가능
                         .anyRequest().authenticated())
 
@@ -73,7 +74,14 @@ public class SecurityConfig {
                         .passwordParameter("password") // submit할 비밀번호
                         .successHandler(customAuthenticationSuccessHandler) // 임시 비밀번호 로그인 유저용 핸들러 장착
                         // .defaultSuccessUrl("/account/main", true) // 정상적 인증 처리 후 이동하는 페이지
-                        .failureUrl("/?error") // 로그인 실패 시 이동 페이지
+                        .failureHandler((request, response, exception) -> {
+
+                            if (exception instanceof LockedException) {
+                                response.sendRedirect("/?banned");
+                            } else {
+                                response.sendRedirect("/?error");
+                            }
+                        }) // 로그인 실패 시 이동 페이지
                         .permitAll())
 
                 /* 폼 로그아웃 처리 */
