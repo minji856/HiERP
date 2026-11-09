@@ -48,6 +48,18 @@ public class AttendanceController {
         return (referer != null) ? referer : "/";
     }
 
+    /**
+     * 현재 로그인한 유저의 근태현황을 보여주는 대시보드 입니다.
+     *
+     * @param principal
+     * @param from
+     * @param to
+     * @param late
+     * @param earlyLeave
+     * @param pageable
+     * @param model
+     * @return attendance-list 뷰 페이지
+     */
     @GetMapping("/list")
     public String attendanceList(
             Principal principal,
@@ -62,15 +74,31 @@ public class AttendanceController {
         LocalDate start = (from != null) ? from : today;
         LocalDate end = (to != null) ? to : today;
 
-        Page<AttendanceResponse> attendancePage =
-                attendanceService.search(principal.getName(), start, end, late, earlyLeave, pageable);
+        // 시작일이 종료일보다 늦은 경우
+        if (start.isAfter(end)) {
+            // 날짜가 잘못된 경우
+            model.addAttribute("errorMessage", "시작일은 종료일보다 늦을 수 없습니다.");
+            model.addAttribute("attendancePage", Page.empty(pageable));
+        } else {
+            // 날짜가 올바른 경우에만 검색 실행
+            Page<AttendanceResponse> attendancePage =
+                    attendanceService.search(
+                            principal.getName(),
+                            start,
+                            end,
+                            late,
+                            earlyLeave,
+                            pageable
+                    );
 
-        model.addAttribute("attendancePage", attendancePage);
+            model.addAttribute("attendancePage", attendancePage);
+        }
+
         model.addAttribute("from", start);
         model.addAttribute("to", end);
         model.addAttribute("late", late);
         model.addAttribute("earlyLeave", earlyLeave);
 
-        return "admin/admin-attendance-list";
+        return "account/attendance-list";
     }
 }
