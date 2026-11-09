@@ -76,4 +76,10 @@ public class AdminController{
         adminService.disableUser(id);
         return "redirect:/admin/admin-setting";
     }
+
+    // 유저 전체 근태현황 뷰 페이지
+    @GetMapping("/attendance/list")
+    public String attendanceList(Model model){
+        return "admin/admin-attendance-list";
+    }
 }
