@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/user-layout}">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+    <title>출퇴근 현황</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/bootstrap/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap/css/lineicons.css}">
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid">
+
+        <!-- 페이지 제목 -->
+        <div class="title-wrapper pt-30">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="title mb-30">
+                        <h2>출퇴근 관리</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 날짜 검색 영역 start -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card-style mb-30">
+
+                    <h6 class="mb-10">내 출퇴근 현황</h6>
+
+                    <p class="text-sm mb-20">
+                        날짜별 출근 및 퇴근 시간과 근태 상태를 확인할 수 있습니다.
+                    </p>
+
+                    <!-- 검색 오류 메시지 -->
+                    <div class="col-12"
+                         th:if="${errorMessage != null}">
+                        <div class="alert alert-danger mb-0"
+                             th:text="${errorMessage}">
+                        </div>
+                    </div>
+
+                    <form th:action="@{/attendance/list}"
+                          method="get"
+                          class="row g-3 align-items-end">
+
+                        <!-- 시작일 -->
+                        <div class="col-md-3">
+                            <label for="from" class="form-label">시작일</label>
+                            <input type="date"
+                                   id="from"
+                                   name="from"
+                                   class="form-control"
+                                   th:value="${from}">
+                        </div>
+
+                        <!-- 종료일 -->
+                        <div class="col-md-3">
+                            <label for="to" class="form-label">종료일</label>
+                            <input type="date"
+                                   id="to"
+                                   name="to"
+                                   class="form-control"
+                                   th:value="${to}">
+                        </div>
+
+                        <!-- 검색 및 초기화 버튼 -->
+                        <div class="col-md-auto">
+                            <div class="d-flex align-items-center gap-1">
+
+                                <button type="submit"
+                                        class="main-btn primary-btn btn-hover"
+                                        style="width: auto; min-width: 90px; height: 48px;
+                                       padding: 0 18px; font-size: 15px;">
+                                    검색
+                                </button>
+
+                                <a th:href="@{/attendance/list}"
+                                   class="main-btn light-btn btn-hover"
+                                   style="width: auto; min-width: 110px; height: 48px;
+                                  padding: 0 18px; font-size: 15px;">
+                                    오늘 날짜
+                                </a>
+
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- 날짜 검색 영역 end-->
+
+
+        <!-- 근태 테이블 영역 start -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card-style mb-30">
+
+                    <div class="table-wrapper table-responsive">
+                        <table class="table">
+
+                            <colgroup>
+                                <col style="width: 20%;">
+                                <col style="width: 20%;">
+                                <col style="width: 20%;">
+                                <col style="width: 20%;">
+                                <col style="width: 20%;">
+                            </colgroup>
+
+                            <thead>
+                            <tr>
+                                <th><h6>날짜</h6></th>
+                                <th><h6>출근 시간</h6></th>
+                                <th><h6>퇴근 시간</h6></th>
+                                <th><h6>근태 상태</h6></th>
+                                <th><h6>특이 사항</h6></th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:each="attendance : ${attendancePage.content}">
+
+                                <!-- 날짜 -->
+                                <td class="min-width">
+                                    <p th:text="${#temporals.format(attendance.workDate, 'yyyy-MM-dd (E)')}">
+                                        2026-11-02
+                                    </p>
+                                </td>
+
+                                <!-- 출근 시간 -->
+                                <td class="min-width">
+                                    <p th:if="${attendance.clockInTime != null}"
+                                       th:text="${#temporals.format(attendance.clockInTime, 'HH:mm')}">
+                                        09:00
+                                    </p>
+
+                                    <p th:unless="${attendance.clockInTime != null}"
+                                       class="text-muted">
+                                        미출근
+                                    </p>
+                                </td>
+
+                                <!-- 퇴근 시간 -->
+                                <td class="min-width">
+                                    <p th:if="${attendance.clockOutTime != null}"
+                                       th:text="${#temporals.format(attendance.clockOutTime, 'HH:mm')}">
+                                        18:00
+                                    </p>
+
+                                    <p th:unless="${attendance.clockOutTime != null}"
+                                       class="text-muted">
+                                        -
+                                    </p>
+                                </td>
+
+                                <!-- 근태 상태 -->
+                                <td class="min-width">
+                            <span th:if="${attendance.status != null}"
+                                  class="status-btn"
+                                  th:classappend="${attendance.status.name() == 'NORMAL'}
+                                      ? ' success-btn'
+                                      : (${attendance.status.name() == 'LATE'}
+                                          ? ' close-btn'
+                                          : '')"
+                                  th:text="${attendance.statusTitle}">
+                                정상 출근
+                            </span>
+
+                                    <span th:unless="${attendance.status != null}"
+                                          class="status-btn light-btn">
+                                미출근
+                            </span>
+                                </td>
+
+                                <!-- 특이 사항 -->
+                                <td class="min-width">
+                            <span th:if="${attendance.late == true}"
+                                  class="status-btn close-btn">
+                                지각
+                            </span>
+
+                                    <span th:if="${attendance.late == true and attendance.earlyLeave == true}">
+                                ·
+                            </span>
+
+                                    <span th:if="${attendance.earlyLeave == true}"
+                                          class="status-btn close-btn">
+                                조퇴
+                            </span>
+
+                                    <span th:if="${attendance.late != true and attendance.earlyLeave != true}"
+                                          class="text-muted">
+                                -
+                            </span>
+                                </td>
+                            </tr>
+
+                            <!-- 조회 결과가 없는 경우 -->
+                            <tr th:if="${#lists.isEmpty(attendancePage.content)}">
+                                <td colspan="5" class="text-center py-4">
+                                    조회된 출퇴근 기록이 없습니다.
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 페이지네이션 -->
+                    <div class="d-flex justify-content-center mt-30"
+                         th:if="${attendancePage.totalPages > 1}">
+
+                        <nav aria-label="출퇴근 목록 페이지">
+                            <ul class="pagination">
+
+                                <!-- 이전 페이지 -->
+                                <li class="page-item"
+                                    th:classappend="${attendancePage.first} ? ' disabled'">
+
+                                    <a class="page-link"
+                                       th:href="@{/attendance/list(
+                                   page=${attendancePage.number - 1},
+                                   from=${from},
+                                   to=${to},
+                                   late=${late},
+                                   earlyLeave=${earlyLeave}
+                               )}">
+                                        이전
+                                    </a>
+                                </li>
+
+                                <!-- 페이지 번호 -->
+                                <li class="page-item"
+                                    th:each="pageNum : ${#numbers.sequence(0, attendancePage.totalPages - 1)}"
+                                    th:classappend="${pageNum == attendancePage.number} ? ' active'">
+
+                                    <a class="page-link"
+                                       th:href="@{/attendance/list(
+                                   page=${pageNum},
+                                   from=${from},
+                                   to=${to},
+                                   late=${late},
+                                   earlyLeave=${earlyLeave}
+                               )}"
+                                       th:text="${pageNum + 1}">
+                                        1
+                                    </a>
+                                </li>
+
+                                <!-- 다음 페이지 -->
+                                <li class="page-item"
+                                    th:classappend="${attendancePage.last} ? ' disabled'">
+
+                                    <a class="page-link"
+                                       th:href="@{/attendance/list(
+                                   page=${attendancePage.number + 1},
+                                   from=${from},
+                                   to=${to},
+                                   late=${late},
+                                   earlyLeave=${earlyLeave}
+                               )}">
+                                        다음
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </nav>
+                    </div>
+                    <!-- 페이지네이션 end-->
+
+                </div>
+            </div>
+        </div>
+        <!--근태영역 end-->
+    </div>
+</div>
+</body>
+</html>
