@@ -72,7 +72,7 @@
                             마이페이지</font></font></a>
                     </li>
                     <li>
-                        <a href="clients.html">
+                        <a th:href="@{/attendance/list}">
                 <span class="text"><font dir="auto" style="vertical-align: inherit;"><font dir="auto"
                                                                                            style="vertical-align: inherit;">
                   근태관리</font></font>
@@ -92,7 +92,7 @@
               </svg>
             </span>
                     <span class="text"><font dir="auto" style="vertical-align: inherit;"><font dir="auto"
-                                                                                               style="vertical-align: inherit;">관리자메뉴</font></font></span>
+                        style="vertical-align: inherit;">관리자메뉴</font></font></span>
                 </a>
                 <ul id="ddmenu_3" class="collapse dropdown-nav">
                     <li>
@@ -101,16 +101,16 @@
                                 style="vertical-align: inherit;">사원관리</font></font></a>
                     </li>
                     <li>
-                        <a href="signup.html"><font dir="auto" style="vertical-align: inherit;"><font dir="auto"
-                                                                                                      style="vertical-align: inherit;">게시판등록</font></font></a>
+                        <a th:href="@{/admin/attendance/list}">
+                            <span class="text"><font dir="auto" style="vertical-align: inherit;"><font dir="auto"
+                                                                                                       style="vertical-align: inherit;">
+                              근태현황</font></font>
+                            </span>
+                        </a>
                     </li>
                     <li>
-                        <a href="reset-password.html">
-                <span class="text"><font dir="auto" style="vertical-align: inherit;"><font dir="auto"
-                                                                                           style="vertical-align: inherit;">
-                  비밀번호 재설정</font></font>
-                </span>
-                        </a>
+                        <a href="signup.html"><font dir="auto" style="vertical-align: inherit;"><font dir="auto"
+                                                                                                      style="vertical-align: inherit;">게시판등록</font></font></a>
                     </li>
                 </ul>
             </li>
