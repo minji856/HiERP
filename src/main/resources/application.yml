@@ -69,3 +69,4 @@ logging:
           interceptor: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.orm.jdbc.bind: trace # sql 바인딩 값 출력용
