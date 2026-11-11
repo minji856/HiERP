@@ -59,4 +59,13 @@ public class AttendanceApiController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "시작일이 종료일보다 늦을 수 없습니다.");
         }
     }
+
+    // 미출근: GET /api/admin/attendance/not-clocked-in?date=2026-11-10&page=0&size=20
+    @GetMapping("/not-clocked-in")
+    public PagedModel<AttendanceResponse> notClockedIn(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @PageableDefault(size = 20) Pageable pageable
+    ) {
+        return new PagedModel<>(attendanceService.findNotClockedIn(orToday(date), pageable));
+    }
 }
