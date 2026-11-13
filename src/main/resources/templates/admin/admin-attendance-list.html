@@ -94,6 +94,13 @@
                         사원별 출근 및 퇴근 시간과 근태 상태를 확인할 수 있습니다.
                     </p>
 
+                    <!-- 새로 추가: 모드 전환 버튼 -->
+                    <div id="mode-group" class="mb-3">
+                        <button type="button" data-mode="records" class="main-btn primary-btn btn-hover btn-sm">출근 기록</button>
+                        <button type="button" data-mode="missing" class="main-btn primary-btn-outline btn-hover btn-sm">미출근</button>
+                        <span id="mode-note" class="text-muted ms-2"></span>
+                    </div>
+
                     <div class="table-wrapper table-responsive">
                         <table class="table">
                             <colgroup>
@@ -131,24 +138,39 @@
         </div>
     </div>
 
+
     <script th:inline="javascript">
         (function () {
             const API = /*[[@{/api/admin/attendance}]]*/ '/api/admin/attendance';
             const PAGE_SIZE = 20;
             const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
-            // 상태값 → PlainAdmin 배지 색. 없는 값은 light-btn
-            const STATUS_CLASS = { NORMAL: 'success-btn', ABSENT: 'close-btn' };
+
+            const STATUS_CLASS = {
+                NORMAL: 'success-btn',
+                ABSENT: 'close-btn',
+                OFF_DUTY: 'light-btn'
+            };
+
+            // [추가] 조회 모드: 'records'(출근 기록, 기간) | 'missing'(미출근, 하루)
+            let mode = 'records';
+            let requestSeq = 0;   // 늦게 도착한 이전 응답이 화면을 덮어쓰지 않게 하는 번호
+            const MODE_BTN_ACTIVE = 'main-btn primary-btn btn-hover btn-sm';
+            const MODE_BTN_INACTIVE = 'main-btn primary-btn-outline btn-hover btn-sm';
 
             const fromEl = document.getElementById('from');
             const toEl = document.getElementById('to');
             const rowsEl = document.getElementById('attendance-rows');
             const pagerEl = document.getElementById('pager');
+            const modeBtns = document.querySelectorAll('#mode-group [data-mode]');   // [추가]
+            const modeNoteEl = document.getElementById('mode-note');                 // [추가]
 
-            // ---------- DOM 헬퍼 (textContent만 사용: 이름 등에 HTML이 들어가도 실행되지 않음) ----------
+            // ---------- DOM 헬퍼 ----------
             function el(tag, className, text) {
                 const node = document.createElement(tag);
                 if (className) node.className = className;
-                if (text !== undefined) node.textContent = text;
+                if (text !== undefined && text !== null) {
+                    node.textContent = text;
+                }
                 return node;
             }
 
@@ -159,75 +181,108 @@
             }
 
             function hhmm(dateTime) {
-                return dateTime.slice(11, 16);   // "2026-11-09T09:10:00" → "09:10"
+                return dateTime ? dateTime.slice(11, 16) : '-';
             }
 
-            // ---------- 렌더링 ----------
+            // ---------- 메시지 ----------
             function showMessage(text) {
                 const tr = document.createElement('tr');
                 const td = el('td', 'text-center py-4', text);
-                td.colSpan = 6;
+                td.colSpan = 6;   // [변경] 행이 6칸이라 6으로 맞춤 (thead 칸 수에 맞추세요)
                 tr.appendChild(td);
                 rowsEl.replaceChildren(tr);
                 pagerEl.replaceChildren();
             }
 
+            // ---------- 행 생성 (변경 없음) ----------
             function buildRow(a) {
                 const tr = document.createElement('tr');
 
                 // 날짜
-                const day = WEEKDAYS[new Date(a.workDate + 'T00:00:00').getDay()];
-                tr.appendChild(cell(el('p', '', a.workDate + ' (' + day + ')')));
+                const workDate = a.workDate ? a.workDate : '-';
+
+                if (a.workDate) {
+                    const day = WEEKDAYS[new Date(a.workDate + 'T00:00:00').getDay()];
+                    tr.appendChild(cell(el('p', '', workDate + ' (' + day + ')')));
+                } else {
+                    tr.appendChild(cell(el('p', 'text-muted', '-')));
+                }
 
                 // 사원명
-                tr.appendChild(cell(el('p', '', a.name)));
+                tr.appendChild(cell(el('p', '', a.name || '-')));
 
-                // 출근 / 퇴근 시간
-                tr.appendChild(cell(a.clockInTime
-                    ? el('p', '', hhmm(a.clockInTime))
-                    : el('p', 'text-muted', '미출근')));
-                tr.appendChild(cell(a.clockOutTime
-                    ? el('p', '', hhmm(a.clockOutTime))
-                    : el('p', 'text-muted', '-')));
+                // 출근 시간
+                tr.appendChild(cell(
+                    a.clockInTime
+                        ? el('p', '', hhmm(a.clockInTime))
+                        : el('p', 'text-muted', '미출근')
+                ));
+
+                // 퇴근 시간
+                tr.appendChild(cell(
+                    a.clockOutTime
+                        ? el('p', '', hhmm(a.clockOutTime))
+                        : el('p', 'text-muted', '-')
+                ));
 
                 // 근태 상태
                 const statusClass = 'status-btn ' + (STATUS_CLASS[a.status] || 'light-btn');
-                tr.appendChild(cell(el('span', statusClass, a.statusTitle || '미출근')));
+                const statusText = a.statusTitle || '미출근';
+                tr.appendChild(cell(el('span', statusClass, statusText)));
 
                 // 특이 사항
                 const remarks = el('td', 'min-width');
-                if (a.late) remarks.appendChild(el('span', 'status-btn close-btn me-1', '지각'));
-                if (a.earlyLeave) remarks.appendChild(el('span', 'status-btn close-btn', '조퇴'));
-                if (!a.late && !a.earlyLeave) remarks.appendChild(el('span', 'text-muted', '-'));
-                tr.appendChild(remarks);
 
+                if (a.late === true) {
+                    remarks.appendChild(el('span', 'status-btn close-btn me-1', '지각'));
+                }
+                if (a.earlyLeave === true) {
+                    remarks.appendChild(el('span', 'status-btn close-btn', '조퇴'));
+                }
+                if (a.late !== true && a.earlyLeave !== true) {
+                    remarks.appendChild(el('span', 'text-muted', '-'));
+                }
+
+                tr.appendChild(remarks);
                 return tr;
             }
 
+            // ---------- 목록 렌더링 ----------
             function renderRows(items) {
-                if (items.length === 0) {
-                    showMessage('조회된 출퇴근 기록이 없습니다.');
+                if (!items || items.length === 0) {
+                    // [변경] 모드에 따라 문구 구분
+                    showMessage(mode === 'missing'
+                        ? '미출근한 직원이 없습니다.'
+                        : '조회된 근태 기록이 없습니다.');
                     return;
                 }
                 rowsEl.replaceChildren(...items.map(buildRow));
             }
 
+            // ---------- 요약 렌더링 (변경 없음) ----------
             function renderSummary(s) {
-                document.getElementById('sum-total').textContent = s.total;
-                document.getElementById('sum-late').textContent = s.lateCount;
-                document.getElementById('sum-late-emp').textContent = s.lateEmployeeCount;
-                document.getElementById('sum-early').textContent = s.earlyLeaveCount;
-                document.getElementById('sum-early-emp').textContent = s.earlyLeaveEmployeeCount;
+                document.getElementById('sum-total').textContent = s.total ?? 0;
+                document.getElementById('sum-late').textContent = s.lateCount ?? 0;
+                document.getElementById('sum-late-emp').textContent = s.lateEmployeeCount ?? 0;
+                document.getElementById('sum-early').textContent = s.earlyLeaveCount ?? 0;
+                document.getElementById('sum-early-emp').textContent = s.earlyLeaveEmployeeCount ?? 0;
             }
 
+            // ---------- 페이지네이션 (변경 없음) ----------
             function pageItem(label, page, disabled, active) {
-                const li = el('li', 'page-item' + (disabled ? ' disabled' : '') + (active ? ' active' : ''));
+                const li = el('li',
+                    'page-item' + (disabled ? ' disabled' : '') + (active ? ' active' : ''));
+
                 const a = el('a', 'page-link', label);
                 a.href = '#';
+
                 a.addEventListener('click', function (e) {
                     e.preventDefault();
-                    if (!disabled && !active) load(page);
+                    if (!disabled && !active) {
+                        load(page);
+                    }
                 });
+
                 li.appendChild(a);
                 return li;
             }
@@ -237,63 +292,128 @@
                     pagerEl.replaceChildren();
                     return;
                 }
-                // 현재 페이지 주변 최대 5개만 표시
+
                 let start = Math.max(0, current - 2);
                 const end = Math.min(total - 1, start + 4);
                 start = Math.max(0, end - 4);
 
                 const items = [pageItem('이전', current - 1, current === 0, false)];
+
                 for (let p = start; p <= end; p++) {
                     items.push(pageItem(String(p + 1), p, false, p === current));
                 }
+
                 items.push(pageItem('다음', current + 1, current >= total - 1, false));
                 pagerEl.replaceChildren(...items);
             }
 
             // ---------- API 호출 ----------
             async function load(page) {
-                if (fromEl.value > toEl.value) {          // yyyy-MM-dd는 문자열 비교가 날짜 비교와 같음
+                // [변경] 미출근 모드는 하루 기준이라 종료일 = 시작일
+                const from = fromEl.value;
+                const to = (mode === 'missing') ? from : toEl.value;
+
+                if (from > to) {
                     alert('시작일이 종료일보다 늦을 수 없습니다.');
                     return;
                 }
 
-                const params = new URLSearchParams({ from: fromEl.value, to: toEl.value });
+                const params = new URLSearchParams({ from: from, to: to });
+                const paging = '&page=' + page + '&size=' + PAGE_SIZE;
+
+                // [변경] 모드에 따라 목록 주소만 다름
+                const listUrl = (mode === 'missing')
+                    ? API + '/not-clocked-in?date=' + from + paging
+                    : API + '?' + params + paging;
+
                 const options = { headers: { 'Accept': 'application/json' } };
+                const seq = ++requestSeq;   // [추가]
 
                 try {
                     const [listRes, sumRes] = await Promise.all([
-                        fetch(API + '?' + params + '&page=' + page + '&size=' + PAGE_SIZE, options),
+                        fetch(listUrl, options),
                         fetch(API + '/summary?' + params, options)
                     ]);
 
-                    // 세션이 만료되면 로그인 페이지로 리다이렉트된 HTML이 돌아옴 → 새로고침해서 로그인 화면으로
+                    if (seq !== requestSeq) return;   // [추가] 더 최신 요청이 있으면 버림
+
                     if (listRes.redirected || sumRes.redirected) {
                         window.location.reload();
                         return;
                     }
+
                     if (!listRes.ok || !sumRes.ok) {
                         showMessage('조회에 실패했습니다. (' + listRes.status + ')');
                         return;
                     }
 
                     const list = await listRes.json();
-                    renderSummary(await sumRes.json());
+                    const summary = await sumRes.json();
+
+                    if (seq !== requestSeq) return;   // [추가]
+
+                    renderSummary(summary);
                     renderRows(list.content);
                     renderPager(list.page.number, list.page.totalPages);
+
+                    // 미출근 인원 표시 요소 못 넣을 시 스크립트 방어 코드
+                    if (modeNoteEl) {
+                        modeNoteEl.textContent = (mode === 'missing')
+                            ? '미출근 ' + list.page.totalElements + '명'
+                            : '';
+                    }
+
                 } catch (e) {
-                    showMessage('서버와 통신하지 못했습니다.');
+                    console.error(e);
+                    if (seq === requestSeq) {
+                        showMessage('서버와 통신하지 못했습니다.');
+                    }
                 }
             }
 
+            // ---------- [추가] 모드 전환 ----------
+            function setMode(next) {
+                mode = next;
+
+                modeBtns.forEach(function (b) {
+                    b.className = (b.dataset.mode === mode) ? MODE_BTN_ACTIVE : MODE_BTN_INACTIVE;
+                });
+
+                if (mode === 'missing') {
+                    toEl.value = fromEl.value;   // 하루 기준이라 종료일은 시작일과 동일하게
+                    toEl.disabled = true;
+                } else {
+                    toEl.disabled = false;
+                }
+
+                load(0);
+            }
+
+            modeBtns.forEach(function (b) {
+                b.addEventListener('click', function () {
+                    if (b.dataset.mode !== mode) {
+                        setMode(b.dataset.mode);
+                    }
+                });
+            });
+
+            fromEl.addEventListener('change', function () {
+                if (mode === 'missing') {
+                    toEl.value = fromEl.value;
+                }
+            });
+
             // ---------- 초기화 ----------
-            const today = new Date().toLocaleDateString('sv-SE');   // 로컬 날짜를 yyyy-MM-dd로
+            const today = new Date().toLocaleDateString('sv-SE');
+
             fromEl.value = today;
             toEl.value = today;
 
-            document.getElementById('filter-form').addEventListener('submit', function (e) {
-                e.preventDefault();
-                load(0);
-            });
+            document.getElementById('filter-form')
+                .addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    load(0);
+                });
 
             load(0);
         })();
