@@ -58,6 +58,11 @@ app:
 server:
   port: 8080
 
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+
 logging:
   level:
     root: INFO
