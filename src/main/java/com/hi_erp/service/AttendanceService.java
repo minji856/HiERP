@@ -4,21 +4,27 @@ import com.hi_erp.dto.AttendanceResponse;
 import com.hi_erp.dto.AttendanceSummary;
 import com.hi_erp.entity.Attendance;
 import com.hi_erp.entity.Users;
+import com.hi_erp.enums.BoardType;
 import com.hi_erp.repository.AttendanceRepository;
 import com.hi_erp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +37,9 @@ public class AttendanceService {
     // 기준 근무 시간 (고정근무제: 9시 출근 / 18시 퇴근)
     private static final LocalTime STANDARD_IN_TIME = LocalTime.of(9, 0);
     private static final LocalTime STANDARD_OUT_TIME = LocalTime.of(18, 0);
+
+    // 최대 조회 기간
+    private static final int MAX_BOARD_DAYS = 31;
 
     // 오늘의 출근/퇴근 기록을 조회하여 현재 근태 상태를 반환 (UI 버튼 제어용)
     public Attendance getTodayAttendance(String email) {
@@ -137,6 +146,7 @@ public class AttendanceService {
     }
 
     // 미출근 직원을 조회합니다. DB 저장은 X
+    /*
     @Transactional(readOnly = true)
     public Page<AttendanceResponse> findNotClockedIn(LocalDate workDate, Pageable pageable) {
         // 컨트롤러에서 정렬 값이 넘어와도 Users에 없는 필드라 오류가 나므로 정렬을 제거합니다.
@@ -145,4 +155,71 @@ public class AttendanceService {
         return userRepository.findNotClockedIn(workDate, unsorted)
                 .map(u -> AttendanceResponse.notClockedIn(u, workDate));
     }
+    */
+
+    // 근태 목록: 출근 기록과 미출근(주말 제외)을 한 목록으로 조회합니다.
+    @Transactional(readOnly = true)
+    public Page<AttendanceResponse> findBoard(LocalDate from, LocalDate to,
+                                              BoardType type, Pageable pageable) {
+        // 출근 기록만 볼 때는 기존 DB 페이징을 그대로 사용 (기간 제한 없음)
+        if (type == BoardType.ATTENDED) {
+            return findAll(from, to, pageable);
+        }
+
+        if (ChronoUnit.DAYS.between(from, to) >= MAX_BOARD_DAYS) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "전체/미출근 조회는 최대 " + MAX_BOARD_DAYS + "일까지 가능합니다.");
+        }
+
+        List<AttendanceResponse> rows = buildBoard(from, to);
+        if (type == BoardType.NOT_CLOCKED_IN) {
+            rows = rows.stream().filter(r -> !r.hasAttendance()).toList();
+        }
+        return toPage(rows, pageable);
+    }
+
+    // 기간 내 (실제 근태 기록) + (평일인데 기록이 없는 직원 × 날짜)를 합쳐 최신순으로 반환
+    private List<AttendanceResponse> buildBoard(LocalDate from, LocalDate to) {
+        LocalDate today = LocalDate.now();
+        LocalDate last = to.isAfter(today) ? today : to;      // 미래 날짜는 계산하지 않음
+
+        List<AttendanceResponse> rows = new ArrayList<>();
+        Set<String> done = new HashSet<>();
+
+        // 1) 실제 기록 (주말에 출근한 기록도 그대로 포함)
+        for (Attendance a : attendanceRepository.findAllByPeriod(from, last)) {
+            done.add(a.getUser().getId() + "_" + a.getWorkDate());
+            rows.add(AttendanceResponse.from(a));
+        }
+
+        // 2) 평일인데 기록이 없는 칸 → 미출근
+        List<Users> users = userRepository.findAllByEnabledTrue();
+        for (LocalDate d = from; !d.isAfter(last); d = d.plusDays(1)) {
+            if (isWeekend(d)) continue;
+            for (Users u : users) {
+                if (!done.contains(u.getId() + "_" + d)) {
+                    rows.add(AttendanceResponse.notClockedIn(u, d));
+                }
+            }
+        }
+
+        rows.sort(Comparator.comparing(AttendanceResponse::workDate).reversed()
+                .thenComparing(AttendanceResponse::name, Comparator.nullsLast(String::compareTo)));
+        return rows;
+    }
+
+    // 메모리 목록을 Page로 변환 (정렬 정보는 쓰지 않음)
+    private Page<AttendanceResponse> toPage(List<AttendanceResponse> rows, Pageable pageable) {
+        Pageable unsorted = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        int start = (int) Math.min(unsorted.getOffset(), rows.size());
+        int end = Math.min(start + unsorted.getPageSize(), rows.size());
+        return new PageImpl<>(rows.subList(start, end), unsorted, rows.size());
+    }
+
+    private boolean isWeekend(LocalDate date) {
+        DayOfWeek w = date.getDayOfWeek();
+        return w == DayOfWeek.SATURDAY || w == DayOfWeek.SUNDAY;
+        // 공휴일 연동 시: || holidayService.isHoliday(date)
+    }
+
 }
