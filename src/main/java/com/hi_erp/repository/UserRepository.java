@@ -1,8 +1,6 @@
 package com.hi_erp.repository;
 
 import com.hi_erp.entity.Users;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -47,22 +45,6 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     @Query("DELETE FROM Users u WHERE u.enabled = false and u.createDate < :cutoffDate")
     int deleteUnverifiedUsersBefore(@Param("cutoffDate") Timestamp cutoffDate);
 
-    @Query(value = """
-        select u from Users u
-        where u.enabled = true
-          and not exists (
-              select 1 from Attendance a
-              where a.user = u and a.workDate = :workDate
-          )
-        order by u.name asc, u.id asc
-        """,
-            countQuery = """
-        select count(u) from Users u
-        where u.enabled = true
-          and not exists (
-              select 1 from Attendance a
-              where a.user = u and a.workDate = :workDate
-          )
-        """)
-    Page<Users> findNotClockedIn(@Param("workDate") LocalDate workDate, Pageable pageable);
+    // 활성(이메일 인증 완료) 직원 전체
+    List<Users> findAllByEnabledTrue();
 }
