@@ -2,7 +2,6 @@ package com.hi_erp.controller;
 
 import com.hi_erp.dto.AttendanceResponse;
 import com.hi_erp.dto.AttendanceSummary;
-import com.hi_erp.enums.BoardType;
 import com.hi_erp.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -31,13 +30,12 @@ public class AttendanceApiController {
     public PagedModel<AttendanceResponse> list(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-            @RequestParam(defaultValue = "ALL") BoardType type,
             @PageableDefault(size = 20, sort = "workDate", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         LocalDate start = orToday(from);
         LocalDate end = orToday(to);
         validate(start, end);
-        return new PagedModel<>(attendanceService.findBoard(start, end, type, pageable));
+        return new PagedModel<>(attendanceService.findAll(start, end, pageable));
     }
 
     // 요약: GET /api/admin/attendance/summary?from=...&to=...
@@ -63,7 +61,6 @@ public class AttendanceApiController {
     }
 
     // 미출근: GET /api/admin/attendance/not-clocked-in?date=2026-11-10&page=0&size=20
-    /*
     @GetMapping("/not-clocked-in")
     public PagedModel<AttendanceResponse> notClockedIn(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
@@ -71,5 +68,4 @@ public class AttendanceApiController {
     ) {
         return new PagedModel<>(attendanceService.findNotClockedIn(orToday(date), pageable));
     }
-    */
 }

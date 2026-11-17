@@ -94,13 +94,10 @@
                         사원별 출근 및 퇴근 시간과 근태 상태를 확인할 수 있습니다.
                     </p>
 
-                    <!-- 전체 출근드롭다운 필터 -->
-                    <div class="d-flex align-items-center mb-3">
-                        <select id="type" class="form-select w-auto">
-                            <option value="ALL">전체</option>
-                            <option value="ATTENDED">출근</option>
-                            <option value="NOT_CLOCKED_IN">미출근</option>
-                        </select>
+                    <!-- 새로 추가: 모드 전환 버튼 -->
+                    <div id="mode-group" class="mb-3">
+                        <button type="button" data-mode="records" class="main-btn primary-btn btn-hover btn-sm">출근 기록</button>
+                        <button type="button" data-mode="missing" class="main-btn primary-btn-outline btn-hover btn-sm">미출근</button>
                         <span id="mode-note" class="text-muted ms-2"></span>
                     </div>
 
@@ -154,13 +151,18 @@
                 OFF_DUTY: 'light-btn'
             };
 
+            // [추가] 조회 모드: 'records'(출근 기록, 기간) | 'missing'(미출근, 하루)
+            let mode = 'records';
             let requestSeq = 0;   // 늦게 도착한 이전 응답이 화면을 덮어쓰지 않게 하는 번호
+            const MODE_BTN_ACTIVE = 'main-btn primary-btn btn-hover btn-sm';
+            const MODE_BTN_INACTIVE = 'main-btn primary-btn-outline btn-hover btn-sm';
 
             const fromEl = document.getElementById('from');
             const toEl = document.getElementById('to');
             const rowsEl = document.getElementById('attendance-rows');
             const pagerEl = document.getElementById('pager');
-            const typeEl = document.getElementById('type');
+            const modeBtns = document.querySelectorAll('#mode-group [data-mode]');   // [추가]
+            const modeNoteEl = document.getElementById('mode-note');                 // [추가]
 
             // ---------- DOM 헬퍼 ----------
             function el(tag, className, text) {
@@ -249,8 +251,8 @@
             function renderRows(items) {
                 if (!items || items.length === 0) {
                     // [변경] 모드에 따라 문구 구분
-                    showMessage(typeEl.value === 'NOT_CLOCKED_IN'
-                        ? '미출근 내역이 없습니다. (주말은 제외됩니다)'
+                    showMessage(mode === 'missing'
+                        ? '미출근한 직원이 없습니다.'
                         : '조회된 근태 기록이 없습니다.');
                     return;
                 }
@@ -307,29 +309,25 @@
 
             // ---------- API 호출 ----------
             async function load(page) {
+                // [변경] 미출근 모드는 하루 기준이라 종료일 = 시작일
                 const from = fromEl.value;
-                const to = toEl.value;
-
-                if (!from || !to) return;                       // 날짜 비어 있으면 요청하지 않음
+                const to = (mode === 'missing') ? from : toEl.value;
 
                 if (from > to) {
                     alert('시작일이 종료일보다 늦을 수 없습니다.');
                     return;
                 }
 
-                // 서버 제한(전체/미출근은 최대 31일)과 동일
-                const days = (new Date(to) - new Date(from)) / 86400000;
-                if (typeEl.value !== 'ATTENDED' && days >= 31) {
-                    alert('전체/미출근 조회는 최대 31일까지 가능합니다.\n기간을 줄이거나 "출근"을 선택해 주세요.');
-                    return;
-                }
                 const params = new URLSearchParams({ from: from, to: to });
                 const paging = '&page=' + page + '&size=' + PAGE_SIZE;
 
-                const listUrl = API + '?' + params + '&type=' + typeEl.value + paging;
+                // [변경] 모드에 따라 목록 주소만 다름
+                const listUrl = (mode === 'missing')
+                    ? API + '/not-clocked-in?date=' + from + paging
+                    : API + '?' + params + paging;
 
                 const options = { headers: { 'Accept': 'application/json' } };
-                const seq = ++requestSeq;
+                const seq = ++requestSeq;   // [추가]
 
                 try {
                     const [listRes, sumRes] = await Promise.all([
@@ -337,16 +335,15 @@
                         fetch(API + '/summary?' + params, options)
                     ]);
 
-                    if (seq !== requestSeq) return;   // 더 최신 요청이 있으면 버림
+                    if (seq !== requestSeq) return;   // [추가] 더 최신 요청이 있으면 버림
 
                     if (listRes.redirected || sumRes.redirected) {
                         window.location.reload();
                         return;
                     }
 
-                    // 실패 시 상태코드 표시
                     if (!listRes.ok || !sumRes.ok) {
-                        showMessage('조회에 실패했습니다. (' + (listRes.ok ? sumRes.status : listRes.status) + ')');
+                        showMessage('조회에 실패했습니다. (' + listRes.status + ')');
                         return;
                     }
 
@@ -359,6 +356,13 @@
                     renderRows(list.content);
                     renderPager(list.page.number, list.page.totalPages);
 
+                    // 미출근 인원 표시 요소 못 넣을 시 스크립트 방어 코드
+                    if (modeNoteEl) {
+                        modeNoteEl.textContent = (mode === 'missing')
+                            ? '미출근 ' + list.page.totalElements + '명'
+                            : '';
+                    }
+
                 } catch (e) {
                     console.error(e);
                     if (seq === requestSeq) {
@@ -367,12 +371,40 @@
                 }
             }
 
+            // ---------- [추가] 모드 전환 ----------
+            function setMode(next) {
+                mode = next;
+
+                modeBtns.forEach(function (b) {
+                    b.className = (b.dataset.mode === mode) ? MODE_BTN_ACTIVE : MODE_BTN_INACTIVE;
+                });
+
+                if (mode === 'missing') {
+                    toEl.value = fromEl.value;   // 하루 기준이라 종료일은 시작일과 동일하게
+                    toEl.disabled = true;
+                } else {
+                    toEl.disabled = false;
+                }
+
+                load(0);
+            }
+
+            modeBtns.forEach(function (b) {
+                b.addEventListener('click', function () {
+                    if (b.dataset.mode !== mode) {
+                        setMode(b.dataset.mode);
+                    }
+                });
+            });
+
+            fromEl.addEventListener('change', function () {
+                if (mode === 'missing') {
+                    toEl.value = fromEl.value;
+                }
+            });
+
             // ---------- 초기화 ----------
             const today = new Date().toLocaleDateString('sv-SE');
-
-            typeEl.addEventListener('change', function () {
-                load(0);
-            });
 
             fromEl.value = today;
             toEl.value = today;
