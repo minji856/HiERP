@@ -35,7 +35,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
                             @Param("earlyLeave") Boolean earlyLeave,
                             Pageable pageable);
 
-
     // [목록] 기간 내 전체 직원의 근태 (이름표(user)도 한 번에 가져옴)
     @EntityGraph(attributePaths = "user")
     Page<Attendance> findByWorkDateBetween(LocalDate from, LocalDate to, Pageable pageable);
@@ -58,38 +57,16 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         """)
     long countEarlyLeaveEmployees(@Param("from") LocalDate from, @Param("to") LocalDate to);
 
-//    @Query(value = """
-//    select a from Attendance a
-//    join fetch a.user u
-//    where a.workDate between :from and :to
-//      and (:late is null or a.late = :late)
-//      and (:earlyLeave is null or a.earlyLeave = :earlyLeave)
-//      and (:keyword is null or u.name like concat('%', :keyword, '%'))
-//    """,
-//            countQuery = """
-//    select count(a) from Attendance a
-//    join a.user u
-//    where a.workDate between :from and :to
-//      and (:late is null or a.late = :late)
-//      and (:earlyLeave is null or a.earlyLeave = :earlyLeave)
-//      and (:keyword is null or u.name like concat('%', :keyword, '%'))
-//    """)
-//    Page<Attendance> searchAll(@Param("from") LocalDate from,
-//                               @Param("to") LocalDate to,
-//                               @Param("late") Boolean late,
-//                               @Param("earlyLeave") Boolean earlyLeave,
-//                               @Param("keyword") String keyword,
-//                               Pageable pageable);
-//
-//    @Query("""
-//    select new com.hi_erp.dto.AttendanceSummary(
-//        count(a),
-//        coalesce(sum(case when a.late = true then 1L else 0L end), 0L),
-//        coalesce(sum(case when a.earlyLeave = true then 1L else 0L end), 0L),
-//        count(distinct case when a.late = true then a.user.id end)
-//    )
-//    from Attendance a
-//    where a.workDate between :from and :to
-//    """)
-//    AttendanceSummary summarizeAll(@Param("from") LocalDate from, @Param("to") LocalDate to);
+    /**
+     * [근태 목록 계산용] 기간 내 전체 근태 기록 (사원명도 한 번에 조회)
+     *
+     * @param from
+     * @param to
+     * @return
+     */
+    @Query("""
+    select a from Attendance a join fetch a.user
+    where a.workDate between :from and :to
+    """)
+    List<Attendance> findAllByPeriod(@Param("from") LocalDate from, @Param("to") LocalDate to);
 }
