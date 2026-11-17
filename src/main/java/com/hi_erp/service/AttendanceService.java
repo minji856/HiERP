@@ -9,6 +9,7 @@ import com.hi_erp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -133,5 +134,15 @@ public class AttendanceService {
                 attendanceRepository.countLateEmployees(from, to),
                 attendanceRepository.countEarlyLeaveEmployees(from, to)
         );
+    }
+
+    // 미출근 직원을 조회합니다. DB 저장은 X
+    @Transactional(readOnly = true)
+    public Page<AttendanceResponse> findNotClockedIn(LocalDate workDate, Pageable pageable) {
+        // 컨트롤러에서 정렬 값이 넘어와도 Users에 없는 필드라 오류가 나므로 정렬을 제거합니다.
+        Pageable unsorted = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+
+        return userRepository.findNotClockedIn(workDate, unsorted)
+                .map(u -> AttendanceResponse.notClockedIn(u, workDate));
     }
 }
