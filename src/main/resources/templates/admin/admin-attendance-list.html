@@ -316,6 +316,16 @@
                     alert('시작일이 종료일보다 늦을 수 없습니다.');
                     return;
                 }
+                const params = new URLSearchParams({ from: from, to: to });
+
+                // 현재 조회 조건을 주소창에 반영 (새로고침해도 유지)
+                const url = new URL(location.href);
+                url.searchParams.set('from', from);
+                url.searchParams.set('to', to);
+                url.searchParams.set('type', typeEl.value);
+                url.searchParams.set('page', page);
+                history.replaceState(null, '', url);  // 브라우저 기록이 쌓이지 않아서 뒤로가기 기록이 늘어나지 않음
+
 
                 // 서버 제한(전체/미출근은 최대 31일)과 동일
                 const days = (new Date(to) - new Date(from)) / 86400000;
@@ -323,7 +333,6 @@
                     alert('전체/미출근 조회는 최대 31일까지 가능합니다.\n기간을 줄이거나 "출근"을 선택해 주세요.');
                     return;
                 }
-                const params = new URLSearchParams({ from: from, to: to });
                 const paging = '&page=' + page + '&size=' + PAGE_SIZE;
 
                 const listUrl = API + '?' + params + '&type=' + typeEl.value + paging;
@@ -369,13 +378,19 @@
 
             // ---------- 초기화 ----------
             const today = new Date().toLocaleDateString('sv-SE');
+            // 새로고침시 입력값 그대로를 위한
+            const q = new URLSearchParams(location.search);
+            const TYPES = ['ALL', 'ATTENDED', 'NOT_CLOCKED_IN'];
 
             typeEl.addEventListener('change', function () {
-                load(0);
+                load(0); // 그대로: 필터를 바꾸면 1페이지부터
             });
 
-            fromEl.value = today;
-            toEl.value = today;
+            fromEl.value = q.get('from') || today;
+            toEl.value = q.get('to') || today;
+
+            typeEl.value = TYPES.includes(q.get('type')) ? q.get('type') : 'ALL';
+            const initialPage = Math.max(0, parseInt(q.get('page'), 10) || 0);
 
             document.getElementById('filter-form')
                 .addEventListener('submit', function (e) {
@@ -383,7 +398,7 @@
                     load(0);
                 });
 
-            load(0);
+            load(initialPage); // 새로고침시 주소에 저장된 페이지로 시작
         })();
     </script>
 </div>
