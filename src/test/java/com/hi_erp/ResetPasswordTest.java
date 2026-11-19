@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -87,9 +88,9 @@ class ResetPasswordTest {
                 );
     }
 
-//    @Test
-//    void test(){
-//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//        System.out.println(encoder.encode("1234"));
-//    }
+    @Test
+    void test(){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        System.out.println(encoder.encode("1234"));
+    }
 }
