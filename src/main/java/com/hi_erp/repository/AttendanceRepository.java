@@ -69,4 +69,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     where a.workDate between :from and :to
     """)
     List<Attendance> findAllByPeriod(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
+    // N+1 확인용 메서드
+    @Query("select a from Attendance a where a.workDate between :from and :to")
+    List<Attendance> findAllByPeriodNoFetch(@Param("from") LocalDate from, @Param("to") LocalDate to);
 }
