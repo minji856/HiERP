@@ -25,4 +25,9 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Notice n SET n.viewCount = :viewCount WHERE n.id = :noticeId")
     void updateViewCount(@Param("noticeId") Long noticeId, @Param("viewCount") int viewCount);
+
+    // 테스트용
+    @Modifying(clearAutomatically = true)
+    @Query("update Notice n set n.viewCount = n.viewCount + 1 where n.id = :id")
+    int incrementViewCount(@Param("id") Long id);
 }
