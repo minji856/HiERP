@@ -150,4 +150,22 @@ public class NoticeService {
             return new NoticeResponseDto(notice, currentViewCount);
         });
     }
+
+    /**
+     * [비교용] 읽기 → +1 → 저장 방식. 동시 요청 시 Lost Update 발생
+     */
+    @Transactional
+    public void increaseViewCount(Long noticeId) {
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id=" + noticeId));
+        notice.increaseViewCount();   // 엔티티의 viewCount++ (Dirty Checking으로 UPDATE)
+    }
+
+    /**
+     * [비교용] DB가 한 번의 UPDATE로 처리. 읽기와 쓰기가 분리되지 않아 유실 없음
+     */
+    @Transactional
+    public void increaseViewCountAtomic(Long noticeId) {
+        noticeRepository.incrementViewCount(noticeId);
+    }
 }
