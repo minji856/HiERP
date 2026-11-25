@@ -34,7 +34,7 @@ public class EmailService {
     private final SpringTemplateEngine templateEngine;
     private final UserRepository userRepository;
 
-    @Value("${app.base-url}")
+    @Value("${app.base.url}")
     private String baseUrl; // final 없이
 
     // 이메일을 보내는 메서드 입니다.
