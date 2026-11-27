@@ -9,6 +9,7 @@ import lombok.Getter;
 public enum AttendanceStatus {
     NORMAL("출근"),
     ABSENT("결근"),
+    LEAVE("휴가"),
     OFF_DUTY("휴무");
 
     private final String title;
